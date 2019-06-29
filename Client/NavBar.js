@@ -79,9 +79,6 @@ const Logo = styled.div`
 const StyleLink = styled.a`
   color: #FFF;
   text-decoration: none;
-  &:visited {
-    color: ${colors[2][1]};
-  }
   &:active,
   &:hover {
     color: ${colors[2][1]};

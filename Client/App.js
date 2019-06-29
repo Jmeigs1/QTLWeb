@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 import NavBar from './NavBar'
 import SearchBar from './SearchBar'
 import HomePage from './HomePage'
-import DisplayPage from './DisplayPage'
+import GenePage from './GenePage'
 
 export default () => (
     <Router>
@@ -13,7 +13,8 @@ export default () => (
             <NavBar/>
             <SearchBar/>
             <Route exact path="/" component={HomePage} />
-            <Route path="/display" component={DisplayPage} />
+            <Route path="/display" component={GenePage} />
+            {/* <Route exact path="/" component={GenePage} />/ */}
         </div>
     </Router>
   )
