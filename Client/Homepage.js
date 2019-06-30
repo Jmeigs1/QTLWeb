@@ -70,11 +70,11 @@ export default () => (
         <SubHeading>QTL Results</SubHeading>
         <p>
         Examples - Gene:{' '}
-        <Link to="/display">
+        <Link to="/gene/PCSK9">
             PCSK9
         </Link>
         , Variant:{' '}
-        <Link to="/display">
+        <Link to="/gene/ZNF692">
             1-55516888-G-GA
         </Link>
         </p>

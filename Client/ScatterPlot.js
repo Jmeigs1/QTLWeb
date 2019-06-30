@@ -6,8 +6,6 @@ import * as d3 from "d3"
 import * as TestData from './TestData'
 import Colors from './UI/Colors'
 
-import os from 'os'
-
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/lab/Slider';
 
@@ -56,60 +54,26 @@ class ScatterPlot extends Component{
     }
 
     state = {
-        position: [],
-        pValue: [],
         dataLoaded: false
     }
 
     componentDidMount() {
-        this.mounted = true
         this.loadData()
-        this.createScatterPlot()
     }
 
     componentDidUpdate() {
-        this.createScatterPlot()
+        if(this.props.resultsData.geneName != this.state.geneName){
+            this.loadData()
+        }
     }
 
     loadData() {
-        var pvals = TestData.geneData
-
-        // fetch('/file.txt')
-        // .then(res => {return res.text()})
-        // .then(data => {
-        //     pvals = data
-        //     })
-
-        var lines = pvals.split(os.EOL)
-
-        var fullData = []
-        var pvals = []
-        var line
-        
-        for(var i = 0; i < lines.length; i++){
-            line = lines[i].split(' ')
-            pvals.push(line[3])
-            fullData.push(
-                {
-                    'gene': line[1].toString(),
-                    'pos':  parseInt(line[2]),
-                    'pVal': line[3]
-                }
-            )
-        }
-
-        this.setState({
-            range: {
-                'start':TestData.range.start,
-                'end':TestData.range.end,
-                'padding':TestData.range.padding
+        if(this.props.resultsData){
+            this.setState({
+                ...this.props.resultsData
             },
-            geneName: "ENSG00000171163",
-            fullData: fullData,
-            pvals: pvals,
-            dataLoaded: true
-        })
-        
+            () => {this.createScatterPlot()})
+        }
     }
 
     createScatterPlot(){
@@ -119,15 +83,11 @@ class ScatterPlot extends Component{
 
         const node = this.node
 
-        const dataMaxP = d3.max(this.state.pvals)
-        const dataMinP = d3.min(this.state.pvals)
+        const margin = this.state.d3Data.margin,
+        width = this.state.d3Data.width,
+        height = this.state.d3Data.height
 
-        const dataMaxSite = TestData.range.end + TestData.range.padding
-        const dataMinSite = TestData.range.start - TestData.range.padding
-
-        const margin = {top: 10, right: 10, bottom: 40, left: 50},
-        width = this.props.size[0] - margin.left - margin.right,
-        height = this.props.size[1] - margin.top - margin.bottom
+        d3.select(node).html("")
 
         // append the svg object to the body of the page
         var sVg = d3.select(node)
@@ -138,10 +98,7 @@ class ScatterPlot extends Component{
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
         // X scale and Axis
-        var x = d3.scaleLinear()
-            .domain([dataMinSite, dataMaxSite])
-            .range([0, width])
-            .nice()
+        var x = this.state.d3Data.scaleX
         
         sVg
         .append('g')
@@ -156,10 +113,7 @@ class ScatterPlot extends Component{
         .text("Position")
 
         // Y scale and Axis
-        var y = d3.scaleLinear()
-            .domain([dataMinP, dataMaxP])
-            .range([height, 0])     
-            .nice()
+        var y = this.state.d3Data.scaleY
 
         sVg
         .append('g')

@@ -2,6 +2,9 @@ import React,{Component} from 'react'
 import styled from 'styled-components'
 import Autocomplete from 'react-autocomplete'
 
+import {Redirect} from 'react-router-dom'
+
+
 import Colors from './UI/Colors'
 
 const Searchbox = styled.input`
@@ -34,9 +37,13 @@ class SearchBar extends Component {
     constructor (props) {
         super(props)
         this.state = {
-          value: '',
+            redirect: '',
         }
-      }
+    }
+
+    goGene = (gene) => {
+        this.props.history.push('/gene/' + gene)
+    }
 
     renderInput = props => {
         const { id } = this.props
@@ -45,7 +52,19 @@ class SearchBar extends Component {
         return <Searchbox {...rest} id={id} ref={ref} />
     }
 
+    componentDidUpdate() {
+        if (this.state.redirect != ''){
+            this.setState({
+                redirect: ''
+            })
+        }
+    }
+
     render() {
+        if (this.state.redirect != ''){
+            return <Redirect push to={'/gene/' + this.state.redirect} />
+        }
+
         return (
             <div style = {{margin:'auto',width:'400px',paddingTop:'20px'}}>
                 <Autocomplete 
@@ -54,7 +73,8 @@ class SearchBar extends Component {
                     { label: 'ENSG00000171163' },
                     { label: 'ENSG00000094975' },
                     { label: 'ENSG00000135845' },
-                    { label: 'ZNF692' }
+                    { label: 'ZNF692' },
+                    { label: 'PCSK9' }
                     ]}
                     shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                     inputProps={{placeholder: "Search by gene"}}
@@ -69,8 +89,12 @@ class SearchBar extends Component {
                         width: '100%',
                     }}
                     value={this.state.value}
-                    onChange={e => this.setState({ value: e.target.value })}
-                    onSelect={value => this.setState({ value })}
+                    // onChange={e => this.setState({ value: e.target.value })}
+                    onSelect={gene => {
+                        this.setState({
+                            redirect: gene
+                        })
+                    }}
                 />
             </div>
         )

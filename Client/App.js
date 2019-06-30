@@ -1,5 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
+// import styled from 'styled-components'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
 import NavBar from './NavBar'
@@ -14,7 +14,15 @@ export default () => (
             <SearchBar/>
             <Route exact path="/" component={HomePage} />
             <Route path="/display" component={GenePage} />
-            {/* <Route exact path="/" component={GenePage} />/ */}
+            <Route path="/gene/:geneSymbol" 
+                render={
+                    ({ match }) => {
+                        return (
+                            <GenePage geneSymbol={match.params.geneSymbol}/>
+                        )
+                    }
+                }
+            />
         </div>
     </Router>
   )
