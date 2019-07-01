@@ -52,14 +52,16 @@ class TranscriptPlot extends Component {
         var items = []
 
         if(this.state.geneData){
+            let i = 0
 
             for(let gene in this.state.geneData){
                 var starts = Buffer.from( this.state.geneData[gene]["knownGene.exonStarts"],'utf-8' ).toString()
                 var ends = Buffer.from( this.state.geneData[gene]["knownGene.exonEnds"],'utf-8' ).toString()
 
-                items.push(<li> {starts} </li>)
-                items.push(<li> {ends} </li>)
-                items.push(<li> </li>)
+                items.push(<li key={3*i+0} > {starts} </li>)
+                items.push(<li key={3*i+1} > {ends} </li>)
+                items.push(<li key={3*i+2} > </li>)
+                i++
             }
         }
 

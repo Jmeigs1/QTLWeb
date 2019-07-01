@@ -190,6 +190,7 @@ const Genecard = (props) => (
 
     <CardBox>
         <h2>{props.geneData["knownXref.GeneSymbol"]}</h2>
+        <h3>{Buffer.from( props.geneData["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
         <dl>
             <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{props.geneData["ensGene.GeneID"]}</dd></FlexDiv>
             <FlexDiv><dt>Uniprot: </dt> <dd>{props.geneData["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
@@ -197,6 +198,12 @@ const Genecard = (props) => (
                 <dt>Location: </dt>
                 <dd>
                     {props.geneData["ensGene.chrom"]}: {props.geneData["knownGene.txStart"]} - {props.geneData["knownGene.txEnd"]}
+                </dd>
+            </FlexDiv>
+            <FlexDiv>
+            <dt>Size: </dt>
+                <dd>
+                    {0 + props.geneData["knownGene.txEnd"] - props.geneData["knownGene.txStart"]}
                 </dd>
             </FlexDiv>
         </dl>

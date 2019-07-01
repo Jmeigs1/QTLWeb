@@ -41,13 +41,8 @@ class SearchBar extends Component {
         }
     }
 
-    goGene = (gene) => {
-        this.props.history.push('/gene/' + gene)
-    }
-
     renderInput = props => {
         const { id } = this.props
-        // eslint-disable-next-line react/prop-types
         const { ref, ...rest } = props
         return <Searchbox {...rest} id={id} ref={ref} />
     }
@@ -68,19 +63,19 @@ class SearchBar extends Component {
         return (
             <div style = {{margin:'auto',width:'400px',paddingTop:'20px'}}>
                 <Autocomplete 
-                    getItemValue={(item) => item.label}
+                    getItemValue={(item) => item.value}
                     items={[
-                    { label: 'ENSG00000171163' },
-                    { label: 'ENSG00000094975' },
-                    { label: 'ENSG00000135845' },
-                    { label: 'ZNF692' },
-                    { label: 'PCSK9' }
+                    { label: 'ENSG00000171163', value: 'ZNF692' },
+                    { label: 'ENSG00000094975', value: 'SUCO' },
+                    { label: 'ENSG00000135845', value: 'PIGC' },
+                    { label: 'ZNF692',          value: 'ZNF692' },
+                    { label: 'PCSK9',           value: 'PCSK9' }
                     ]}
                     shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                     inputProps={{placeholder: "Search by gene"}}
                     renderInput={this.renderInput}
                     renderItem={(item, isHighlighted) =>
-                    <SearchboxItem key={item.label} isHighlighted={isHighlighted}>
+                    <SearchboxItem key={item.label} isHighlighted={isHighlighted} >
                         {item.label}
                     </SearchboxItem>
                     }
