@@ -14,8 +14,7 @@ const NavBarWrapper = styled.div`
   box-sizing: border-box;
   width: 100%;
   padding: 20px 30px;
-  background-color: ${colors[1][0]};
-
+  background-color: #699FA1;
   @media (max-width: 900px) {
     flex-direction: column;
     padding: 10px 30px;
@@ -25,7 +24,7 @@ const NavBarWrapper = styled.div`
 const AfterNav = styled.div`
   height:10px;
   width:100%;
-  background-color: ${colors[2][0]};
+  background-color: #DF7027;
 `
 
 const ToggleMenuButton = styled(Button)`

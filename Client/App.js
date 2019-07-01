@@ -2,15 +2,18 @@ import React from 'react'
 // import styled from 'styled-components'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
-import NavBar from './NavBar'
 import SearchBar from './SearchBar'
 import HomePage from './HomePage'
 import GenePage from './GenePage'
+import './Overrides.css';
+import SideDrawer from './Drawer'
+
+document.getElementById('root').style = 'background: linear-gradient(to right,#C3E5E7, #FFFFFF);';
 
 export default () => (
     <Router>
-        <div>
-            <NavBar/>
+        <div className={"appContainer"}>
+            <SideDrawer/>
             <SearchBar/>
             <Route exact path="/" component={HomePage} />
             <Route path="/display" component={GenePage} />

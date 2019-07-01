@@ -1,0 +1,11 @@
+Body {
+    background: linear-gradient(to right,#C3E5E7, #FFFFFF);
+}
+
+.appContainer {
+    height: auto;
+}
+
+list {
+    width: 250px
+}
