@@ -7,8 +7,7 @@
     "build": "webpack --mode production",
     "start": "npm run build && node server.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-    "server": "nodemon server.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "server": "nodemon server.js"
   },
   "author": "Jacob Meigs",
   "license": "ISC",

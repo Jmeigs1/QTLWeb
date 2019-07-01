@@ -77,6 +77,7 @@ const mySqlQuery = (gene) => {
     JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
     JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
     JOIN hg19.knownGene AS kg on kg.name = kte.name \
+    JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID
     where kxr.genesymbol = ${mysql.escape(gene)}`)
 
     // .query('select * from kgXref kgX where kgX.genesymbol = "ZNF692" limit 1')
