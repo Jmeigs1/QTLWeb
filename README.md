@@ -1,3 +1,10 @@
+## Dev instructions:  
+
+#### Install Deps
 npm install  
-node server.js &  
-npm run client  
+  
+#### Terminal a (Backend API)  
+node server.js  
+  
+#### Terminal b (Webpack dev server)  
+npm run client
