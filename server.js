@@ -38,49 +38,64 @@ const mySqlQuery = (gene) => {
     host     : 'genome-mysql.soe.ucsc.edu',
     user     : 'genome',
     port     : '3306',
-    database : 'hg19'
+    database : 'hg19',
+    multipleStatements: true
   })
 
   var result = db
-    // .query('SELECT * from ensGene where name2 = \'ENSG00000171163\'')
+    .query(`
+SET @VAR1 = 0;
+SET @VAR2 = 0;
 
-    .query(`SELECT e.name "ensGene.TranscriptID", \
-    e.name2 "ensGene.GeneID", \
-    e.chrom "ensGene.chrom", \
-    e.strand "ensGene.strand", \
-    e.txStart "ensGene.txStart", \
-    e.txEnd "ensGene.txEnd", \
-    e.cdsStart "ensGene.cdsStart", \
-    e.cdsEnd "ensGene.cdsEnd", \
-    e.exonCount "ensGene.exonCount", \
-    e.exonStarts "ensGene.exonStarts", \
-    e.exonEnds "ensGene.exonEnds", \
-    kte.name "knownToEnsembl.KnownGeneID", \
-    kxr.mRNA "knownXref.mRNAID", \
-    kxr.spID "knownXref.UniProtProteinAccessionNumber", \
-    kxr.spDisplayID "knownXref.UniProtDisplayID", \
-    kxr.genesymbol "knownXref.GeneSymbol", \
-    kxr.refseq "knownXref.RefSeqID", \
-    kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
-    kxr.description "knownXref.Description", \
-    kxr.rfamAcc "knownXref.RfamAccessionNumber", \
-    kxr.tRnaName "knownXref.NameOfThetRNATrack", \
-    kg.name "knownGene.GeneName", \
-    kg.chrom "knownGene.chrom", \
-    kg.txStart "knownGene.txStart", \
-    kg.txEnd "knownGene.txEnd", \
-    kg.cdsStart "knownGene.cdsStart", \
-    kg.cdsEnd "knownGene.cdsEnd", \
-    kg.exonStarts "knownGene.exonStarts", \
-    kg.exonEnds "knownGene.exonEnds" \
-    FROM hg19.ensGene AS e \
-    JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
-    JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
-    JOIN hg19.knownGene AS kg on kg.name = kte.name \
-    JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID
-    where kxr.genesymbol = ${mysql.escape(gene)}`)
+SELECT \
+(e2.txStart - 100000) as "asdf", \
+(e2.txEnd + 100000 ) as "asdf2" \
+INTO @VAR1,@VAR2
+FROM hg19.ensGene AS e2 \
+JOIN hg19.knownToEnsembl AS kte2 ON kte2.value = e2.name \
+JOIN hg19.kgXref AS kxr2 ON kxr2.kgID = kte2.name \
+WHERE kxr2.GeneSymbol = ${mysql.escape(gene)} \
+limit 1;
+    
 
-    // .query('select * from kgXref kgX where kgX.genesymbol = "ZNF692" limit 1')
+SELECT \
+e.name "ensGene.TranscriptID", \
+e.name2 "ensGene.GeneID", \
+e.chrom "ensGene.chrom", \
+e.strand "ensGene.strand", \
+e.txStart "ensGene.txStart", \
+e.txEnd "ensGene.txEnd", \
+e.cdsStart "ensGene.cdsStart", \
+e.cdsEnd "ensGene.cdsEnd", \
+e.exonCount "ensGene.exonCount", \
+e.exonStarts "ensGene.exonStarts", \
+e.exonEnds "ensGene.exonEnds", \
+kte.name "knownToEnsembl.KnownGeneID", \
+kxr.mRNA "knownXref.mRNAID", \
+kxr.spID "knownXref.UniProtProteinAccessionNumber", \
+kxr.spDisplayID "knownXref.UniProtDisplayID", \
+kxr.genesymbol "knownXref.GeneSymbol", \
+kxr.refseq "knownXref.RefSeqID", \
+kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
+kxr.description "knownXref.Description", \
+kxr.rfamAcc "knownXref.RfamAccessionNumber", \
+kxr.tRnaName "knownXref.NameOfThetRNATrack", \
+kg.name "knownGene.GeneName", \
+kg.chrom "knownGene.chrom", \
+kg.txStart "knownGene.txStart", \
+kg.txEnd "knownGene.txEnd", \
+kg.cdsStart "knownGene.cdsStart", \
+kg.cdsEnd "knownGene.cdsEnd", \
+kg.exonStarts "knownGene.exonStarts", \
+kg.exonEnds "knownGene.exonEnds" \
+FROM hg19.ensGene AS e \
+JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
+JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
+JOIN hg19.knownGene AS kg on kg.name = kte.name \
+JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
+where e.txStart >= @VAR1 \
+  and e.txEnd <= @VAR2 \
+`)
 
   result.then(
     () => {console.log("Closed");db.close()}
@@ -97,7 +112,7 @@ app.get('/api/gene/:geneId', (req, res) => {mySqlQuery(req.params.geneId).then(r
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.send(
     { 
-      genes: rows
+      genes: rows[3]
     }
   )
 })})

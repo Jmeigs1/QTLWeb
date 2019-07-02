@@ -7,11 +7,12 @@ import GenePage from './GenePage'
 import './Overrides.css';
 import SideDrawer from './Drawer'
 
-document.getElementById('root').style = 'background: linear-gradient(to right,#C3E5E7, #FFFFFF);';
-
 export default () => (
     <Router>
-        <div className={"appContainer"}>
+        <div className={"appContainer"} style = {{
+                background: 'linear-gradient(to right,#C3E5E7, #FFFFFF)',
+                paddingBottom: '40px'
+            }}>
             <SideDrawer/>
             <Route exact path="/" component={HomePage} />
             <Route path="/display" component={GenePage} />

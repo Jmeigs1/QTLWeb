@@ -168,17 +168,18 @@ class ScatterPlot extends Component{
             .attr("fill-opacity", "0.6")
             .attr('transform','translate(' + x(this.state.range.start) +',0)')
 
-        colunmWidth =  x(this.state.range.start) - x(this.state.range.start - this.state.range.padding) 
+        let colunmWidthLeft =  x(this.state.range.start) - x(Math.max(this.state.range.start - this.state.range.padding,0)), 
+        colunmWidthRight =  x(this.state.range.start) - x(this.state.range.start - this.state.range.padding) 
 
         sVg.append("rect")
-            .attr("width", colunmWidth)
+            .attr("width", colunmWidthLeft)
             .attr("height", height)
             .attr("fill", 'green')
             .attr("fill-opacity", "0.2")
-            .attr('transform','translate(' + x(this.state.range.start - this.state.range.padding) +',0)')
+            .attr('transform','translate(' + x(Math.max(this.state.range.start - this.state.range.padding,0)) +',0)')
 
         sVg.append("rect")
-            .attr("width", colunmWidth)
+            .attr("width", colunmWidthRight)
             .attr("height", height)
             .attr("fill", 'green')
             .attr("fill-opacity", "0.2")

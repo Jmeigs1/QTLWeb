@@ -40,7 +40,7 @@ class TranscriptPlot extends Component {
     }
 
     createTranscriptPlot(){
-        console.log(this.state)
+        // console.log(this.state)
         
     }
 
@@ -55,8 +55,10 @@ class TranscriptPlot extends Component {
             let i = 0
 
             for(let gene in this.state.geneData){
-                var starts = Buffer.from( this.state.geneData[gene]["knownGene.exonStarts"],'utf-8' ).toString()
-                var ends = Buffer.from( this.state.geneData[gene]["knownGene.exonEnds"],'utf-8' ).toString()
+                // var starts = Buffer.from( this.state.geneData[gene]["ensGene.txStart"],'utf-8' ).toString()
+                var starts = this.state.geneData[gene]["ensGene.txStart"]
+                // var ends = Buffer.from( this.state.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
+                var ends = this.state.geneData[gene]["ensGene.txEnd"]
 
                 items.push(<li key={3*i+0} > {starts} </li>)
                 items.push(<li key={3*i+1} > {ends} </li>)
