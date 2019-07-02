@@ -9,8 +9,11 @@ import './Overrides.css';
 import SideDrawer from './Drawer'
 
 export default () => (
-    <Router style={{background: 'linear-gradient(to right,#C3E5E7, #FFFFFF)'}}>
-        <div className={"appContainer"}>
+    <Router>
+        <div className={"appContainer"} style = {{
+                background: 'linear-gradient(to right,#C3E5E7, #FFFFFF)',
+                paddingBottom: '40px'
+            }}>
             <SideDrawer/>
             <SearchBar/>
             <Route exact path="/" component={HomePage} />
