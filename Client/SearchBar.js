@@ -1,9 +1,10 @@
 import React,{Component} from 'react'
 import styled from 'styled-components'
 import Autocomplete from 'react-autocomplete'
-
+import {FaSearch} from 'react-icons/fa';
 import {Redirect} from 'react-router-dom'
-
+import Button from '@material-ui/core/Button';
+import FadeIn from 'react-fade-in';
 
 import Colors from './UI/Colors'
 
@@ -38,6 +39,7 @@ class SearchBar extends Component {
         super(props)
         this.state = {
             redirect: '',
+            isHidden: true,
         }
     }
 
@@ -50,9 +52,15 @@ class SearchBar extends Component {
     componentDidUpdate() {
         if (this.state.redirect != ''){
             this.setState({
-                redirect: ''
+                redirect: '',
             })
         }
+    }
+
+    toggleHidden() {
+        this.setState({
+            isHidden: !this.state.isHidden
+        })
     }
 
     render() {
@@ -60,39 +68,50 @@ class SearchBar extends Component {
             return <Redirect push to={'/gene/' + this.state.redirect} />
         }
 
-        return (
-            <div style = {{margin:'auto',width:'400px',paddingTop:'20px'}}>
-                <Autocomplete 
-                    getItemValue={(item) => item.value}
-                    items={[
-                    { label: 'ENSG00000171163', value: 'ZNF692' },
-                    { label: 'ENSG00000094975', value: 'SUCO' },
-                    { label: 'ENSG00000135845', value: 'PIGC' },
-                    { label: 'ZNF692',          value: 'ZNF692' },
-                    { label: 'PCSK9',           value: 'PCSK9' }
-                    ]}
-                    shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
-                    inputProps={{placeholder: "Search by gene"}}
-                    renderInput={this.renderInput}
-                    renderItem={(item, isHighlighted) =>
-                    <SearchboxItem key={item.label} isHighlighted={isHighlighted} >
-                        {item.label}
-                    </SearchboxItem>
-                    }
-                    wrapperStyle={{
-                        display: 'inline-block',
-                        width: '100%',
-                    }}
-                    value={this.state.value}
-                    // onChange={e => this.setState({ value: e.target.value })}
-                    onSelect={gene => {
-                        this.setState({
-                            redirect: gene
-                        })
-                    }}
-                />
-            </div>
-        )
+        if(!this.state.isHidden) {
+            return (
+                <div>
+                    <Button onClick={() => this.toggleHidden()}><FaSearch size={"3em"}/></Button>
+                <FadeIn>
+                    <div style={{display: 'inline-block',position: 'absolute', left: '25px', width: '250px', paddingTop: '20px'}}>
+                    <Autocomplete
+                        getItemValue={(item) => item.value}
+                        items={[
+                            {label: 'ENSG00000171163', value: 'ZNF692'},
+                            {label: 'ENSG00000094975', value: 'SUCO'},
+                            {label: 'ENSG00000135845', value: 'PIGC'},
+                            {label: 'ZNF692', value: 'ZNF692'},
+                            {label: 'PCSK9', value: 'PCSK9'}
+                        ]}
+                        shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
+                        inputProps={{placeholder: "Search by gene"}}
+                        renderInput={this.renderInput}
+                        renderItem={(item, isHighlighted) =>
+                            <SearchboxItem key={item.label} isHighlighted={isHighlighted}>
+                                {item.label}
+                            </SearchboxItem>
+                        }
+                        wrapperStyle={{
+                            display: 'inline-block',
+                            width: '100%',
+                        }}
+                        value={this.state.value}
+                        // onChange={e => this.setState({ value: e.target.value })}
+                        onSelect={gene => {
+                            this.setState({
+                                redirect: gene
+                            })
+                        }}
+                    />
+                </div>
+                </FadeIn>
+                </div>
+            )
+        } else {
+            return(
+                <Button onClick={() => this.toggleHidden()}><FaSearch size={"3em"}/></Button>
+            );
+        }
     }
 }
 

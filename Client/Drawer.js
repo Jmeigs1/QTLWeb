@@ -4,8 +4,10 @@ import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import FadeIn from 'react-fade-in';
+import SearchBar from "./SearchBar";
+import {FaBars} from 'react-icons/fa';
 
 export default function SideDrawer() {
     const [state, setState] = React.useState({
@@ -31,7 +33,6 @@ export default function SideDrawer() {
             <List>
                 {['About', 'Paper', 'WingoLab'].map((text, index) => (
                     <ListItem button key={text} onClick={() => (window.location = '/' + text)}>
-                        <ListItemIcon>{index % 2 === 0 ? "1" : "2"}</ListItemIcon>
                         <ListItemText primary={text}/>
                     </ListItem>
                 ))}
@@ -42,7 +43,10 @@ export default function SideDrawer() {
 
     return (
         <div>
-            <Button onClick={toggleDrawer('left', true)}>Navigation</Button>
+            <FadeIn>
+                <Button onClick={toggleDrawer('left', true) }><FaBars size={"3em"}/></Button>
+                <SearchBar/>
+            </FadeIn>
             <SwipeableDrawer
                 open={state.left}
                 onClose={toggleDrawer('left', false)}

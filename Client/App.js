@@ -2,7 +2,6 @@ import React from 'react'
 // import styled from 'styled-components'
 import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
-import SearchBar from './SearchBar'
 import HomePage from './HomePage'
 import GenePage from './GenePage'
 import './Overrides.css';
@@ -14,7 +13,6 @@ export default () => (
     <Router>
         <div className={"appContainer"}>
             <SideDrawer/>
-            <SearchBar/>
             <Route exact path="/" component={HomePage} />
             <Route path="/display" component={GenePage} />
             <Route path="/gene/:geneSymbol" 
