@@ -104,11 +104,11 @@ class GenePage extends Component {
         //Calculate here because we need the scale across components
         const d3Min = min(pvals),
         d3Max = max(pvals),
-        dataMinSite = this.state.geneData.genes[0]["knownGene.txStart"] - 100000,
-        dataMaxSite = this.state.geneData.genes[0]["knownGene.txEnd"] + 100000
+        dataMinSite = this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txStart"] - 100000,
+        dataMaxSite = this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txEnd"] + 100000
 
         var d3ScaleX = scaleLinear()
-            .domain([dataMinSite, dataMaxSite])
+            .domain([Math.max(dataMinSite,0), dataMaxSite])
             .range([0, d3Width])
             .nice()
 
@@ -132,8 +132,8 @@ class GenePage extends Component {
             {
                 resultsData:{    
                     range: {
-                        'start':this.state.geneData.genes[0]["knownGene.txStart"],
-                        'end':this.state.geneData.genes[0]["knownGene.txEnd"],
+                        'start':this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txStart"],
+                        'end':this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txEnd"],
                         'padding':100000
                     },
                     geneName: geneSymbol,
@@ -153,8 +153,19 @@ class GenePage extends Component {
             .then( data => {
                 //Check for no data
                 if(data.genes.length > 0){
+
+                    let index = 0
+
+                    for(const [i,row] of data.genes.entries()){
+                        console.log(row['knownXref.GeneSymbol'], ': ', i)
+                        if(row['knownXref.GeneSymbol'] ==  geneSymbol){
+                            index = i
+                        }
+                    }
+
                     this.setState({
                         geneData: data,
+                        mainGeneIndex: index,
                         geneDataLoaded: true
                     })
                 }
@@ -177,7 +188,7 @@ class GenePage extends Component {
 
         return (
             <Page>
-                <Genecard geneData={this.state.geneData.genes[0]}/>
+                <Genecard geneData={this.state.geneData.genes[this.state.mainGeneIndex]}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot resultsData={this.state.resultsData} size={[1000,500]}/>
                 <TranscriptPlot resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>

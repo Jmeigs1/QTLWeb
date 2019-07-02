@@ -31,7 +31,7 @@ export default function SideDrawer() {
             <List>
                 {['About', 'Paper', 'WingoLab'].map((text, index) => (
                     <ListItem button key={text} onClick={() => (window.location = '/' + text)}>
-                        <ListItemIcon>{index % 2 === 0 ? "1" : "2"}</ListItemIcon>
+                        <ListItemIcon>{index % 2 === 0 ? <div>1</div> : <div>2</div>}</ListItemIcon>
                         <ListItemText primary={text}/>
                     </ListItem>
                 ))}

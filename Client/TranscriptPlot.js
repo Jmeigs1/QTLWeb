@@ -40,7 +40,7 @@ class TranscriptPlot extends Component {
     }
 
     createTranscriptPlot(){
-        console.log(this.state)
+        // console.log(this.state)
         
     }
 
