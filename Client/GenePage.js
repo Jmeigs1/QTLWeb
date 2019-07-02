@@ -15,8 +15,8 @@ const Page = styled.div`
     box-sizing: border-box;
     width: 100%;
     max-width: 1200px;
-    padding: 0 15px;
-    margin: 0 auto 40px;
+    padding: 0 30px;
+    margin: 0 auto;
     font-size: 16px;
 `
 
@@ -104,8 +104,8 @@ class GenePage extends Component {
         //Calculate here because we need the scale across components
         const d3Min = min(pvals),
         d3Max = max(pvals),
-        dataMinSite = this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txStart"] - 100000,
-        dataMaxSite = this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txEnd"] + 100000
+        dataMinSite = this.state.geneData.genes[this.state.mainGeneIndex]["ensGene.txStart"] - 100000,
+        dataMaxSite = this.state.geneData.genes[this.state.mainGeneIndex]["ensGene.txEnd"] + 100000
 
         var d3ScaleX = scaleLinear()
             .domain([Math.max(dataMinSite,0), dataMaxSite])
@@ -132,8 +132,8 @@ class GenePage extends Component {
             {
                 resultsData:{    
                     range: {
-                        'start':this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txStart"],
-                        'end':this.state.geneData.genes[this.state.mainGeneIndex]["knownGene.txEnd"],
+                        'start':this.state.geneData.genes[this.state.mainGeneIndex]["ensGene.txStart"],
+                        'end':this.state.geneData.genes[this.state.mainGeneIndex]["ensGene.txEnd"],
                         'padding':100000
                     },
                     geneName: geneSymbol,
@@ -208,13 +208,13 @@ const Genecard = (props) => (
             <FlexDiv>
                 <dt>Location: </dt>
                 <dd>
-                    {props.geneData["ensGene.chrom"]}: {props.geneData["knownGene.txStart"]} - {props.geneData["knownGene.txEnd"]}
+                    {props.geneData["ensGene.chrom"]}: {props.geneData["ensGene.txStart"]} - {props.geneData["ensGene.txEnd"]}
                 </dd>
             </FlexDiv>
             <FlexDiv>
             <dt>Size: </dt>
                 <dd>
-                    {0 + props.geneData["knownGene.txEnd"] - props.geneData["knownGene.txStart"]}
+                    {0 + props.geneData["ensGene.txEnd"] - props.geneData["ensGene.txStart"]}
                 </dd>
             </FlexDiv>
         </dl>

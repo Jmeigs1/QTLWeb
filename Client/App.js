@@ -8,10 +8,8 @@ import GenePage from './GenePage'
 import './Overrides.css';
 import SideDrawer from './Drawer'
 
-document.getElementById('root').style = 'background: linear-gradient(to right,#C3E5E7, #FFFFFF);';
-
 export default () => (
-    <Router>
+    <Router style={{background: 'linear-gradient(to right,#C3E5E7, #FFFFFF)'}}>
         <div className={"appContainer"}>
             <SideDrawer/>
             <SearchBar/>
