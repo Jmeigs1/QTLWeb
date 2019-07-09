@@ -6,8 +6,9 @@ import * as d3 from "d3"
 import * as TestData from './TestData'
 import Colors from './UI/Colors'
 
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/lab/Slider';
+import Typography from '@material-ui/core/Typography'
+import Slider from '@material-ui/lab/Slider'
+
 
 const Svg = styled.svg`
     margin: 10px auto;
@@ -76,6 +77,14 @@ class ScatterPlot extends Component{
         }
     }
 
+    handleMouseOver(data, index, objects) {
+        objects[index].setAttribute('r','6')
+    }
+
+    handleMouseOut(data, index, objects) {
+        objects[index].setAttribute('r','3')        
+    }
+
     createScatterPlot(){
         if (!this.state.dataLoaded) {
             return
@@ -135,30 +144,6 @@ class ScatterPlot extends Component{
             .style("text-anchor", "middle")
             .text("P-Value"); 
 
-        //Data
-        sVg
-            .selectAll('circle')
-            .data(this.state.fullData)
-            .enter()
-            .filter(function(x){return x.gene != "ENSG00000171163"})
-            .append("circle")
-                .attr("cx", function(d){ return x(d.pos) })
-                .attr("cy", function(d){ return y(d.pVal) })
-                .attr("r", 3)
-                .attr("fill", Colors[0][0])
-
-        sVg
-            .selectAll('circle2')
-            .data(this.state.fullData)
-            .enter()
-            .filter(function(x){return x.gene == "ENSG00000171163"})
-            .append("circle")
-                .attr("cx", function(d){ return x(d.pos) })
-                .attr("cy", function(d){ return y(d.pVal) })
-                .attr("r", 3)
-                .attr("fill", 'red')
-
-
         var colunmWidth = x(this.state.range.end)-x(this.state.range.start)
 
         sVg.append("rect")
@@ -184,6 +169,33 @@ class ScatterPlot extends Component{
             .attr("fill", 'green')
             .attr("fill-opacity", "0.2")
             .attr('transform','translate(' + x(this.state.range.end) +',0)')
+
+        //Data circles
+        sVg
+            .selectAll('circle')
+            .data(this.state.fullData)
+            .enter()
+            .filter(function(x){return x.gene != "ENSG00000171163"})
+            .append("circle")
+                .attr("cx", function(d){ return x(d.pos) })
+                .attr("cy", function(d){ return y(d.pVal) })
+                .attr("r", 3)
+                .attr("fill", Colors[0][0])
+                .on("mouseover", this.handleMouseOver)
+                .on("mouseout", this.handleMouseOut)
+
+        sVg
+            .selectAll('circle2')
+            .data(this.state.fullData)
+            .enter()
+            .filter(function(x){return x.gene == "ENSG00000171163"})
+            .append("circle")
+                .attr("cx", function(d){ return x(d.pos) })
+                .attr("cy", function(d){ return y(d.pVal) })
+                .attr("r", 3)
+                .attr("fill", 'red')
+                .on("mouseover", this.handleMouseOver)
+                .on("mouseout", this.handleMouseOut)
 
     }
 

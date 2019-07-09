@@ -40,8 +40,8 @@ class TranscriptPlot extends Component {
     }
 
     createTranscriptPlot(){
-        // console.log(this.state)
-        
+        let d3Data = this.state.resultsData.d3Data
+
     }
 
     TestData = () => {
@@ -60,9 +60,10 @@ class TranscriptPlot extends Component {
                 // var ends = Buffer.from( this.state.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
                 var ends = this.state.geneData[gene]["ensGene.txEnd"]
 
-                items.push(<li key={3*i+0} > {starts} </li>)
-                items.push(<li key={3*i+1} > {ends} </li>)
-                items.push(<li key={3*i+2} > </li>)
+                items.push(<li key={4*i+0} > {this.state.geneData[gene]["knownXref.GeneSymbol"]} </li>)
+                items.push(<li key={4*i+1} > {starts} </li>)
+                items.push(<li key={4*i+2} > {ends} </li>)
+                items.push(<li key={4*i+3} > </li>)
                 i++
             }
         }
@@ -70,7 +71,10 @@ class TranscriptPlot extends Component {
 
         return (
             <div>
-                {items}
+                {/* {items} */}
+                <Svg id="TranscriptArea" ref={node => this.node = node}
+                    width={this.props.size[0]} height={this.props.size[1]}>
+                </Svg>
             </div>
         );
     }

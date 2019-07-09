@@ -4,6 +4,8 @@ const os = require('os')
 const path = require('path')
 
 const mysql = require('mysql')
+const bodyParser = require('body-parser');
+const cors = require('cors')
 
 const app = express()
 
@@ -32,32 +34,55 @@ class Database {
   }
 }
 
-const mySqlQuery = (gene) => {
+
+const getSiteRange = (gene) => {
 
   db = new Database({
     host     : 'genome-mysql.soe.ucsc.edu',
     user     : 'genome',
     port     : '3306',
-    database : 'hg19',
-    multipleStatements: true
+    database : 'hg19'
+    // multipleStatements: true
   })
 
   var result = db
-    .query(`
-SET @VAR1 = 0;
-SET @VAR2 = 0;
-
+    .query(`    
 SELECT \
-(e2.txStart - 100000) as "asdf", \
-(e2.txEnd + 100000 ) as "asdf2" \
-INTO @VAR1,@VAR2
-FROM hg19.ensGene AS e2 \
-JOIN hg19.knownToEnsembl AS kte2 ON kte2.value = e2.name \
-JOIN hg19.kgXref AS kxr2 ON kxr2.kgID = kte2.name \
-WHERE kxr2.GeneSymbol = ${mysql.escape(gene)} \
-limit 1;
-    
+e.txStart "ensGene.txStart", \
+e.txEnd "ensGene.txEnd" \
+FROM hg19.ensGene AS e \
+where name2 = ${mysql.escape(gene)}
+`)
 
+  result.then(
+    () => {console.log("Closed");db.close()}
+  )
+
+  return result
+
+}
+
+
+const mySqlQuery = (genes) => {
+
+  db = new Database({
+    host     : 'genome-mysql.soe.ucsc.edu',
+    user     : 'genome',
+    port     : '3306',
+    database : 'hg19'
+    // multipleStatements: true
+  })
+
+  let geneList = ""
+
+  for(gene of genes){
+    geneList += `${mysql.escape(gene)},`
+  }
+
+  geneList = geneList.substr(0,geneList.length - 1)
+
+  var result = db
+    .query(`    
 SELECT \
 e.name "ensGene.TranscriptID", \
 e.name2 "ensGene.GeneID", \
@@ -93,8 +118,7 @@ JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
 JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
 JOIN hg19.knownGene AS kg on kg.name = kte.name \
 JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
-where e.txStart >= @VAR1 \
-  and e.txEnd <= @VAR2 \
+where e.name2 in (${geneList})\
 `)
 
   result.then(
@@ -107,15 +131,34 @@ where e.txStart >= @VAR1 \
 const publicDir = path.resolve(__dirname, 'dist')
 app.use(express.static(publicDir))
 
+//
+app.use(cors());
+app.options('localhost:3000', cors());
+
+app.use(bodyParser.json())
+
 app.get('/api/getUsername', (req, res) => res.send({ username: os.userInfo().username }))
-app.get('/api/gene/:geneId', (req, res) => {mySqlQuery(req.params.geneId).then(rows => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.send(
-    { 
-      genes: rows[3]
-    }
-  )
-})})
+
+app.get('/api/gene/:geneID', (req, res) => {
+  getSiteRange(req.params.geneID).then( rows => {
+    res.send(
+      {
+        genes: rows
+      }
+    )
+  })
+})
+
+app.post('/api/gene/search', (req, res) => {
+
+  mySqlQuery(req.body.genes).then(rows => {
+    res.send(
+      { 
+        genes: rows
+      }
+    )
+  })
+})
 
 app.get('*', (request, response) => {
   response.sendFile(path.join(publicDir,'index.html'))

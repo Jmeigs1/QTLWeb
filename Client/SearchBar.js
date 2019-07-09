@@ -77,11 +77,11 @@ class SearchBar extends Component {
                     <Autocomplete
                         getItemValue={(item) => item.value}
                         items={[
-                            {label: 'ENSG00000171163', value: 'ZNF692'},
-                            {label: 'ENSG00000094975', value: 'SUCO'},
-                            {label: 'ENSG00000135845', value: 'PIGC'},
-                            {label: 'ZNF692', value: 'ZNF692'},
-                            {label: 'PCSK9', value: 'PCSK9'}
+                            {label: 'ENSG00000171163', value: 'ENSG00000171163'},
+                            {label: 'ENSG00000094975', value: 'ENSG00000094975'},
+                            {label: 'ENSG00000135845', value: 'ENSG00000135845'},
+                            {label: 'ZNF692', value: 'ENSG00000171163'},
+                            {label: 'PCSK9', value: 'ENSG00000169174'}
                         ]}
                         shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
                         inputProps={{placeholder: "Search by gene"}}

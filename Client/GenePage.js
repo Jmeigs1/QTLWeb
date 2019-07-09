@@ -49,13 +49,12 @@ class GenePage extends Component {
             geneData: [],
             dataLoaded: false,
             geneSymbol: this.props.geneSymbol,
-            resultsData: null,
+            resultsData: {},
           };
     }
 
     componentDidMount() {
-        this.loadDataGene(this.props.geneSymbol)
-        .then(() => {this.loadDataResults(this.props.geneSymbol)})
+        this.loadAllData()
     }
 
     componentDidUpdate() {
@@ -63,43 +62,37 @@ class GenePage extends Component {
             this.setState({
                 geneSymbol: this.props.geneSymbol
             })
-            this.loadDataGene(this.props.geneSymbol)
-            .then(() => {this.loadDataResults(this.props.geneSymbol)})
+            this.loadAllData()
         }
     }
 
-    loadDataResults(geneSymbol) {
-        var pvals = TestData.geneData
+    loadAllData(){
+        this.getSiteRange()
+        .then( 
+            (range) => (Promise.resolve(this.loadDataResults(this.props.geneSymbol,range)))
+        )
+        .then(
+            (geneQueryResults) => {
+                this.loadDataGene(geneQueryResults.genes)
+                .then(
+                    () => {this.loadD3Data(geneQueryResults)}
+                )
+                
+            }
+        )
+    }
 
-        // fetch('/file.txt')
-        // .then(res => {return res.text()})
-        // .then(data => {
-        //     pvals = data
-        //     })
+    loadD3Data(geneQueryResults){
+        if(!geneQueryResults)
+            return
 
-        var lines = pvals.split(os.EOL)
-
-        var fullData = []
-        var pvals = []
-        var line
-        
-        for(var i = 0; i < lines.length; i++){
-            line = lines[i].split(' ')
-            pvals.push(line[3])
-            fullData.push(
-                {
-                    'gene': line[1].toString(),
-                    'pos':  parseInt(line[2]),
-                    'pVal': line[3]
-                }
-            )
-        }
-        
         const size = [1000,500]
 
         const d3Margin = {top: 10, right: 10, bottom: 40, left: 50},
         d3Width = size[0] - d3Margin.left - d3Margin.right,
         d3Height = size[1] - d3Margin.top - d3Margin.bottom
+
+        let pvals = geneQueryResults.pvals
 
         //Calculate here because we need the scale across components
         const d3Min = min(pvals),
@@ -130,35 +123,85 @@ class GenePage extends Component {
 
         this.setState(
             {
-                resultsData:{    
+                resultsData:{
+                    ...geneQueryResults,    
                     range: {
                         'start':this.state.geneData.genes[this.state.mainGeneIndex]["ensGene.txStart"],
                         'end':this.state.geneData.genes[this.state.mainGeneIndex]["ensGene.txEnd"],
                         'padding':100000
                     },
-                    geneName: geneSymbol,
-                    fullData: fullData,
-                    pvals: pvals,
                     dataLoaded: true,
                     d3Data: d3Data
                 }
             }
         )
-
     }
 
-    loadDataGene(geneSymbol) {
-        return fetch('http://localhost:8080/api/gene/' + this.props.geneSymbol)
+    getSiteRange(){
+        return fetch(
+            'http://localhost:8080/api/gene/' + this.props.geneSymbol
+        )
+    }
+
+    loadDataResults(geneSymbol,range) {
+        var pvals = TestData.geneData
+
+        var lines = pvals.split(os.EOL)
+
+        var fullData = []
+        var pvals = []
+        var genes = []
+        var line
+        
+        for(var i = 0; i < lines.length; i++){
+            line = lines[i].split(' ')
+            pvals.push(line[3])
+            genes.push(line[1].toString())
+            fullData.push(
+                {
+                    'gene': line[1].toString(),
+                    'pos':  parseInt(line[2]),
+                    'pVal': line[3]
+                }
+            )
+        }
+
+        genes.push(geneSymbol)
+
+        return {
+            ...this.state.resultsData,
+            geneName: geneSymbol,
+            fullData: fullData,
+            pvals: pvals,
+            genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
+            range: range
+        }
+    }
+
+    loadDataGene(genes) {
+
+        return fetch(
+            'http://localhost:8080/api/gene/search',
+            { 
+                method: "POST",
+                body: JSON.stringify({
+                    genes: genes
+                }),
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            }
+        )
             .then(response => response.json())
             .then( data => {
+
                 //Check for no data
                 if(data.genes.length > 0){
 
                     let index = 0
 
                     for(const [i,row] of data.genes.entries()){
-                        console.log(row['knownXref.GeneSymbol'], ': ', i)
-                        if(row['knownXref.GeneSymbol'] ==  geneSymbol){
+                        if(row['ensGene'] ==  this.props.geneSymbol){
                             index = i
                         }
                     }
@@ -190,8 +233,8 @@ class GenePage extends Component {
             <Page>
                 <Genecard geneData={this.state.geneData.genes[this.state.mainGeneIndex]}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
-                <ScatterPlot resultsData={this.state.resultsData} size={[1000,500]}/>
-                <TranscriptPlot resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
+                <ScatterPlot size={[1000,500]} resultsData={this.state.resultsData} />
+                <TranscriptPlot size={[1000,50]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
             </Page>
         )
     }
