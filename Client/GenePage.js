@@ -6,6 +6,8 @@ import os from 'os'
 
 import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
+import GenePageTable from './GenePageTable'
+import GeneSlider from './GeneSlider'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
@@ -234,7 +236,9 @@ class GenePage extends Component {
                 <Genecard geneData={this.state.geneData.genes[this.state.mainGeneIndex]}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot size={[1000,500]} resultsData={this.state.resultsData} />
-                <TranscriptPlot size={[1000,50]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
+                <TranscriptPlot size={[1000,10]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
+                <GeneSlider/>
+                <GenePageTable size={[1000,500]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
             </Page>
         )
     }
@@ -261,6 +265,12 @@ const Genecard = (props) => (
                 </dd>
             </FlexDiv>
         </dl>
+        <select>
+            <option value="volvo">EQTL</option>
+            <option value="volvo">PQTL</option>
+            <option value="volvo">EQTL Overlap</option>
+            <option value="volvo">PQTL Overlap</option>
+        </select>
     </CardBox>
 )
 

@@ -24,7 +24,6 @@ const HomePage = styled(InfoPage)`
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 740px;
     margin-top: 0px;
 `
 

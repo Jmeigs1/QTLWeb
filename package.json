@@ -14,7 +14,6 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.19",
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
-    "@fortawesome/react-native-fontawesome": "^0.1.0",
     "@material-ui/core": "4.1.3",
     "@material-ui/lab": "4.0.0-alpha.18",
     "babel-polyfill": "^6.26.0",
@@ -39,11 +38,9 @@
     "react": "^16.8.6",
     "react-autocomplete": "1.8.1",
     "react-bootstrap": "^1.0.0-beta.9",
-    "react-d3-library": "1.1.8",
     "react-dom": "^16.8.6",
     "react-fade-in": "^0.1.6",
     "react-icons": "^3.7.0",
-    "react-native-fontawesome": "^6.0.1",
     "react-native-svg": "^9.5.1",
     "react-router-dom": "^5.0.1",
     "styled-components": "^4.3.2"

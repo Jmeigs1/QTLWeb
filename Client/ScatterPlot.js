@@ -3,49 +3,12 @@ import styled from 'styled-components'
 
 import * as d3 from "d3"
 
-import * as TestData from './TestData'
 import Colors from './UI/Colors'
-
-import Typography from '@material-ui/core/Typography'
-import Slider from '@material-ui/lab/Slider'
-
 
 const Svg = styled.svg`
     margin: 10px auto;
     display: block;
 `
-
-const UseStyles = styled.div`
-    width: 1000px;
-    margin: 10px auto;
-`
-
-function valuetext(value) {
-  return `${value}°C`;
-}
-
-export function RangeSlider() {
-  const [value, setValue] = React.useState([20, 37]);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  return (
-    <UseStyles>
-      <Typography id="range-slider" gutterBottom>
-        BP range
-      </Typography>
-      <Slider
-        value={value}
-        onChange={handleChange}
-        valueLabelDisplay="auto"
-        aria-labelledby="range-slider"
-        getAriaValueText={valuetext}
-      />
-    </UseStyles>
-  );
-}
 
 class ScatterPlot extends Component{
 
@@ -78,11 +41,15 @@ class ScatterPlot extends Component{
     }
 
     handleMouseOver(data, index, objects) {
-        objects[index].setAttribute('r','6')
+
+        let dot = objects[index]
+        dot.setAttribute('r','10')
     }
 
     handleMouseOut(data, index, objects) {
-        objects[index].setAttribute('r','3')        
+
+        let dot = objects[index]
+        dot.setAttribute('r','5')        
     }
 
     createScatterPlot(){
@@ -159,15 +126,15 @@ class ScatterPlot extends Component{
         sVg.append("rect")
             .attr("width", colunmWidthLeft)
             .attr("height", height)
-            .attr("fill", 'green')
-            .attr("fill-opacity", "0.2")
+            .attr("fill", '#AA9239')
+            .attr("fill-opacity", "0.1")
             .attr('transform','translate(' + x(Math.max(this.state.range.start - this.state.range.padding,0)) +',0)')
 
         sVg.append("rect")
             .attr("width", colunmWidthRight)
             .attr("height", height)
-            .attr("fill", 'green')
-            .attr("fill-opacity", "0.2")
+            .attr("fill", '#AA9239')
+            .attr("fill-opacity", "0.1")
             .attr('transform','translate(' + x(this.state.range.end) +',0)')
 
         //Data circles
@@ -179,7 +146,7 @@ class ScatterPlot extends Component{
             .append("circle")
                 .attr("cx", function(d){ return x(d.pos) })
                 .attr("cy", function(d){ return y(d.pVal) })
-                .attr("r", 3)
+                .attr("r", 5)
                 .attr("fill", Colors[0][0])
                 .on("mouseover", this.handleMouseOver)
                 .on("mouseout", this.handleMouseOut)
@@ -192,8 +159,8 @@ class ScatterPlot extends Component{
             .append("circle")
                 .attr("cx", function(d){ return x(d.pos) })
                 .attr("cy", function(d){ return y(d.pVal) })
-                .attr("r", 3)
-                .attr("fill", 'red')
+                .attr("r", 5)
+                .attr("fill", 'brown')
                 .on("mouseover", this.handleMouseOver)
                 .on("mouseout", this.handleMouseOut)
 
@@ -205,7 +172,6 @@ class ScatterPlot extends Component{
                 <Svg id="MainGraphArea" ref={node => this.node = node}
                     width={this.props.size[0]} height={this.props.size[1]}>
                 </Svg>
-                <RangeSlider/>
             </div>
         )
     }

@@ -9,6 +9,14 @@ import FadeIn from 'react-fade-in';
 import SearchBar from "./SearchBar";
 import {FaBars} from 'react-icons/fa';
 
+import styled from 'styled-components'
+
+const StyledListItemText = styled(ListItemText)`
+    font-family: Raleway, sans-serif;
+    color: #4C688B;
+    font-size: 16px;
+`
+
 export default function SideDrawer() {
     const [state, setState] = React.useState({
         left: false,
@@ -22,6 +30,17 @@ export default function SideDrawer() {
         setState({ ...state, [side]: open });
     };
 
+    const linkData = (label, url) => {
+        return {label, url}
+    }
+
+    const links = [
+        linkData('Home', '/'),
+        linkData('About', '/About'),
+        linkData('Paper', '/Paper'),
+        linkData('WingoLab', '/WingoLab'),
+    ]
+
     const sideList = side => (
         <div
             role="presentation"
@@ -31,9 +50,9 @@ export default function SideDrawer() {
             onKeyDown={toggleDrawer(side, false)}
         >
             <List>
-                {['About', 'Paper', 'WingoLab'].map((text, index) => (
-                    <ListItem button key={text} onClick={() => (window.location = '/' + text)}>
-                        <ListItemText primary={text}/>
+                {links.map((link, index) => (
+                    <ListItem button key={link.label} onClick={() => (window.location = link.url)}>
+                        <StyledListItemText disableTypography primary={link.label}/>
                     </ListItem>
                 ))}
             </List>
