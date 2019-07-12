@@ -77,7 +77,7 @@ class GenePage extends Component {
             (geneQueryResults) => {
                 this.loadDataGene(geneQueryResults.genes)
                 .then(
-                    () => {this.loadD3Data(geneQueryResults)}
+                    () => {this.loadD3Data(geneQueryResults); console.log(this.state)}
                 )
                 
             }
@@ -203,8 +203,9 @@ class GenePage extends Component {
                     let index = 0
 
                     for(const [i,row] of data.genes.entries()){
-                        if(row['ensGene'] ==  this.props.geneSymbol){
+                        if(row['ensGene.GeneID'] ==  this.props.geneSymbol){
                             index = i
+                            break
                         }
                     }
 
@@ -223,6 +224,7 @@ class GenePage extends Component {
     }
 
     render() {
+        console.log(this.state)
 
         if (!this.state.geneDataLoaded){
             return (

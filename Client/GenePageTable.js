@@ -13,6 +13,7 @@ import colors from './UI/Colors'
 
 const StyledTableCell = styled(TableCell)`
     font-size: 12px !important;
+    font-family: Raleway, sans-serif !important;
     color: ${colors[0][2]} !important;
 `
 
@@ -42,6 +43,7 @@ const StyledTableRoot = styled(Paper)`
 const StyledTableRow = styled(TableRow)`
     &:hover {
         background: ${colors[2][1]};
+        cursor: pointer;
     }
 `
 

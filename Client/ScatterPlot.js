@@ -10,6 +10,34 @@ const Svg = styled.svg`
     display: block;
 `
 
+const LegendDiv = styled.div`
+    width: 1000px;
+    margin: auto;
+    display: block;
+    height: 25px;
+    line-height:25px;
+`
+
+const LegendIconSquare = styled.span`
+    height: 25px;
+    width: 25px;
+    display: inline-block;
+    border: 1px solid black;
+`
+
+const LegendIconCircle = styled(LegendIconSquare)`
+    border-radius: 50%;
+    height: 10px;
+    width: 10px;
+    vertical-align: super;
+`
+
+const LegendLabel = styled.span`
+    vertical-align: top;
+    display: inline-block;
+    margin: 0 10px;
+`
+
 class ScatterPlot extends Component{
 
     constructor(props){
@@ -172,6 +200,29 @@ class ScatterPlot extends Component{
                 <Svg id="MainGraphArea" ref={node => this.node = node}
                     width={this.props.size[0]} height={this.props.size[1]}>
                 </Svg>
+                <p>
+                    Legend
+                </p>
+                <LegendDiv>
+                        <LegendIconSquare style={{
+                            background: '#3A32769A',
+                        }}/> 
+                        <LegendLabel>Main Gene Coding Region</LegendLabel>
+                        <LegendIconSquare style={{
+                            background: '#AA92391A',
+                        }}/> 
+                        <LegendLabel>Padding Region</LegendLabel>
+                        <LegendIconCircle style={{
+                            background: 'brown',
+                        }}/>
+                        <LegendLabel>Main Gene QTL</LegendLabel>
+                        <LegendIconCircle style={{
+                            background: '#2B4970',
+                        }}/>
+                        <LegendLabel>In Region QTL</LegendLabel>
+                </LegendDiv>
+                <p>
+                </p>
             </div>
         )
     }
