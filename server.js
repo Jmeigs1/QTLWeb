@@ -1,5 +1,4 @@
 const express = require('express')
-const os = require('os')
 
 const path = require('path')
 
@@ -136,8 +135,6 @@ app.use(cors());
 app.options('localhost:3000', cors());
 
 app.use(bodyParser.json())
-
-app.get('/api/getUsername', (req, res) => res.send({ username: os.userInfo().username }))
 
 app.get('/api/gene/:geneID', (req, res) => {
   getSiteRange(req.params.geneID).then( rows => {

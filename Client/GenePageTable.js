@@ -1,15 +1,21 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 import styled from 'styled-components'
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import Checkbox from '@material-ui/core/Checkbox'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Paper from '@material-ui/core/Paper'
 
 import colors from './UI/Colors'
 
+
+const StyledCheckBox = styled(Checkbox)`
+    
+
+`
 
 const StyledTableCell = styled(TableCell)`
     font-size: 12px !important;
@@ -35,7 +41,7 @@ const StyledTableHead = styled(TableHead)`
 
 const StyledTableRoot = styled(Paper)`
     width: 100%;
-    margin-top: 50px;
+    margin-top: 0px;
     overflow-x: auto;
     height: 500px;
 `
@@ -54,7 +60,6 @@ function columnData(displayName, dbName){
 const cols = [
     columnData('Associated Gene', 'gene'),
     columnData('Relative Position', 'pos'),
-    columnData('Log 10 ( P-Value )', 'pVal'),
     columnData('Log 10 ( P-Value )', 'pVal'),
     columnData('Log 10 ( P-Value )', 'pVal'),
     columnData('Log 10 ( P-Value )', 'pVal'),
@@ -84,6 +89,15 @@ class GenePageTable extends Component {
               <StyledTable>
                 <StyledTableHead>
                   <TableRow>
+                    <StyledTableCellHeader key={'_Checkbox'} >
+                        <Checkbox
+                            style={{color: 'white'}}
+                            // indeterminate={numSelected > 0 && numSelected < rowCount}
+                            // checked={numSelected === rowCount}
+                            // onChange={onSelectAllClick}
+                            // inputProps={{ 'aria-label': 'Select all desserts' }}
+                        />
+                    </StyledTableCellHeader>
                     <StyledTableCellHeader key={'_index'} >Index</StyledTableCellHeader>
                   {cols.map((col, i) => (
                     <StyledTableCellHeader key={i} >{col.displayName}</StyledTableCellHeader>
@@ -92,13 +106,20 @@ class GenePageTable extends Component {
                 </StyledTableHead>
                 <TableBody style={{height: '500px',
                 overflow: 'hidden auto',
-                willChange: 'transform',
+                // willChange: 'transform',
                 // display: 'block',
                 width: this.props.size[0]}}>
                     {
                         rows ?
                         rows.map((row, i) => (
                         <StyledTableRow key={i}>
+                            <StyledTableCell key={i + '_Checkbox'}>
+                            <Checkbox
+                                // checked={isItemSelected}
+                                // inputProps={{ 'aria-labelledby': labelId }}
+                            />
+                            </StyledTableCell>
+
                             <StyledTableCell key={i + '_Index'}> {i} </StyledTableCell>
                             {cols.map((col, j) =>(
                                 <StyledTableCell key={i + '_' + j}>

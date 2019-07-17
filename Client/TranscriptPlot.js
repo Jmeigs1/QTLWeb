@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'
 
+import colors from './UI/Colors'
+
 const Svg = styled.svg`
     margin: 30px auto;
     display: block;
+    cursor: pointer;
 `
+
+const TranscriptionRect = styled.rect`
+    cursor: pointer;
+`
+
 
 class TranscriptPlot extends Component {
 
@@ -44,6 +52,18 @@ class TranscriptPlot extends Component {
 
     }
 
+    handleMouseOver(event) {
+
+        let rect = event.target
+        rect.setAttribute('fill',colors[2][0])
+    }
+
+    handleMouseOut(event) {
+
+        let rect = event.target
+        rect.setAttribute('fill','black')    
+    }
+
     TestData = () => {
         
     }
@@ -69,9 +89,6 @@ class TranscriptPlot extends Component {
         if(!this.state.resultsData.d3Data)
             return (<div/>)
 
-
-        console.log(this.state.resultsData.dataLoaded)
-
         return (
             <div>
                 <p>
@@ -96,13 +113,15 @@ class TranscriptPlot extends Component {
                             (item) => {
                                 let d3Data = this.state.resultsData.d3Data
                                 return (
-                                <rect
+                                <TranscriptionRect
                                     height = {this.props.size[1]}
                                     width = {d3Data.scaleX(item.end) - d3Data.scaleX(item.start)}
                                     transform = {'translate(' + d3Data.scaleX(item.start) + ',0)'}
                                     fill = 'black'
                                     key = {JSON.stringify(item)}
                                     data = {JSON.stringify(item)}
+                                    onMouseEnter = { (e) => {this.handleMouseOver(e)} }
+                                    onMouseLeave = {this.handleMouseOut}
                                     
                                 />
                         )})}

@@ -69,7 +69,7 @@ export default () => (
         <SubHeading>QTL Results</SubHeading>
         <p>
         Examples - Gene:{' '}
-        <Link to="/gene/ZNF692">
+        <Link to="/gene/ENSG00000171163">
         ZNF692
         </Link>
         </p>

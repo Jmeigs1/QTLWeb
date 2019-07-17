@@ -80,6 +80,7 @@ class SearchBar extends Component {
                             {label: 'ENSG00000171163', value: 'ENSG00000171163'},
                             {label: 'ENSG00000094975', value: 'ENSG00000094975'},
                             {label: 'ENSG00000135845', value: 'ENSG00000135845'},
+                            {label: 'ENSG00000235492', value: 'ENSG00000235492'},
                             {label: 'ZNF692', value: 'ENSG00000171163'},
                             {label: 'PCSK9', value: 'ENSG00000169174'}
                         ]}
@@ -96,7 +97,7 @@ class SearchBar extends Component {
                             width: '100%',
                         }}
                         value={this.state.value}
-                        // onChange={e => this.setState({ value: e.target.value })}
+                        onChange={e => this.setState({ value: e.target.value })}
                         onSelect={gene => {
                             this.setState({
                                 redirect: gene
