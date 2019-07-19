@@ -1,9 +1,10 @@
 import React from 'react'
 // import styled from 'styled-components'
-import { BrowserRouter as Router, Route, Link } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 
 import HomePage from './HomePage'
 import GenePage from './GenePage'
+import SitePage from './SitePage'
 import './Overrides.css';
 import SideDrawer from './Drawer'
 
@@ -14,17 +15,27 @@ export default () => (
                 paddingBottom: '40px'
             }}>
             <SideDrawer/>
-            <Route exact path="/" component={HomePage} />
-            <Route path="/display" component={GenePage} />
-            <Route path="/gene/:geneSymbol" 
-                render={
-                    ({ match }) => {
-                        return (
-                            <GenePage geneSymbol={match.params.geneSymbol}/>
-                        )
+            <Switch>
+                <Route exact path="/" component={HomePage} />
+                <Route exact path="/gene/:geneSymbol/site/:siteValue" 
+                    render={
+                        ({ match }) => {
+                            return (
+                                <SitePage geneSymbol={match.params.geneSymbol} siteValue={match.params.siteValue}/>
+                            )
+                        }
                     }
-                }
-            />
+                />
+                <Route exact path="/gene/:geneSymbol" 
+                    render={
+                        ({ match }) => {
+                            return (
+                                <GenePage geneSymbol={match.params.geneSymbol}/>
+                            )
+                        }
+                    }
+                />
+            </Switch>
         </div>
     </Router>
   )

@@ -179,7 +179,7 @@ class GenePage extends Component {
         if(!resultsQueryResults)
             return
 
-        const size = [1000,500]
+        const size = [1000,400]
 
         const d3Margin = {top: 10, right: 10, bottom: 40, left: 50},
         d3Width = size[0] - d3Margin.left - d3Margin.right,
@@ -241,10 +241,10 @@ class GenePage extends Component {
             <Page>
                 <Genecard geneData={this.state.geneData.genes[this.state.mainGeneIndex]}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
-                <ScatterPlot size={[1000,500]} resultsData={this.state.resultsData} />
+                <ScatterPlot size={[1000,400]} resultsData={this.state.resultsData} />
                 <TranscriptPlot size={[1000,10]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
-                <GeneSlider/>
-                <GenePageTableFilter/>
+                {/* <GeneSlider/> */}
+                <GenePageTableFilter geneSymbol={this.props.geneSymbol}/>
                 <GenePageTable size={[1000,500]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
             </Page>
         )

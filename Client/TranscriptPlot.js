@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import colors from './UI/Colors'
 
 const Svg = styled.svg`
-    margin: 30px auto;
+    margin: 10px auto;
     display: block;
     cursor: pointer;
 `
