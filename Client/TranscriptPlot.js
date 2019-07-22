@@ -18,7 +18,6 @@ class TranscriptPlot extends Component {
 
     constructor(props){
         super(props)
-        this.createTranscriptPlot = this.createTranscriptPlot.bind(this)
     }
 
     state = {
@@ -28,28 +27,14 @@ class TranscriptPlot extends Component {
     }
 
     componentDidMount() {
-        this.loadData()
     }
 
     componentDidUpdate() {
-        if(this.props.resultsData.geneName != this.state.resultsData.geneName){
-            this.loadData()
-        }
+        console.log("Test")
     }
 
-    loadData() {
-        if(this.props.resultsData){
-            this.setState({
-                resultsData: {...this.props.resultsData},
-                geneData: {...this.props.geneData}
-            },
-            () => {this.createTranscriptPlot()})
-        }
-    }
-
-    createTranscriptPlot(){
-        // let d3Data = this.state.resultsData.d3Data
-
+    shouldComponentUpdate(nextProps, nextState){
+         return (nextProps.geneData != this.props.geneData)
     }
 
     handleMouseOver(event) {
@@ -64,19 +49,15 @@ class TranscriptPlot extends Component {
         rect.setAttribute('fill','black')    
     }
 
-    TestData = () => {
-        
-    }
-
     render() {
         let items = []
-        if(this.state.geneData && this.state.resultsData){
-            for(let gene in this.state.geneData){
-                // let starts = Buffer.from( this.state.geneData[gene]["ensGene.txStart"],'utf-8' ).toString()
-                let start = this.state.geneData[gene]["ensGene.txStart"]
-                // let ends = Buffer.from( this.state.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
-                let end = this.state.geneData[gene]["ensGene.txEnd"]
-                let name = this.state.geneData[gene]["knownXref.GeneSymbol"]
+        if(this.props.geneData){
+            for(let gene in this.props.geneData){
+                // let starts = Buffer.from( this.props.geneData[gene]["ensGene.txStart"],'utf-8' ).toString()
+                let start = this.props.geneData[gene]["ensGene.txStart"]
+                // let ends = Buffer.from( this.props.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
+                let end = this.props.geneData[gene]["ensGene.txEnd"]
+                let name = this.props.geneData[gene]["knownXref.GeneSymbol"]
 
                 items.push({
                     name: name,
@@ -86,7 +67,7 @@ class TranscriptPlot extends Component {
             }
         }
         
-        if(!this.state.resultsData.d3Data)
+        if(!this.props.d3Data)
             return (<div/>)
 
         return (
@@ -107,11 +88,11 @@ class TranscriptPlot extends Component {
                             />
                         </g>
                         <g
-                            transform = {'translate(' + this.state.resultsData.d3Data.margin.left + ',0)'}
+                            transform = {'translate(' + this.props.d3Data.margin.left + ',0)'}
                         >
                         {items.map(
                             (item) => {
-                                let d3Data = this.state.resultsData.d3Data
+                                let d3Data = this.props.d3Data
                                 return (
                                 <TranscriptionRect
                                     height = {this.props.size[1]}

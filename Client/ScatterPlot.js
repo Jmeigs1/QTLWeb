@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import styled from 'styled-components'
 
 import * as d3 from "d3"
@@ -70,15 +70,15 @@ class ScatterPlot extends Component{
     }
 
     createScatterPlot(){
-        if (!this.props.resultsData.dataLoaded) {
+        if (!this.props.dataLoaded) {
             return
         }
 
         const node = this.node
 
-        const margin = this.props.resultsData.d3Data.margin,
-        width = this.props.resultsData.d3Data.width,
-        height = this.props.resultsData.d3Data.height
+        const margin = this.props.d3Data.margin,
+        width = this.props.d3Data.width,
+        height = this.props.d3Data.height
 
         d3.select(node).html("")
 
@@ -91,7 +91,7 @@ class ScatterPlot extends Component{
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
         // X scale and Axis
-        var x = this.props.resultsData.d3Data.scaleX
+        var x = this.props.d3Data.scaleX
         
         sVg
         .append('g')
@@ -106,7 +106,7 @@ class ScatterPlot extends Component{
         .text("Position")
 
         // Y scale and Axis
-        var y = this.props.resultsData.d3Data.scaleY
+        var y = this.props.d3Data.scaleY
 
         sVg
         .append('g')
@@ -128,36 +128,36 @@ class ScatterPlot extends Component{
             .style("text-anchor", "middle")
             .text("P-Value"); 
 
-        var colunmWidth = x(this.props.resultsData.range.end)-x(this.props.resultsData.range.start)
+        var colunmWidth = x(this.props.range.end)-x(this.props.range.start)
 
         sVg.append("rect")
             .attr("width", colunmWidth)
             .attr("height", height)
             .attr("fill", Colors[1][0])
             .attr("fill-opacity", "0.6")
-            .attr('transform','translate(' + x(this.props.resultsData.range.start) +',0)')
+            .attr('transform','translate(' + x(this.props.range.start) +',0)')
 
-        let colunmWidthLeft =  x(this.props.resultsData.range.start) - x(Math.max(this.props.resultsData.range.start - this.props.resultsData.range.padding,0)), 
-        colunmWidthRight =  x(this.props.resultsData.range.start) - x(this.props.resultsData.range.start - this.props.resultsData.range.padding) 
+        let colunmWidthLeft =  x(this.props.range.start) - x(Math.max(this.props.range.start - this.props.range.padding,0)), 
+        colunmWidthRight =  x(this.props.range.start) - x(this.props.range.start - this.props.range.padding) 
 
         sVg.append("rect")
             .attr("width", colunmWidthLeft)
             .attr("height", height)
             .attr("fill", '#AA9239')
             .attr("fill-opacity", "0.1")
-            .attr('transform','translate(' + x(Math.max(this.props.resultsData.range.start - this.props.resultsData.range.padding,0)) +',0)')
+            .attr('transform','translate(' + x(Math.max(this.props.range.start - this.props.range.padding,0)) +',0)')
 
         sVg.append("rect")
             .attr("width", colunmWidthRight)
             .attr("height", height)
             .attr("fill", '#AA9239')
             .attr("fill-opacity", "0.1")
-            .attr('transform','translate(' + x(this.props.resultsData.range.end) +',0)')
+            .attr('transform','translate(' + x(this.props.range.end) +',0)')
 
         //Data circles
         sVg
             .selectAll('circle')
-            .data(this.props.resultsData.fullData)
+            .data(this.props.filteredData)
             .enter()
             .filter(function(x){return x.gene != "ENSG00000171163"})
             .append("circle")
@@ -170,7 +170,7 @@ class ScatterPlot extends Component{
 
         sVg
             .selectAll('circle2')
-            .data(this.props.resultsData.fullData)
+            .data(this.props.filteredData)
             .enter()
             .filter(function(x){return x.gene == "ENSG00000171163"})
             .append("circle")

@@ -9,7 +9,13 @@ class GenePageTableFilter extends Component {
     render() {
         return (
             <div>
-                <TableFilter placeholder='Filter Table'/>
+                <TableFilter 
+                    onChange={(e) => {
+                        return new Promise((resolve, reject) => {
+                            this.props.filterResults(e.target.value)
+                        }).then(() => {console.log("Done")})
+                    }}
+                    placeholder='Filter Results'/>
                 <GenePageTableDownloadButton geneSymbol = {this.props.geneSymbol} selected={[[1,2,3],[4,5,6]]}/>
             </div>
         );
@@ -21,6 +27,10 @@ class GenePageTableDownloadButton extends Component {
     constructor(props){
         super(props)
     }
+
+    shouldComponentUpdate(nextProps, nextState){
+        return false
+   }
 
     clickHander(props) {
 

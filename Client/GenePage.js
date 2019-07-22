@@ -8,7 +8,6 @@ import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 import GenePageTable from './GenePageTable'
 import GenePageTableFilter from './GenePageTableFilter'
-import GeneSlider from './GeneSlider'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
@@ -53,6 +52,7 @@ class GenePage extends Component {
             dataLoaded: false,
             geneSymbol: this.props.geneSymbol,
             resultsData: {},
+            filteredData: {},
           };
     }
 
@@ -162,7 +162,7 @@ class GenePage extends Component {
                     }
 
                     return ({
-                        geneData: data,
+                        geneData: data.genes,
                         mainGeneIndex: index,
                         geneDataLoaded: true
                     })
@@ -221,9 +221,24 @@ class GenePage extends Component {
                     ...resultsQueryResults,
                     dataLoaded: true,
                     d3Data: d3Data
-                }
+                },
+                filteredData: resultsQueryResults.fullData,
             }
         )
+    }
+
+    filterResults = (filterText) => {
+
+        let filteredData = this.state.resultsData.fullData.filter(
+            (dataPoint) => (dataPoint.gene.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
+        )
+        
+        console.log("filteredData.length: ", filteredData.length)
+        console.log("filteredData: ", filteredData)
+
+        this.setState({
+            filteredData: filteredData
+        })
     }
 
     render() {
@@ -239,19 +254,31 @@ class GenePage extends Component {
 
         return (
             <Page>
-                <Genecard geneData={this.state.geneData.genes[this.state.mainGeneIndex]}/>
+                <Genecard geneData={this.state.geneData[this.state.mainGeneIndex]}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
-                <ScatterPlot size={[1000,400]} resultsData={this.state.resultsData} />
-                <TranscriptPlot size={[1000,10]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
-                {/* <GeneSlider/> */}
-                <GenePageTableFilter geneSymbol={this.props.geneSymbol}/>
-                <GenePageTable size={[1000,500]} resultsData={this.state.resultsData} geneData={this.state.geneData.genes}/>
+                <ScatterPlot size={[1000,400]} 
+                    d3Data={this.state.resultsData.d3Data}
+                    range={this.state.resultsData.range}
+                    geneSymbol={this.props.geneSymbol}
+                    dataLoaded={this.state.geneDataLoaded}
+                    filteredData={this.state.filteredData} />
+                <TranscriptPlot size={[1000,10]} 
+                    d3Data={this.state.resultsData.d3Data}
+                    geneSymbol={this.props.geneSymbol}
+                    dataLoaded={this.state.geneDataLoaded}
+                    geneData={this.state.geneData}/>
+                <GenePageTableFilter
+                    geneSymbol={this.props.geneSymbol}
+                    filterResults={this.filterResults}/>
+                <GenePageTable size={[1000,500]} 
+                    filteredData={this.state.filteredData}
+                    />
             </Page>
         )
     }
 }
 
-const Genecard = (props) => (
+let Genecard = (props) => (
 
     <CardBox>
         <h2>{props.geneData["knownXref.GeneSymbol"]}</h2>
@@ -280,5 +307,8 @@ const Genecard = (props) => (
         </select>
     </CardBox>
 )
+
+Genecard = React.memo(Genecard)
+
 
 export default GenePage;

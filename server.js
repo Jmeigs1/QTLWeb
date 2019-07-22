@@ -54,7 +54,7 @@ where name2 = ${mysql.escape(gene)}
 `)
 
   result.then(
-    () => {console.log("Closed");db.close()}
+    () => {console.log("Closed getSiteRange");db.close()}
   )
 
   return result
@@ -121,7 +121,7 @@ where e.name2 in (${geneList})\
 `)
 
   result.then(
-    () => {console.log("Closed");db.close()}
+    () => {console.log("Closed mySqlQuery");db.close()}
   )
 
   return result
