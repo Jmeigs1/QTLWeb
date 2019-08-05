@@ -300,10 +300,10 @@ let Genecard = (props) => (
             </FlexDiv>
         </dl>
         <select>
-            <option value="volvo">EQTL</option>
-            <option value="volvo">PQTL</option>
-            <option value="volvo">EQTL Overlap</option>
-            <option value="volvo">PQTL Overlap</option>
+            <option value="volvo">eQTL</option>
+            <option value="volvo">pQTL</option>
+            <option value="volvo">eQTL Overlap</option>
+            <option value="volvo">pQTL Overlap</option>
         </select>
     </CardBox>
 )

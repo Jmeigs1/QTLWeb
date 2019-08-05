@@ -30,7 +30,7 @@ class TranscriptPlot extends Component {
     }
 
     componentDidUpdate() {
-        console.log("Test")
+        
     }
 
     shouldComponentUpdate(nextProps, nextState){

@@ -103,7 +103,6 @@ class ScatterPlot extends Component{
                 "translate(" + (width/2) + " ," + 
                             (height + margin.top + 30) + ")")
         .style("text-anchor", "middle")
-        .text("Position")
 
         // Y scale and Axis
         var y = this.props.d3Data.scaleY
@@ -118,7 +117,7 @@ class ScatterPlot extends Component{
                 "translate(" + (width/2) + " ," + 
                             (height + margin.top + 30) + ")")
         .style("text-anchor", "middle")
-        .text("Position")
+        .text("Genomic Position")
 
         sVg.append("text")
             .attr("transform", "rotate(-90)")
@@ -126,7 +125,7 @@ class ScatterPlot extends Component{
             .attr("x",0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
-            .text("P-Value"); 
+            .text("-Log 10 P-Value"); 
 
         var colunmWidth = x(this.props.range.end)-x(this.props.range.start)
 
@@ -167,6 +166,7 @@ class ScatterPlot extends Component{
                 .attr("fill", Colors[0][0])
                 .on("mouseover", this.handleMouseOver)
                 .on("mouseout", this.handleMouseOut)
+                .style("cursor", "pointer")
 
         sVg
             .selectAll('circle2')
@@ -180,6 +180,7 @@ class ScatterPlot extends Component{
                 .attr("fill", 'brown')
                 .on("mouseover", this.handleMouseOver)
                 .on("mouseout", this.handleMouseOut)
+                .style("cursor", "pointer")
 
     }
 
@@ -196,19 +197,19 @@ class ScatterPlot extends Component{
                         <LegendIconSquare style={{
                             background: '#3A32769A',
                         }}/> 
-                        <LegendLabel>Main Gene Coding Region</LegendLabel>
+                        <LegendLabel>Searched Gene Coding Region</LegendLabel>
                         <LegendIconSquare style={{
                             background: '#AA92391A',
                         }}/> 
-                        <LegendLabel>Padding Region</LegendLabel>
+                        <LegendLabel>Window Region</LegendLabel>
                         <LegendIconCircle style={{
                             background: 'brown',
                         }}/>
-                        <LegendLabel>Main Gene QTL</LegendLabel>
+                        <LegendLabel>Searched Gene QTL</LegendLabel>
                         <LegendIconCircle style={{
                             background: '#2B4970',
                         }}/>
-                        <LegendLabel>In Region QTL</LegendLabel>
+                        <LegendLabel>In Window QTL</LegendLabel>
                 </LegendDiv>
                 <p>
                 </p>

@@ -58,7 +58,7 @@ const columnData = (displayName, dbName) => {
 
 const cols = [
     columnData('Associated Gene', 'gene'),
-    columnData('Relative Position', 'pos'),
+    columnData('Genomic Coordinates', 'pos'),
     columnData('Log 10 ( P-Value )', 'pVal'),
     columnData('Log 10 ( P-Value )', 'pVal'),
     columnData('Log 10 ( P-Value )', 'pVal'),
