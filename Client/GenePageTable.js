@@ -57,11 +57,11 @@ const columnData = (displayName, dbName) => {
 }
 
 const cols = [
-    columnData('Associated Gene', 'gene'),
-    columnData('Genomic Coordinates', 'pos'),
-    columnData('Log 10 ( P-Value )', 'pVal'),
-    columnData('Log 10 ( P-Value )', 'pVal'),
-    columnData('Log 10 ( P-Value )', 'pVal'),
+    columnData('Associated Gene', (x) => x.EnsID),
+    columnData('Genomic Coordinates', (x) => x.Coordinate),
+    columnData('Log 10 ( P-Value )', (x) => x.NonIndexedData.Log10pvalue),
+    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.BonferroniPValue),
+    columnData('FDR', (x) => x.NonIndexedData.FDR),
 ]
 
 class GenePageTable extends Component {
@@ -100,7 +100,7 @@ class GenePageTable extends Component {
                             {cols.map((col, j) =>
                                 (
                                     <StyledTableCell key={i + '_' + j}>
-                                        {row[col.dbName]}
+                                        {col.dbName(row)}
                                     </StyledTableCell>
                                 )
                             )}

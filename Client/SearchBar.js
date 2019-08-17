@@ -1,6 +1,9 @@
 import React,{Component} from 'react'
 import styled from 'styled-components'
 import Autocomplete from 'react-autocomplete'
+import axios from 'axios'
+import { debounce } from 'throttle-debounce'
+
 import {FaSearch} from 'react-icons/fa';
 import {Redirect} from 'react-router-dom'
 import Button from '@material-ui/core/Button';
@@ -49,11 +52,42 @@ class SearchBar extends Component {
         this.state = {
             redirect: '',
             isHidden: true,
-            items: defaultGenes
+            suggestions: defaultGenes
         }
-    }
+
+        this.getSuggestionsDebounce = debounce(
+            250,
+            this.getSuggestions
+        )
+    }    
 
     getSuggestions = value => {
+
+        axios({
+            method: "get",
+            url: "http://localhost:8080/api/es/" + value
+        }).then(res => {
+
+            if(res.data && res.data.hits && res.data.hits.hits){
+                const results = res.data.hits.hits.map(h => {
+
+                    let field
+
+                    for(var prop in h.highlight){
+                        field = prop
+                        break
+                    }
+
+                    let ret = {
+                        label: `${h._source[field]} (${h._source["EnsID"]})`,
+                        value: h._source.EnsID,
+                    }
+                    return ret
+                })
+                this.setState({ suggestions: results })
+            }
+        })
+
         console.log("value:", value)
     }
 
@@ -90,8 +124,7 @@ class SearchBar extends Component {
                         <div style={{display: 'inline-block',position: 'absolute', left: '25px', width: '250px', paddingTop: '20px'}}>
                             <Autocomplete
                                 getItemValue={(item) => item.value}
-                                items={this.state.items}
-                                shouldItemRender={(item, value) => item.label.toLowerCase().indexOf(value.toLowerCase()) > -1}
+                                items={this.state.suggestions}
                                 inputProps={{placeholder: "Search by gene"}}
                                 renderInput={this.renderInput}
                                 renderItem={(item, isHighlighted) =>
@@ -105,8 +138,11 @@ class SearchBar extends Component {
                                 }}
                                 value={this.state.value}
                                 onChange={e => {
-                                    this.setState({ value: e.target.value })
-                                    this.getSuggestions(e.target.value)
+                                    let trimVal = e.target.value.trim()
+                                    this.setState({ value: trimVal })
+                                    if(trimVal){
+                                        this.getSuggestionsDebounce(trimVal)
+                                    }
                                 }}
                                 onSelect={gene => {
                                     this.setState({

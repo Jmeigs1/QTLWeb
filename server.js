@@ -6,8 +6,19 @@ const mysql = require('mysql')
 const bodyParser = require('body-parser');
 const cors = require('cors')
 
+const axios = require('axios')
+
 const app = express()
 
+const esSanitize = (query) => {
+  return query
+    .replace(/[\*\+\-=~><\"\?^\${}\(\)\:\!\/[\]\\\s]/g, '\\$&') // replace single character special characters
+    .replace(/\|\|/g, '\\||') // replace ||
+    .replace(/\&\&/g, '\\&&') // replace &&
+    .replace(/AND/g, '\\A\\N\\D') // replace AND
+    .replace(/OR/g, '\\O\\R') // replace OR
+    .replace(/NOT/g, '\\N\\O\\T'); // replace NOT
+}
 
 class Database {
   constructor( config ) {
@@ -33,6 +44,54 @@ class Database {
   }
 }
 
+const esQuery = (searchTerm) => {
+
+  var reqBody = {
+    "size":10,
+    "query": {
+      "query_string" : {
+          "analyze_wildcard": true,
+          "query":    esSanitize(searchTerm) + "*",
+          "analyzer": "lowercasespaceanalyzer",
+          "fields": [ "GeneSymbol", "UniprotID", "EnsID", "ProteinName","Coordinate","RsNum" ] 
+        }
+    },
+    "highlight" : {
+      "fields" : {
+          "*" : {}
+      },
+      "number_of_fragments":1,
+      "type":"plain"
+  }
+  }
+
+  return axios.post('http://localhost:9200/searchresults/_search', reqBody)
+}
+
+const esQueryRange = (rangeData) => {
+
+  return axios.post('http://localhost:9200/searchresults/_search', {
+          "size":10000,
+          "query": {
+            "bool": {
+            "must": [{
+                "term": {
+                  "Chr": rangeData.chr
+                }
+              },
+              {
+                "range": {
+                  "Site": {
+                    "gte": rangeData.start,
+                    "lt": rangeData.end
+                  }
+                }
+              }
+            ]
+          }
+        }
+        })
+}
 
 const getSiteRange = (gene) => {
 
@@ -47,11 +106,15 @@ const getSiteRange = (gene) => {
   var result = db
     .query(`    
 SELECT \
-e.txStart "ensGene.txStart", \
-e.txEnd "ensGene.txEnd" \
+max(e.chrom) "ensGene.chrom", \
+min(e.txStart) "ensGene.txStart", \
+max(e.txEnd) "ensGene.txEnd" \
 FROM hg19.ensGene AS e \
-where name2 = ${mysql.escape(gene)}
+where name2 = ${mysql.escape(gene)} \
+Group By e.name2
 `)
+
+
 
   result.then(
     () => {console.log("Closed getSiteRange");db.close()}
@@ -136,6 +199,22 @@ app.options('localhost:3000', cors());
 
 app.use(bodyParser.json())
 
+app.get('/api/es/:searchTerm', (req, res) => {
+  esQuery(req.params.searchTerm).then( results => {
+    res.send(
+        results.data
+      )
+  })
+})
+
+app.post('/api/es/range', (req, res) => {
+  esQueryRange(req.body.rangeData).then( results => {
+    res.send(
+        results.data
+      )
+  })
+})
+
 app.get('/api/gene/:geneID', (req, res) => {
   getSiteRange(req.params.geneID).then( rows => {
     res.send(
@@ -149,6 +228,20 @@ app.get('/api/gene/:geneID', (req, res) => {
 app.post('/api/gene/search', (req, res) => {
 
   mySqlQuery(req.body.genes).then(rows => {
+    res.send(
+      { 
+        genes: rows
+      }
+    )
+  })
+})
+
+app.post('/api/gene/test', (req, res) => {
+
+  mySqlQuery(['ENSG00000198744']).then(rows => {
+
+    console.log(rows)
+    
     res.send(
       { 
         genes: rows

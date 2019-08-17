@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import * as d3 from "d3"
+import * as d3 from 'd3'
+import {Axis,axisPropsFromTickScale, LEFT, BOTTOM} from 'react-d3-axis'
 
 import Colors from './UI/Colors'
 
@@ -42,7 +43,6 @@ class ScatterPlot extends Component{
 
     constructor(props){
         super(props)
-        this.createScatterPlot = this.createScatterPlot.bind(this)
     }
 
     state = {
@@ -50,146 +50,23 @@ class ScatterPlot extends Component{
     }
 
     componentDidMount() {
-        this.createScatterPlot()
+
     }
 
     componentDidUpdate() {
-        this.createScatterPlot()
-    }
-
-    handleMouseOver(data, index, objects) {
-
-        let dot = objects[index]
-        dot.setAttribute('r','10')
-    }
-
-    handleMouseOut(data, index, objects) {
-
-        let dot = objects[index]
-        dot.setAttribute('r','5')        
-    }
-
-    createScatterPlot(){
-        if (!this.props.dataLoaded) {
-            return
-        }
-
-        const node = this.node
-
-        const margin = this.props.d3Data.margin,
-        width = this.props.d3Data.width,
-        height = this.props.d3Data.height
-
-        d3.select(node).html("")
-
-        // append the svg object to the body of the page
-        var sVg = d3.select(node)
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
-        // X scale and Axis
-        var x = this.props.d3Data.scaleX
-        
-        sVg
-        .append('g')
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x).tickFormat(d3.format("s")))
-
-        sVg.append("text")             
-        .attr("transform",
-                "translate(" + (width/2) + " ," + 
-                            (height + margin.top + 30) + ")")
-        .style("text-anchor", "middle")
-
-        // Y scale and Axis
-        var y = this.props.d3Data.scaleY
-
-        sVg
-        .append('g')
-        .call(d3.axisLeft(y))
-
-        // text label for the x axis
-        sVg.append("text")             
-        .attr("transform",
-                "translate(" + (width/2) + " ," + 
-                            (height + margin.top + 30) + ")")
-        .style("text-anchor", "middle")
-        .text("Genomic Position")
-
-        sVg.append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 0 - margin.left)
-            .attr("x",0 - (height / 2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("-Log 10 P-Value"); 
-
-        var colunmWidth = x(this.props.range.end)-x(this.props.range.start)
-
-        sVg.append("rect")
-            .attr("width", colunmWidth)
-            .attr("height", height)
-            .attr("fill", Colors[1][0])
-            .attr("fill-opacity", "0.6")
-            .attr('transform','translate(' + x(this.props.range.start) +',0)')
-
-        let colunmWidthLeft =  x(this.props.range.start) - x(Math.max(this.props.range.start - this.props.range.padding,0)), 
-        colunmWidthRight =  x(this.props.range.start) - x(this.props.range.start - this.props.range.padding) 
-
-        sVg.append("rect")
-            .attr("width", colunmWidthLeft)
-            .attr("height", height)
-            .attr("fill", '#AA9239')
-            .attr("fill-opacity", "0.1")
-            .attr('transform','translate(' + x(Math.max(this.props.range.start - this.props.range.padding,0)) +',0)')
-
-        sVg.append("rect")
-            .attr("width", colunmWidthRight)
-            .attr("height", height)
-            .attr("fill", '#AA9239')
-            .attr("fill-opacity", "0.1")
-            .attr('transform','translate(' + x(this.props.range.end) +',0)')
-
-        //Data circles
-        sVg
-            .selectAll('circle')
-            .data(this.props.filteredData)
-            .enter()
-            .filter(function(x){return x.gene != "ENSG00000171163"})
-            .append("circle")
-                .attr("cx", function(d){ return x(d.pos) })
-                .attr("cy", function(d){ return y(d.pVal) })
-                .attr("r", 5)
-                .attr("fill", Colors[0][0])
-                .on("mouseover", this.handleMouseOver)
-                .on("mouseout", this.handleMouseOut)
-                .style("cursor", "pointer")
-
-        sVg
-            .selectAll('circle2')
-            .data(this.props.filteredData)
-            .enter()
-            .filter(function(x){return x.gene == "ENSG00000171163"})
-            .append("circle")
-                .attr("cx", function(d){ return x(d.pos) })
-                .attr("cy", function(d){ return y(d.pVal) })
-                .attr("r", 5)
-                .attr("fill", 'brown')
-                .on("mouseover", this.handleMouseOver)
-                .on("mouseout", this.handleMouseOut)
-                .style("cursor", "pointer")
 
     }
 
     render() {
         return (
             <div>
-                <Svg id="MainGraphArea" ref={node => this.node = node}
-                    width={this.props.size[0]} height={this.props.size[1]}>
-                </Svg>
+                <Plot 
+                    size={this.props.size}
+                    d3Data={this.props.d3Data}
+                    range={this.props.range}
+                    geneSymbol={this.props.geneSymbol}
+                    dataLoaded={this.props.geneDataLoaded}
+                    filteredData={this.props.filteredData} />
                 <p>
                     Legend
                 </p>
@@ -218,5 +95,128 @@ class ScatterPlot extends Component{
     }
 }
 
+const Plot = (props) => {
+
+    const handleMouseOver = (event) => {
+
+        event.target.setAttribute('r','10')
+
+    }
+
+    const handleMouseOut = (event) => {
+
+        event.target.setAttribute('r','5')
+     
+    }
+
+    const margin = props.d3Data.margin,
+    width = props.d3Data.width,
+    height = props.d3Data.height
+
+    const x = props.d3Data.scaleX
+    const y = props.d3Data.scaleY
+
+    let mainGene = [],
+    otherGene = []
+
+    for( let item of props.filteredData ){
+        if(item.NonIndexedData.EnsemblGeneID == props.geneSymbol){
+            mainGene.push(item)
+        } else {
+            otherGene.push(item)
+        }
+    }
+
+    return (
+    <Svg 
+        id="MainGraphArea"
+        width = {width + margin.left + margin.right}
+        height = {height + margin.top + margin.bottom}>
+        <g transform = {"translate(" + margin.left + "," + margin.top + ")"}>
+            {/*Axis*/}
+            <g transform= {"translate(0," + height + ")"}>
+                <Axis {...axisPropsFromTickScale(props.d3Data.scaleX)} 
+                    style={{
+                        orient: BOTTOM,
+                    }}
+                />
+             </g>
+             <g>
+                <Axis {...axisPropsFromTickScale(props.d3Data.scaleY)} 
+                    style={{
+                        orient: LEFT,
+                    }}
+                />
+             </g>
+            {/*Label*/}
+            <text
+                transform = {"translate(" + (width/2) + " ," + (height + margin.top + 30) + ")"}
+                style = {{textAnchor:"middle"}}
+                >
+                    Genomic Position
+            </text>
+            <text
+                transform = "rotate(-90)"
+                style = {{textAnchor:"middle"}}
+                dy = "1em"
+                y = {0 - margin.left}
+                x = {0 - (height / 2)}
+                >
+                    -Log 10 P-Value
+            </text>
+            {/*Shaded Regions*/}        
+            <rect
+                width = {x(props.range.end)-x(props.range.start)}
+                height = {height}
+                fill = {Colors[1][0]}
+                fillOpacity = {0.6}
+                transform = {'translate(' + x(props.range.start) +',0)'}
+                />
+            <rect
+                width = {x(props.range.start) - x(Math.max(props.range.start - props.range.padding,0))}
+                height = {height}
+                fill = {"#AA9239"}
+                fillOpacity = {0.1}
+                transform = {'translate(' + x(Math.max(props.range.start - props.range.padding,0)) + ',0)'}/>    
+            <rect
+                width = {x(props.range.start) - x(props.range.start - props.range.padding)}
+                height = {height}
+                fill = {"#AA9239"}
+                fillOpacity = {0.1}
+                transform = {'translate(' + x(props.range.end) + ',0)'}/>
+
+            {
+                otherGene.map(
+                    (item, index) => (
+                        <circle 
+                            cx = {x(item.Site)}
+                            cy = {y(item.NonIndexedData.Log10pvalue)}
+                            r = "5"
+                            fill = {Colors[0][0]}
+                            style = {{cursor:"pointer"}}
+                            onMouseOver = {handleMouseOver}
+                            onMouseOut = {handleMouseOut}
+                            key = {index}/>
+                    )
+                )
+            }
+            {
+                mainGene.map(
+                    (item, index) => (
+                        <circle 
+                            cx = {x(item.Site)}
+                            cy = {y(item.NonIndexedData.Log10pvalue)}
+                            r = "5"
+                            fill = "brown"
+                            style = {{cursor:"pointer"}}
+                            onMouseOver = {handleMouseOver}
+                            onMouseOut = {handleMouseOut}
+                            key = {index}/>
+                    )
+                )
+            }
+        </g>
+    </Svg>
+)}
 
 export default ScatterPlot;

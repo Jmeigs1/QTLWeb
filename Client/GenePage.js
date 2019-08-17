@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
+import { debounce } from 'throttle-debounce'
 
 import * as TestData from './TestData'
 import os from 'os'
@@ -11,6 +12,7 @@ import GenePageTableFilter from './GenePageTableFilter'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
+import {format} from 'd3-format'
 
 
 const Page = styled.div`
@@ -53,7 +55,12 @@ class GenePage extends Component {
             geneSymbol: this.props.geneSymbol,
             resultsData: {},
             filteredData: {},
-          };
+          }
+
+        this.filterResults = debounce(
+            250,
+            this.filterResults
+        )
     }
 
     componentDidMount() {
@@ -72,16 +79,16 @@ class GenePage extends Component {
     loadAllData(){
         this.getSiteRange()
         .then( 
-            (range) => (Promise.resolve(this.loadDataResults(this.props.geneSymbol,range)))
-        )
-        .then(
-            (resultsQueryResults) => {
-                this.loadDataGene(resultsQueryResults.genes)
-                .then(
-                    (stateDI) => {this.loadD3Data(resultsQueryResults,stateDI)}
-                )
-                
-            }
+            (range) => this.loadDataResults(this.props.geneSymbol,range)
+            .then(
+                (resultsQueryResults) => {
+                    this.loadDataGene(resultsQueryResults.genes)
+                    .then(
+                        (stateDI) => {this.loadD3Data(resultsQueryResults,stateDI)}
+                    )
+                    
+                }
+            )
         )
     }
 
@@ -93,43 +100,83 @@ class GenePage extends Component {
 
     loadDataResults(geneSymbol,rangeQueryData) {
 
-        console.log(rangeQueryData)
-
-        var pvals = TestData.geneData
-
-        var lines = pvals.split(os.EOL)
-
-        var fullData = []
-        var pvals = []
-        var genes = []
-        var line
-        
-        for(var i = 0; i < lines.length; i++){
-            line = lines[i].split(' ')
-            pvals.push(line[3])
-            genes.push(line[1].toString())
-            fullData.push(
-                {
-                    'gene': line[1].toString(),
-                    'pos':  parseInt(line[2]),
-                    'pVal': line[3]
+        return fetch(
+            'http://localhost:8080/api/es/range',
+            { 
+                method: "POST",
+                body: JSON.stringify({
+                    rangeData:{
+                        chr: rangeQueryData.genes[0]["ensGene.chrom"],
+                        start: rangeQueryData.genes[0]["ensGene.txStart"] - 100000,
+                        end: rangeQueryData.genes[0]["ensGene.txEnd"] + 100000,
+                    }
+                }),
+                headers:{
+                    'Content-Type': 'application/json'
                 }
-            )
-        }
+            }
+        )
+        .then(response => response.json())
+        .then(data => {
+            console.log("data.hits.hits",data.hits.hits)
+            var lines = data.hits.hits
 
-        genes.push(geneSymbol)
+            var fullData = lines.map(x => x._source)
+            var pvals = lines.map(x => x._source.NonIndexedData.Log10pvalue)
+            var genes = lines.map(x => x._source.NonIndexedData.EnsemblGeneID)
 
-        return {
-            geneName: geneSymbol,
-            fullData: fullData,
-            pvals: pvals,
-            genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
-            range: {
-                'start':rangeQueryData.genes[0]["ensGene.txStart"],
-                'end':rangeQueryData.genes[0]["ensGene.txEnd"],
-                'padding':100000
-            },
-        }
+            genes.push(geneSymbol)
+            console.log(geneSymbol)
+
+            return {
+                geneName: geneSymbol,
+                fullData: fullData,
+                pvals: pvals,
+                genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
+                range: {
+                    'start':    rangeQueryData.genes[0]["ensGene.txStart"],
+                    'end':      rangeQueryData.genes[0]["ensGene.txEnd"],
+                    'padding':  100000
+                },
+            }
+
+        })
+
+        // var pvals = TestData.geneData
+
+        // var lines = pvals.split(os.EOL)
+
+        // var fullData = []
+        // var pvals = []
+        // var genes = []
+        // var line
+        
+        // for(var i = 0; i < lines.length; i++){
+        //     line = lines[i].split(' ')
+        //     pvals.push(line[3])
+        //     genes.push(line[1].toString())
+        //     fullData.push(
+        //         {
+        //             'gene': line[1].toString(),
+        //             'pos':  parseInt(line[2]),
+        //             'pVal': line[3]
+        //         }
+        //     )
+        // }
+
+        // genes.push(geneSymbol)
+
+        // return {
+        //     geneName: geneSymbol,
+        //     fullData: fullData,
+        //     pvals: pvals,
+        //     genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
+        //     range: {
+        //         'start':    rangeQueryData.genes[0]["ensGene.txStart"],
+        //         'end':      rangeQueryData.genes[0]["ensGene.txEnd"],
+        //         'padding':  100000
+        //     },
+        // }
     }
 
     loadDataGene(genes) {
@@ -153,12 +200,18 @@ class GenePage extends Component {
                 if(data.genes.length > 0){
 
                     let index = 0
+                    let found = false
 
                     for(const [i,row] of data.genes.entries()){
                         if(row['ensGene.GeneID'] ==  this.props.geneSymbol){
                             index = i
+                            found = true
                             break
                         }
+                    }
+
+                    if(!found){
+                        console.log("Gene query failed")
                     }
 
                     return ({
@@ -197,11 +250,13 @@ class GenePage extends Component {
             .domain([Math.max(dataMinSite,0), dataMaxSite])
             .range([0, d3Width])
             .nice()
+            // .tickFormat(format("s"))
 
         var d3ScaleY = scaleLinear()
             .domain([d3Min, d3Max])
             .range([d3Height, 0])     
             .nice()
+            // .tickFormat(format("s"))
 
         var d3Data ={
             min:    d3Min,
@@ -230,7 +285,7 @@ class GenePage extends Component {
     filterResults = (filterText) => {
 
         let filteredData = this.state.resultsData.fullData.filter(
-            (dataPoint) => (dataPoint.gene.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
+            (dataPoint) => (dataPoint.NonIndexedData.EnsemblGeneID.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
         )
         
         console.log("filteredData.length: ", filteredData.length)
@@ -302,8 +357,6 @@ let Genecard = (props) => (
         <select>
             <option value="volvo">eQTL</option>
             <option value="volvo">pQTL</option>
-            <option value="volvo">eQTL Overlap</option>
-            <option value="volvo">pQTL Overlap</option>
         </select>
     </CardBox>
 )
