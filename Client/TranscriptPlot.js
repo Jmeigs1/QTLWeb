@@ -58,11 +58,13 @@ class TranscriptPlot extends Component {
                 // let ends = Buffer.from( this.props.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
                 let end = this.props.geneData[gene]["ensGene.txEnd"]
                 let name = this.props.geneData[gene]["knownXref.GeneSymbol"]
+                let ensID = this.props.geneData[gene]["ensGene.GeneID"]
 
                 items.push({
                     name: name,
                     start: start,
-                    end: end
+                    end: end,
+                    ensID: ensID
                 })
             }
         }
@@ -99,10 +101,12 @@ class TranscriptPlot extends Component {
                                     width = {d3Data.scaleX(item.end) - d3Data.scaleX(item.start)}
                                     transform = {'translate(' + d3Data.scaleX(item.start) + ',0)'}
                                     fill = 'black'
-                                    key = {JSON.stringify(item)}
+                                    key = {item.ensID}
                                     data = {JSON.stringify(item)}
+                                    value={item.ensID}
                                     onMouseEnter = { (e) => {this.handleMouseOver(e)} }
                                     onMouseLeave = {this.handleMouseOut}
+                                    onClick={(e) => {this.props.filterResultsFunc(e.target.getAttribute("value"))}}
                                     
                                 />
                         )})}

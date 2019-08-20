@@ -6,16 +6,35 @@ const TableFilter = styled.input`
 `
 
 class GenePageTableFilter extends Component {
+
+    constructor(props){
+        super(props)
+
+        this.state = {
+            filterValue: this.props.filterValue
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.filterValue != this.props.filterValue){
+            this.setState({
+                filterValue: this.props.filterValue
+            })
+        }
+    }
     
     render() {
         return (
             <div>
                 <TableFilter 
                     onChange={(e) => {
-                        return new Promise((resolve, reject) => {
-                            this.props.filterResults(e.target.value)
+                        this.setState({
+                            filterValue: e.target.value
+                        },(prevState, props) => {
+                            this.props.filterResultsFunc(this.state.filterValue)
                         })
                     }}
+                    value={this.state.filterValue}
                     placeholder='Filter Results'/>
                 <GenePageTableDownloadButton 
                     geneSymbol = {this.props.geneSymbol}

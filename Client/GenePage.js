@@ -58,11 +58,12 @@ class GenePage extends Component {
             geneSymbol: this.props.geneSymbol,
             resultsData: {},
             filteredData: {},
+            filterValue: ""
           }
 
-        this.filterResults = debounce(
+        this.filterResultsFuncDB = debounce(
             250,
-            this.filterResults
+            this.filterResultsFunc
         )
     }
 
@@ -246,14 +247,15 @@ class GenePage extends Component {
         )
     }
 
-    filterResults = (filterText) => {
+    filterResultsFunc = (filterText) => {
 
         let filteredData = this.state.resultsData.fullData.filter(
             (dataPoint) => (dataPoint.NonIndexedData.EnsemblGeneID.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
         )
 
         this.setState({
-            filteredData: filteredData
+            filteredData: filteredData,
+            filterValue: filterText
         })
     }
 
@@ -282,11 +284,13 @@ class GenePage extends Component {
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
                     dataLoaded={this.state.geneDataLoaded}
+                    filterResultsFunc={this.filterResultsFunc}
                     geneData={this.state.geneData}/>
                 <GenePageTableFilter
                     geneSymbol={this.state.geneSymbol}
-                    filterResults={this.filterResults}
+                    filterResultsFunc={this.filterResultsFuncDB}
                     filteredData={this.state.filteredData}
+                    filterValue={this.state.filterValue}
                     />
                 <GenePageTable size={[1000,500]} 
                     filteredData={this.state.filteredData}
