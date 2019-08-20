@@ -65,7 +65,7 @@ class SearchBar extends Component {
 
         axios({
             method: "get",
-            url: "http://localhost:8080/api/es/" + value
+            url: window.location.host + "/api/es/" + value
         }).then(res => {
 
             if(res.data && res.data.hits && res.data.hits.hits){
