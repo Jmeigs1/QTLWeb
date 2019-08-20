@@ -98,14 +98,14 @@ class GenePage extends Component {
 
     getSiteRange(){
         return fetch(
-            window.location.host + '/api/gene/' + this.props.geneSymbol
+            window.location.origin + '/api/gene/' + this.props.geneSymbol
         ).then(response => response.json())
     }
 
     loadDataResults(geneSymbol,rangeQueryData) {
 
         return fetch(
-            window.location.host + '/api/es/range',
+            window.location.origin + '/api/es/range',
             { 
                 method: "POST",
                 body: JSON.stringify({
@@ -149,7 +149,7 @@ class GenePage extends Component {
     loadDataGene(genes) {
 
         return fetch(
-            window.location.host + '/api/gene/search',
+            window.location.origin + '/api/gene/search',
             { 
                 method: "POST",
                 body: JSON.stringify({
