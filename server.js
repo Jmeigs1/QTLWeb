@@ -124,6 +124,38 @@ Group By e.name2
 
 }
 
+const mySqlQueryTest = (genes) => {
+
+  db = new Database({
+    host     : 'genome-mysql.soe.ucsc.edu',
+    user     : 'genome',
+    port     : '3306',
+    database : 'hg19'
+    // multipleStatements: true
+  })
+
+  let geneList = ""
+
+  for(gene of genes){
+    geneList += `${mysql.escape(gene)},`
+  }
+
+  geneList = geneList.substr(0,geneList.length - 1)
+
+  var result = db
+    .query(`    
+SELECT \
+* \
+from hg19.knownToEnsembl AS kte \
+where kte.name = "uc001abo.3" \
+`)
+
+  result.then(
+    () => {console.log("Closed mySqlQuery");db.close()}
+  )
+
+  return result
+}
 
 const mySqlQuery = (genes) => {
 
@@ -238,7 +270,8 @@ app.post('/api/gene/search', (req, res) => {
 
 app.post('/api/gene/test', (req, res) => {
 
-  mySqlQuery(['ENSG00000198744']).then(rows => {
+  // mySqlQuery(['ENSG00000198744']).then(rows => {
+  mySqlQueryTest(['ENSG00000225972']).then(rows => {
 
     console.log(rows)
     

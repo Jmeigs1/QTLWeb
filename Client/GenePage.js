@@ -2,18 +2,21 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { debounce } from 'throttle-debounce'
 
-import * as TestData from './TestData'
-import os from 'os'
-
 import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 import GenePageTable from './GenePageTable'
 import GenePageTableFilter from './GenePageTableFilter'
 
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormControl from '@material-ui/core/FormControl'
+import FormLabel from '@material-ui/core/FormLabel'
+
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
-import {format} from 'd3-format'
 
+import Colors from './UI/Colors'
 
 const Page = styled.div`
     box-sizing: border-box;
@@ -69,10 +72,10 @@ class GenePage extends Component {
 
     componentDidUpdate() {
         if(this.props.geneSymbol != this.state.geneSymbol){
+            this.loadAllData()
             this.setState({
                 geneSymbol: this.props.geneSymbol
             })
-            this.loadAllData()
         }
     }
 
@@ -118,15 +121,14 @@ class GenePage extends Component {
         )
         .then(response => response.json())
         .then(data => {
-            console.log("data.hits.hits",data.hits.hits)
+
             var lines = data.hits.hits
 
             var fullData = lines.map(x => x._source)
-            var pvals = lines.map(x => x._source.NonIndexedData.Log10pvalue)
+            var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.Log10pvalue))
             var genes = lines.map(x => x._source.NonIndexedData.EnsemblGeneID)
 
             genes.push(geneSymbol)
-            console.log(geneSymbol)
 
             return {
                 geneName: geneSymbol,
@@ -141,42 +143,6 @@ class GenePage extends Component {
             }
 
         })
-
-        // var pvals = TestData.geneData
-
-        // var lines = pvals.split(os.EOL)
-
-        // var fullData = []
-        // var pvals = []
-        // var genes = []
-        // var line
-        
-        // for(var i = 0; i < lines.length; i++){
-        //     line = lines[i].split(' ')
-        //     pvals.push(line[3])
-        //     genes.push(line[1].toString())
-        //     fullData.push(
-        //         {
-        //             'gene': line[1].toString(),
-        //             'pos':  parseInt(line[2]),
-        //             'pVal': line[3]
-        //         }
-        //     )
-        // }
-
-        // genes.push(geneSymbol)
-
-        // return {
-        //     geneName: geneSymbol,
-        //     fullData: fullData,
-        //     pvals: pvals,
-        //     genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
-        //     range: {
-        //         'start':    rangeQueryData.genes[0]["ensGene.txStart"],
-        //         'end':      rangeQueryData.genes[0]["ensGene.txEnd"],
-        //         'padding':  100000
-        //     },
-        // }
     }
 
     loadDataGene(genes) {
@@ -250,13 +216,11 @@ class GenePage extends Component {
             .domain([Math.max(dataMinSite,0), dataMaxSite])
             .range([0, d3Width])
             .nice()
-            // .tickFormat(format("s"))
 
         var d3ScaleY = scaleLinear()
             .domain([d3Min, d3Max])
             .range([d3Height, 0])     
             .nice()
-            // .tickFormat(format("s"))
 
         var d3Data ={
             min:    d3Min,
@@ -287,9 +251,6 @@ class GenePage extends Component {
         let filteredData = this.state.resultsData.fullData.filter(
             (dataPoint) => (dataPoint.NonIndexedData.EnsemblGeneID.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
         )
-        
-        console.log("filteredData.length: ", filteredData.length)
-        console.log("filteredData: ", filteredData)
 
         this.setState({
             filteredData: filteredData
@@ -298,7 +259,7 @@ class GenePage extends Component {
 
     render() {
 
-        console.log(this.state)
+        console.log("this.state:",this.state)
 
         if (!this.state.geneDataLoaded){
             return (
@@ -314,17 +275,19 @@ class GenePage extends Component {
                 <ScatterPlot size={[1000,400]} 
                     d3Data={this.state.resultsData.d3Data}
                     range={this.state.resultsData.range}
-                    geneSymbol={this.props.geneSymbol}
+                    geneSymbol={this.state.geneSymbol}
                     dataLoaded={this.state.geneDataLoaded}
                     filteredData={this.state.filteredData} />
                 <TranscriptPlot size={[1000,10]} 
                     d3Data={this.state.resultsData.d3Data}
-                    geneSymbol={this.props.geneSymbol}
+                    geneSymbol={this.state.geneSymbol}
                     dataLoaded={this.state.geneDataLoaded}
                     geneData={this.state.geneData}/>
                 <GenePageTableFilter
-                    geneSymbol={this.props.geneSymbol}
-                    filterResults={this.filterResults}/>
+                    geneSymbol={this.state.geneSymbol}
+                    filterResults={this.filterResults}
+                    filteredData={this.state.filteredData}
+                    />
                 <GenePageTable size={[1000,500]} 
                     filteredData={this.state.filteredData}
                     />
@@ -333,33 +296,61 @@ class GenePage extends Component {
     }
 }
 
-let Genecard = (props) => (
+let Genecard = (props) => {
 
-    <CardBox>
-        <h2>{props.geneData["knownXref.GeneSymbol"]}</h2>
-        <h3>{Buffer.from( props.geneData["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
-        <dl>
-            <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{props.geneData["ensGene.GeneID"]}</dd></FlexDiv>
-            <FlexDiv><dt>Uniprot: </dt> <dd>{props.geneData["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
-            <FlexDiv>
-                <dt>Location: </dt>
-                <dd>
-                    {props.geneData["ensGene.chrom"]}: {props.geneData["ensGene.txStart"]} - {props.geneData["ensGene.txEnd"]}
-                </dd>
-            </FlexDiv>
-            <FlexDiv>
-            <dt>Size: </dt>
-                <dd>
-                    {0 + props.geneData["ensGene.txEnd"] - props.geneData["ensGene.txStart"]}
-                </dd>
-            </FlexDiv>
-        </dl>
-        <select>
-            <option value="volvo">eQTL</option>
-            <option value="volvo">pQTL</option>
-        </select>
-    </CardBox>
-)
+    const [value, setValue] = React.useState('eqtl')
+
+    const handleChange = (event) => {
+        setValue(event.target.value)
+    }
+
+    return (
+        <CardBox>
+            <h2>{props.geneData["knownXref.GeneSymbol"]}</h2>
+            <h3>{Buffer.from( props.geneData["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
+            <dl>
+                <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{props.geneData["ensGene.GeneID"]}</dd></FlexDiv>
+                <FlexDiv><dt>Uniprot: </dt> <dd>{props.geneData["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
+                <FlexDiv>
+                    <dt>Location: </dt>
+                    <dd>
+                        {props.geneData["ensGene.chrom"]}: {props.geneData["ensGene.txStart"]} - {props.geneData["ensGene.txEnd"]}
+                    </dd>
+                </FlexDiv>
+                <FlexDiv>
+                <dt>Size: </dt>
+                    <dd>
+                        {0 + props.geneData["ensGene.txEnd"] - props.geneData["ensGene.txStart"]}
+                    </dd>
+                </FlexDiv>
+            </dl>
+            <p style={{fontWeight:"bold"}}> Dataset </p>
+            <FormControl style={{
+                boxShadow:"0px 1px 3px 0px rgba(0,0,0,0.2), \
+                        0px 1px 1px 0px rgba(0,0,0,0.14), \
+                        0px 2px 1px -1px rgba(0,0,0,0.12)",
+                background: "#FFF",
+                paddingTop:"5px",
+                }} component="fieldset">
+                <RadioGroup aria-label="position" name="position" value={value} onChange={handleChange} row>
+                    <FormControlLabel
+                    value="eqtl"
+                    control={<Radio color="primary" />}
+                    label={<div style={{fontSize:"20px"}}>EQTL</div>}
+                    labelPlacement="top"
+                    style={{fontSize:"20px"}}
+                    />
+                    <FormControlLabel
+                    value="pqtl"
+                    control={<Radio color="primary" />}
+                    label={<div style={{fontSize:"20px"}}>PQTL</div>}
+                    labelPlacement="top"
+                    />
+                </RadioGroup>
+            </FormControl>
+        </CardBox>
+    )
+}
 
 Genecard = React.memo(Genecard)
 

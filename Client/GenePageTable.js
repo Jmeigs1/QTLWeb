@@ -59,7 +59,7 @@ const columnData = (displayName, dbName) => {
 const cols = [
     columnData('Associated Gene', (x) => x.EnsID),
     columnData('Genomic Coordinates', (x) => x.Coordinate),
-    columnData('Log 10 ( P-Value )', (x) => x.NonIndexedData.Log10pvalue),
+    columnData('P-Value', (x) => x.NonIndexedData.PValue),
     columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.BonferroniPValue),
     columnData('FDR', (x) => x.NonIndexedData.FDR),
 ]
@@ -95,7 +95,7 @@ class GenePageTable extends Component {
                     {
                         rows ?
                         rows.map((row, i) => (
-                        <StyledTableRow onClick={() => { window.location= "/gene/" + row.gene + "/site/" + row.pos}} key={i}>
+                        <StyledTableRow onClick={() => { window.location= "/gene/" + row.EnsID + "/site/" + row.Site}} key={i}>
                             <StyledTableCell key={i + '_Index'}> {i} </StyledTableCell>
                             {cols.map((col, j) =>
                                 (

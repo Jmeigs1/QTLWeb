@@ -17,7 +17,10 @@ class GenePageTableFilter extends Component {
                         })
                     }}
                     placeholder='Filter Results'/>
-                <GenePageTableDownloadButton geneSymbol = {this.props.geneSymbol} selected={[[1,2,3],[4,5,6]]}/>
+                <GenePageTableDownloadButton 
+                    geneSymbol = {this.props.geneSymbol}
+                    filteredData = {this.props.filteredData}
+                />
             </div>
         );
     }
@@ -29,11 +32,11 @@ class GenePageTableDownloadButton extends Component {
         super(props)
     }
 
-    shouldComponentUpdate(nextProps, nextState){
+    shouldComponentUpdate(){
         return false
    }
 
-    clickHander(props) {
+    downloadHander(props) {
 
         const baseFileName = "QTLWeb_" + this.props.geneSymbol + "_"
 
@@ -54,19 +57,15 @@ class GenePageTableDownloadButton extends Component {
             .toString()
             .padStart(2, '0')}`
 
-        let data = props.selected
-        var csv = 'Name,Title,Other\n'
-        data.forEach(function(row) {
-                csv += row.join(',')
-                csv += "\n"
-        });
+        let data = props.filteredData
+        var csv = JSON.stringify(props.filteredData)
 
-        const blob = new Blob([csv], { type: 'text/csv' })
+        const blob = new Blob([csv], { type: 'application/json' })
         const url = URL.createObjectURL(blob)
 
         const link = document.createElement('a')
         link.setAttribute('href', url)
-        link.setAttribute('download', `${baseFileName.replace(/\s+/g, '_')}_${timestamp}.csv`)
+        link.setAttribute('download', `${baseFileName.replace(/\s+/g, '_')}_${timestamp}.json`)
         link.onClick = () => {
             console.log('revoke')
             URL.revokeObjectURL(url)
@@ -82,7 +81,7 @@ class GenePageTableDownloadButton extends Component {
             <button
                 type='file'
                 accept='*'
-                onClick={() => this.clickHander(this.props)}
+                onClick={() => this.downloadHander(this.props)}
                 style = {{float:'right'}}
             > 
                 Download
