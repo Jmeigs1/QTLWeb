@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { Link as RouteLink } from "react-router-dom"
 
-import { colors } from './UI/Colors'
+import Colors from './UI/Colors'
 
 const Page = styled.div`
     box-sizing: border-box;
@@ -36,14 +36,14 @@ const HeadingContainer = styled.div`
 `
 
 const StyleLink = styled.a`
-    color: ${colors[2][0]};
+    color: ${Colors[2][0]};
     text-decoration: none;
     &:visited {
-        color: ${colors[2][0]};
+        color: ${Colors[2][0]};
     }
     &:active,
     &:hover {
-        color: ${colors[1][2]};
+        color: ${Colors[1][2]};
     cursor: pointer;
     text-shadow:0px 0px 1px black;
     }

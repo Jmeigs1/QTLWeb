@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'
 
-import colors from './UI/Colors'
+import Colors from './UI/Colors'
 
 const Svg = styled.svg`
     margin: 10px auto;
@@ -40,7 +40,7 @@ class TranscriptPlot extends Component {
     handleMouseOver(event) {
 
         let rect = event.target
-        rect.setAttribute('fill',colors[2][0])
+        rect.setAttribute('fill',Colors[2][0])
     }
 
     handleMouseOut(event) {

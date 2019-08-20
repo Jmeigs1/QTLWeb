@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Link as RouteLink } from "react-router-dom"
 
 import { Button } from './UI/Button'
-import { colors } from './UI/Colors'
+import Colors from './UI/Colors'
 
 const NavBarWrapper = styled.div`
   display: flex;
@@ -80,7 +80,7 @@ const StyleLink = styled.a`
   text-decoration: none;
   &:active,
   &:hover {
-    color: ${colors[2][1]};
+    color: ${Colors[2][1]};
     cursor: pointer;
     text-shadow:0px 0px 1px black;
   }

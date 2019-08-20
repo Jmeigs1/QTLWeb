@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 
 import styled from 'styled-components'
 
-import colors from './UI/Colors'
+import Colors from './UI/Colors'
 
 const StyledTableCell = styled.td`
     font-size: 12px !important;
     font-family: Raleway, sans-serif !important;
-    color: ${colors[0][2]} !important;
+    color: ${Colors[0][2]} !important;
 
     padding: 10px;
 `
@@ -15,7 +15,7 @@ const StyledTableCell = styled.td`
 const StyledTableCellHeader = styled.td`
     font-size: 12px !important;
     color: white !important;
-    background-color: ${colors[0][2]};
+    background-color: ${Colors[0][2]};
 
     padding: 10px;
 `
@@ -43,7 +43,7 @@ const StyledTableRoot = styled.div`
 
 const StyledTableRow = styled.tr`
     &:hover {
-        background: ${colors[2][1]};
+        background: ${Colors[2][1]};
         cursor: pointer;
     }
 
