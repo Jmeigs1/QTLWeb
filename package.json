@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "npm run build && node server.js",
+    "start": "npm run build && forever start server.js",
+    "stop": "forever stop server.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon server.js"
   },
