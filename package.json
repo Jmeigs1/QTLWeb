@@ -8,7 +8,8 @@
     "start": "npm run build && forever start server.js",
     "stop": "forever stop server.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "list": "forever list"
   },
   "author": "Jacob Meigs",
   "license": "ISC",
@@ -55,6 +56,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.6",
     "clean-webpack-plugin": "^3.0.0",
+    "compression-webpack-plugin": "^3.0.0",
     "css-loader": "^3.0.0",
     "forever": "1.0.0",
     "html-webpack-plugin": "^3.2.0",

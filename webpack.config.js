@@ -1,6 +1,8 @@
+const webpack = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 
 const outputDirectory = 'dist'
 
@@ -34,6 +36,9 @@ module.exports = {
       }
     ]
   },
+  optimization: {
+    minimize: true,
+  },
   resolve: {
     extensions: ['*', '.js', '.jsx']
   },
@@ -50,6 +55,19 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html'
     //   favicon: './public/favicon.ico'
+    }),
+    new webpack.DefinePlugin({ // <-- key to reducing React's size
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.AggressiveMergingPlugin(), //Merge chunks
+    new CompressionPlugin({
+      filename: "[path].gz[query]",
+      algorithm: "gzip",
+      test: /\.js$|\.css$|\.html$/,
+      threshold: 10240,
+      minRatio: 0.8
     })
   ]
 };

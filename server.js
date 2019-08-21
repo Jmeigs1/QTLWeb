@@ -222,6 +222,12 @@ where e.name2 in (${geneList})\
   return result
 }
 
+app.get('*.js', function (req, res, next) {
+  req.url = req.url + '.gz'
+  res.set('Content-Encoding', 'gzip')
+  next()
+})
+
 const publicDir = path.resolve(__dirname, 'dist')
 app.use(express.static(publicDir))
 
