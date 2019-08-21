@@ -5,6 +5,7 @@ const path = require('path')
 const mysql = require('mysql')
 const bodyParser = require('body-parser');
 const cors = require('cors')
+const compression = require('compression')
 
 const axios = require('axios')
 
@@ -245,7 +246,7 @@ app.get('/api/es/:searchTerm', (req, res) => {
   })
 })
 
-app.post('/api/es/range', (req, res) => {
+app.post('/api/es/range', compression() ,(req, res) => {
   esQueryRange(req.body.rangeData).then( results => {
     res.send(
         results.data
