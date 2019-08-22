@@ -275,7 +275,9 @@ class GenePage extends Component {
 
         return (
             <Page>
-                <Genecard geneData={this.state.geneData[this.state.mainGeneIndex]}/>
+                <Genecard 
+                    geneData={this.state.geneData[this.state.mainGeneIndex]}
+                    mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot size={[1000,400]} 
                     d3Data={this.state.resultsData.d3Data}
@@ -283,12 +285,25 @@ class GenePage extends Component {
                     geneSymbol={this.state.geneSymbol}
                     dataLoaded={this.state.geneDataLoaded}
                     filteredData={this.state.filteredData} />
+                <p>
+                    Gene Coding Regions
+                </p>
                 <TranscriptPlot size={[1000,10]} 
+                    header="Ensembel Track"
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
                     dataLoaded={this.state.geneDataLoaded}
                     filterResultsFunc={this.filterResultsFunc}
-                    geneData={this.state.geneData}/>
+                    geneData={this.state.geneData}
+                    filterValue={this.state.filterValue}/>
+                <TranscriptPlot size={[1000,10]} 
+                    header="KnownGene Track"
+                    d3Data={this.state.resultsData.d3Data}
+                    geneSymbol={this.state.geneSymbol}
+                    dataLoaded={this.state.geneDataLoaded}
+                    filterResultsFunc={this.filterResultsFunc}
+                    geneData={this.state.geneData}
+                    filterValue={this.state.filterValue}/>
                 <GenePageTableFilter
                     geneSymbol={this.state.geneSymbol}
                     filterResultsFunc={this.filterResultsFuncDB}
@@ -311,23 +326,37 @@ let Genecard = (props) => {
         setValue(event.target.value)
     }
 
+    //Test's if any of the transcripts could join between KG and ENS
+    const xRefIndex = props.mainGeneTranscripts.map(v => v["knownXref.GeneSymbol"] !== null).indexOf(true)
+
+    if(xRefIndex === -1){
+        return (
+            <CardBox>
+                <h2>{props.mainGeneTranscripts[0]["ensGene.GeneID"]}</h2>
+                <h3>Gene could not be cross track joined between ENS and KG</h3>
+            </CardBox>
+        )
+    }
+
+    const geneInfo = props.mainGeneTranscripts[xRefIndex]
+
     return (
         <CardBox>
-            <h2>{props.geneData["knownXref.GeneSymbol"]}</h2>
-            <h3>{Buffer.from( props.geneData["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
+            <h2>{geneInfo["knownXref.GeneSymbol"]}</h2>
+            <h3>{Buffer.from( geneInfo["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
             <dl>
-                <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{props.geneData["ensGene.GeneID"]}</dd></FlexDiv>
-                <FlexDiv><dt>Uniprot: </dt> <dd>{props.geneData["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
+                <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{geneInfo["ensGene.GeneID"]}</dd></FlexDiv>
+                <FlexDiv><dt>Uniprot: </dt> <dd>{geneInfo["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
                 <FlexDiv>
                     <dt>Location: </dt>
                     <dd>
-                        {props.geneData["ensGene.chrom"]}: {props.geneData["ensGene.txStart"]} - {props.geneData["ensGene.txEnd"]}
+                        {geneInfo["ensGene.chrom"]}: {geneInfo["ensGene.txStart"]} - {geneInfo["ensGene.txEnd"]}
                     </dd>
                 </FlexDiv>
                 <FlexDiv>
                 <dt>Size: </dt>
                     <dd>
-                        {0 + props.geneData["ensGene.txEnd"] - props.geneData["ensGene.txStart"]}
+                        {0 + geneInfo["ensGene.txEnd"] - geneInfo["ensGene.txStart"]}
                     </dd>
                 </FlexDiv>
             </dl>

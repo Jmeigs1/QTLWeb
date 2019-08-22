@@ -97,15 +97,15 @@ class ScatterPlot extends Component{
 const Plot = (props) => {
 
     const handleMouseOver = (event) => {
+        let circle = event.target
+        circle.setAttribute('r','10')
 
-        event.target.setAttribute('r','10')
-
+        //Brings svg element to front
+        circle.parentNode.append(circle)
     }
 
     const handleMouseOut = (event) => {
-
         event.target.setAttribute('r','5')
-     
     }
 
     const margin = props.d3Data.margin,
