@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import * as d3 from 'd3'
 import {Axis,axisPropsFromTickScale, LEFT, BOTTOM} from 'react-d3-axis'
 
 import Colors from './UI/Colors'

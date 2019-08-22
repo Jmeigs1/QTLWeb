@@ -105,14 +105,34 @@ const getSiteRange = (gene) => {
   })
 
   var result = db
-    .query(`    
+    .query(`
 SELECT \
-max(e.chrom) "ensGene.chrom", \
-min(e.txStart) "ensGene.txStart", \
-max(e.txEnd) "ensGene.txEnd" \
+  e.name "ensGene.TranscriptID", \
+  e.name2 "ensGene.GeneID", \
+  e.chrom "ensGene.chrom", \
+  e.strand "ensGene.strand", \
+  e.txStart "ensGene.txStart", \
+  e.txEnd "ensGene.txEnd", \
+  e.cdsStart "ensGene.cdsStart", \
+  e.cdsEnd "ensGene.cdsEnd", \
+  e.exonCount "ensGene.exonCount", \
+  e.exonStarts "ensGene.exonStarts", \
+  e.exonEnds "ensGene.exonEnds", \
+  kte.name "knownToEnsembl.KnownGeneID", \
+  kxr.mRNA "knownXref.mRNAID", \
+  kxr.spID "knownXref.UniProtProteinAccessionNumber", \
+  kxr.spDisplayID "knownXref.UniProtDisplayID", \
+  kxr.genesymbol "knownXref.GeneSymbol", \
+  kxr.refseq "knownXref.RefSeqID", \
+  kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
+  kxr.description "knownXref.Description", \
+  kxr.rfamAcc "knownXref.RfamAccessionNumber", \
+  kxr.tRnaName "knownXref.NameOfThetRNATrack" \
 FROM hg19.ensGene AS e \
-where name2 = ${mysql.escape(gene)} \
-Group By e.name2
+LEFT JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
+LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
+WHERE 
+  e.name2 = ${mysql.escape(gene)}
 `)
 
 
@@ -143,12 +163,46 @@ const mySqlQueryTest = (genes) => {
 
   geneList = geneList.substr(0,geneList.length - 1)
 
+  console.log(geneList)
+
   var result = db
     .query(`    
 SELECT \
-* \
-from hg19.knownToEnsembl AS kte \
-where kte.name = "uc001abo.3" \
+e.name "ensGene.TranscriptID", \
+e.name2 "ensGene.GeneID", \
+e.chrom "ensGene.chrom", \
+e.strand "ensGene.strand", \
+e.txStart "ensGene.txStart", \
+e.txEnd "ensGene.txEnd", \
+e.cdsStart "ensGene.cdsStart", \
+e.cdsEnd "ensGene.cdsEnd", \
+e.exonCount "ensGene.exonCount", \
+e.exonStarts "ensGene.exonStarts", \
+e.exonEnds "ensGene.exonEnds", \
+kte.name "knownToEnsembl.KnownGeneID", \
+kxr.mRNA "knownXref.mRNAID", \
+kxr.spID "knownXref.UniProtProteinAccessionNumber", \
+kxr.spDisplayID "knownXref.UniProtDisplayID", \
+kxr.genesymbol "knownXref.GeneSymbol", \
+kxr.refseq "knownXref.RefSeqID", \
+kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
+kxr.description "knownXref.Description", \
+kxr.rfamAcc "knownXref.RfamAccessionNumber", \
+kxr.tRnaName "knownXref.NameOfThetRNATrack", \
+kg.name "knownGene.GeneName", \
+kg.chrom "knownGene.chrom", \
+kg.txStart "knownGene.txStart", \
+kg.txEnd "knownGene.txEnd", \
+kg.cdsStart "knownGene.cdsStart", \
+kg.cdsEnd "knownGene.cdsEnd", \
+kg.exonStarts "knownGene.exonStarts", \
+kg.exonEnds "knownGene.exonEnds" \
+FROM hg19.ensGene AS e \
+JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
+JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
+JOIN hg19.knownGene AS kg on kg.name = kte.name \
+JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
+where e.name2 in (${geneList}) \
 `)
 
   result.then(
@@ -277,8 +331,7 @@ app.post('/api/gene/search', (req, res) => {
 
 app.post('/api/gene/test', (req, res) => {
 
-  // mySqlQuery(['ENSG00000198744']).then(rows => {
-  mySqlQueryTest(['ENSG00000225972']).then(rows => {
+  mySqlQueryTest(req.body.genes).then(rows => {
 
     console.log(rows)
     

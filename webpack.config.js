@@ -1,12 +1,16 @@
-const webpack = require('webpack')
+const { optimize,DefinePlugin } = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+ 
+const smp = new SpeedMeasurePlugin();
 
 const outputDirectory = 'dist'
 
-module.exports = {
+module.exports = smp.wrap({
   entry: [
       'babel-polyfill',
        './Client/index.js'
@@ -46,22 +50,24 @@ module.exports = {
     port: 3000,
     open: true,
     historyApiFallback: true,
+    // publicPath: path.join(__dirname, outputDirectory),
     proxy: {
       '/api': 'http://localhost:8080'
     }
   },
   plugins: [
-    // new CleanWebpackPlugin(),
+    new LodashModuleReplacementPlugin(),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './public/index.html'
-    //   favicon: './public/favicon.ico'
+      // favicon: './public/favicon.ico'
     }),
-    new webpack.DefinePlugin({ // <-- key to reducing React's size
+    new DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new webpack.optimize.AggressiveMergingPlugin(), //Merge chunks
+    new optimize.AggressiveMergingPlugin(),
     new CompressionPlugin({
       filename: "[path].gz[query]",
       algorithm: "gzip",
@@ -70,4 +76,4 @@ module.exports = {
       minRatio: 0.8
     })
   ]
-};
+});

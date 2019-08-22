@@ -54,7 +54,6 @@ class GenePage extends Component {
 
         this.state = {
             geneData: [],
-            dataLoaded: false,
             geneSymbol: this.props.geneSymbol,
             resultsData: {},
             filteredData: {},
@@ -104,6 +103,9 @@ class GenePage extends Component {
 
     loadDataResults(geneSymbol,rangeQueryData) {
 
+        const txStart = Math.min(...rangeQueryData.genes.map(o => parseInt(o["ensGene.txStart"])))
+        const txEnd   = Math.max(...rangeQueryData.genes.map(o => parseInt(o["ensGene.txEnd"])))
+
         return fetch(
             window.location.origin + '/api/es/range',
             { 
@@ -111,8 +113,8 @@ class GenePage extends Component {
                 body: JSON.stringify({
                     rangeData:{
                         chr: rangeQueryData.genes[0]["ensGene.chrom"],
-                        start: rangeQueryData.genes[0]["ensGene.txStart"] - 100000,
-                        end: rangeQueryData.genes[0]["ensGene.txEnd"] + 100000,
+                        start: txStart - 100000,
+                        end: txEnd + 100000,
                     }
                 }),
                 headers:{
@@ -135,10 +137,11 @@ class GenePage extends Component {
                 geneName: geneSymbol,
                 fullData: fullData,
                 pvals: pvals,
+                mainGeneTranscripts: rangeQueryData.genes,
                 genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
                 range: {
-                    'start':    rangeQueryData.genes[0]["ensGene.txStart"],
-                    'end':      rangeQueryData.genes[0]["ensGene.txEnd"],
+                    'start':    txStart,
+                    'end':      txEnd,
                     'padding':  100000
                 },
             }
