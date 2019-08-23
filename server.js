@@ -21,27 +21,26 @@ const esSanitize = (query) => {
     .replace(/NOT/g, '\\N\\O\\T'); // replace NOT
 }
 
+const connectionPool = mysql.createPool({
+    connectionLimit : 10,
+    host     : 'genome-mysql.soe.ucsc.edu',
+    user     : 'genome',
+    port     : '3306',
+    database : 'hg19'
+})
+
 class Database {
-  constructor( config ) {
-      this.connection = mysql.createConnection( config )
+  constructor( pool ) {
+      this.pool = pool
   }
   query( sql, args ) {
       return new Promise( ( resolve, reject ) => {
-          this.connection.query( sql, args, ( err, rows, fields ) => {
+        this.pool.query( sql, args, ( err, rows, fields ) => {
               if ( err )
                   return reject( err )
               resolve( rows )
           } )
       } )
-  }
-  close(rows) {
-      return new Promise( ( resolve, reject ) => {
-          this.connection.end( err => {
-              if ( err )
-                  return reject( err )
-          } )
-          resolve(rows)
-      } );
   }
 }
 
@@ -94,15 +93,9 @@ const esQueryRange = (rangeData) => {
         })
 }
 
-const getSiteRange = (gene) => {
+const getSiteRange = (gene,pool) => {
 
-  db = new Database({
-    host     : 'genome-mysql.soe.ucsc.edu',
-    user     : 'genome',
-    port     : '3306',
-    database : 'hg19'
-    // multipleStatements: true
-  })
+  db = new Database(pool)
 
   var result = db
     .query(`
@@ -135,26 +128,15 @@ LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
 LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
 WHERE 
   e.name2 = ${mysql.escape(gene)}
-`).then(
-  (rows) => {
-    console.log("Closing getSiteRange")
-    return db.close(rows)
-  }
-)
+`)
 
   return result
 
 }
 
-const mySqlQueryTest = (genes) => {
+const mySqlQueryTest = (genes, pool) => {
 
-  db = new Database({
-    host     : 'genome-mysql.soe.ucsc.edu',
-    user     : 'genome',
-    port     : '3306',
-    database : 'hg19'
-    // multipleStatements: true
-  })
+  db = new Database(pool)
 
   let geneList = ""
 
@@ -172,28 +154,17 @@ SELECT count(*)
 FROM hg19.knownGene AS kg \
 left JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
 where kxr.kgID is null
-`   ).then(
-      (rows) => {
-        console.log("Closing mySqlQuery")
-        return db.close(rows)
-      }
-    )
+`   )
 
   return result
 }
 
-const mySqlQuery = (ensGenes,knownGenes) => {
+const mySqlQuery = (ensGenes,knownGenes,pool) => {
 
-  db = new Database({
-    host     : 'genome-mysql.soe.ucsc.edu',
-    user     : 'genome',
-    port     : '3306',
-    database : 'hg19'
-    // multipleStatements: true
-  })
+  db = new Database(pool)
 
   let ensGeneList   = ""
-  let knwonGeneList = ""
+  let knownGeneList = ""
 
   for(gene of ensGenes){
     ensGeneList += `${mysql.escape(gene)},`
@@ -202,10 +173,10 @@ const mySqlQuery = (ensGenes,knownGenes) => {
   ensGeneList = ensGeneList.substr(0,ensGeneList.length - 1)
 
   for(gene of knownGenes){
-    knwonGeneList += `${mysql.escape(gene)},`
+    knownGeneList += `${mysql.escape(gene)},`
   }
 
-  knwonGeneList = knwonGeneList.substr(0,knwonGeneList.length - 1)
+  knownGeneList = knownGeneList.substr(0,knownGeneList.length - 1)
 
   var result = db
     .query(`    
@@ -225,15 +196,11 @@ const mySqlQuery = (ensGenes,knownGenes) => {
     "KnownGene" as "track" \
   FROM hg19.knownGene AS kg \
   LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
-  where kxr.GeneSymbol in (${knwonGeneList}) \
+  where kxr.GeneSymbol in (${knownGeneList}) \
   GROUP BY kxr.GeneSymbol \
-`).then(
-  (rows) => {
-    console.log("Closing mySqlQuery")
-    return db.close(rows)
-  }
-)
-  return result
+`)
+
+return result
 }
 
 app.get('*.js', function (req, res, next) {
@@ -268,7 +235,7 @@ app.post('/api/es/range', compression() ,(req, res) => {
 })
 
 app.get('/api/gene/:geneID', (req, res) => {
-  getSiteRange(req.params.geneID).then( rows => {
+  getSiteRange(req.params.geneID,connectionPool).then( rows => {
     res.send(
       {
         genes: rows
@@ -279,7 +246,7 @@ app.get('/api/gene/:geneID', (req, res) => {
 
 app.post('/api/gene/search', (req, res) => {
 
-  mySqlQuery(req.body.ensGenes,req.body.knownGenes).then(rows => {
+  mySqlQuery(req.body.ensGenes,req.body.knownGenes,connectionPool).then(rows => {
     res.send(
       { 
         genes: rows
