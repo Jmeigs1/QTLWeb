@@ -36,7 +36,7 @@ class GenePageTable extends Component {
         let rows = this.props.filteredData
 
         return (
-            <StyledTableRoot>
+            <StyledTableRoot style={{height:"500px"}}>
               <StyledTable>
                 <StyledTableHead>
                   <tr>

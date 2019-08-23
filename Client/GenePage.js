@@ -248,8 +248,7 @@ class GenePage extends Component {
 
         return (
             <Page>
-                <GeneCard 
-                    geneData={this.state.geneData[this.state.mainGeneIndex]}
+                <GeneCard
                     mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot size={[1000,400]} 

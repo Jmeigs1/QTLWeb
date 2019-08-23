@@ -1,4 +1,5 @@
-import { Link as RouteLink } from "react-router-dom"
+import { useEffect } from "react"
+import { Link as RouteLink, withRouter } from "react-router-dom"
 import styled from 'styled-components'
 
 import Colors from './Colors'
@@ -22,3 +23,15 @@ const StyleLink = styled.a`
 `
 
 export const Link = StyleLink.withComponent(RouteLink)
+
+let ScrollToTop = ({ children, location: { pathname } }) => {
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+  
+    return children || null;
+  }
+
+ScrollToTop = withRouter(ScrollToTop)
+  
+export { ScrollToTop }
