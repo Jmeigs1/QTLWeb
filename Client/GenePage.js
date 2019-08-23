@@ -6,17 +6,10 @@ import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 import GenePageTable from './GenePageTable'
 import GenePageTableFilter from './GenePageTableFilter'
-
-import Radio from '@material-ui/core/Radio'
-import RadioGroup from '@material-ui/core/RadioGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormControl from '@material-ui/core/FormControl'
-import FormLabel from '@material-ui/core/FormLabel'
+import GeneCard from './GeneCard'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
-
-import Colors from './UI/Colors'
 
 const Page = styled.div`
     box-sizing: border-box;
@@ -25,26 +18,6 @@ const Page = styled.div`
     padding: 0 30px;
     margin: 0 auto;
     font-size: 16px;
-`
-
-const FlexDiv = styled.div`
-    display: flex;
-    flex-direction: right;
-
-    > dt {width:200px; font-weight:bold};
-    > dd {width:250px;margin: 0 10px};
-`
-
-const CardBox = styled.div`
-    margin: 10px;
-    padding: 0 10px;
-    float: left;
-`
-const TranscriptWrapper = styled.div`
-    width:1000px;
-    height:300px;
-    margin: auto 10px;
-    background-color:black
 `
 
 class GenePage extends Component {
@@ -275,7 +248,7 @@ class GenePage extends Component {
 
         return (
             <Page>
-                <Genecard 
+                <GeneCard 
                     geneData={this.state.geneData[this.state.mainGeneIndex]}
                     mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
@@ -317,78 +290,5 @@ class GenePage extends Component {
         )
     }
 }
-
-let Genecard = (props) => {
-
-    const [value, setValue] = React.useState('eqtl')
-
-    const handleChange = (event) => {
-        setValue(event.target.value)
-    }
-
-    //Test's if any of the transcripts could join between KG and ENS
-    const xRefIndex = props.mainGeneTranscripts.map(v => v["knownXref.GeneSymbol"] !== null).indexOf(true)
-
-    if(xRefIndex === -1){
-        return (
-            <CardBox>
-                <h2>{props.mainGeneTranscripts[0]["ensGene.GeneID"]}</h2>
-                <h3>Gene could not be cross track joined between ENS and KG</h3>
-            </CardBox>
-        )
-    }
-
-    const geneInfo = props.mainGeneTranscripts[xRefIndex]
-
-    return (
-        <CardBox>
-            <h2>{geneInfo["knownXref.GeneSymbol"]}</h2>
-            <h3>{Buffer.from( geneInfo["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
-            <dl>
-                <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{geneInfo["ensGene.GeneID"]}</dd></FlexDiv>
-                <FlexDiv><dt>Uniprot: </dt> <dd>{geneInfo["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
-                <FlexDiv>
-                    <dt>Location: </dt>
-                    <dd>
-                        {geneInfo["ensGene.chrom"]}: {geneInfo["ensGene.txStart"]} - {geneInfo["ensGene.txEnd"]}
-                    </dd>
-                </FlexDiv>
-                <FlexDiv>
-                <dt>Size: </dt>
-                    <dd>
-                        {0 + geneInfo["ensGene.txEnd"] - geneInfo["ensGene.txStart"]}
-                    </dd>
-                </FlexDiv>
-            </dl>
-            <p style={{fontWeight:"bold"}}> Dataset </p>
-            <FormControl style={{
-                boxShadow:"0px 1px 3px 0px rgba(0,0,0,0.2), \
-                        0px 1px 1px 0px rgba(0,0,0,0.14), \
-                        0px 2px 1px -1px rgba(0,0,0,0.12)",
-                background: "#FFF",
-                paddingTop:"5px",
-                }} component="fieldset">
-                <RadioGroup aria-label="position" name="position" value={value} onChange={handleChange} row>
-                    <FormControlLabel
-                    value="eqtl"
-                    control={<Radio color="primary" />}
-                    label={<div style={{fontSize:"20px"}}>EQTL</div>}
-                    labelPlacement="top"
-                    style={{fontSize:"20px"}}
-                    />
-                    <FormControlLabel
-                    value="pqtl"
-                    control={<Radio color="primary" />}
-                    label={<div style={{fontSize:"20px"}}>PQTL</div>}
-                    labelPlacement="top"
-                    />
-                </RadioGroup>
-            </FormControl>
-        </CardBox>
-    )
-}
-
-Genecard = React.memo(Genecard)
-
 
 export default GenePage;
