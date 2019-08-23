@@ -54,13 +54,13 @@ class TranscriptPlot extends Component {
     render() {
         let items = []
         if(this.props.geneData){
-            for(let gene in this.props.geneData){
+            for(let gene of this.props.geneData){
                 // let starts = Buffer.from( this.props.geneData[gene]["ensGene.txStart"],'utf-8' ).toString()
-                let start = this.props.geneData[gene]["ensGene.txStart"]
+                let start = gene.start
                 // let ends = Buffer.from( this.props.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
-                let end = this.props.geneData[gene]["ensGene.txEnd"]
-                let name = this.props.geneData[gene]["knownXref.GeneSymbol"]
-                let ensID = this.props.geneData[gene]["ensGene.GeneID"]
+                let end = gene.end
+                let name = gene.name
+                let ensID = gene.name
 
                 items.push({
                     name: name,

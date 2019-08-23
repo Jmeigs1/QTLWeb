@@ -167,42 +167,10 @@ const mySqlQueryTest = (genes) => {
 
   var result = db
     .query(`    
-SELECT \
-e.name "ensGene.TranscriptID", \
-e.name2 "ensGene.GeneID", \
-e.chrom "ensGene.chrom", \
-e.strand "ensGene.strand", \
-e.txStart "ensGene.txStart", \
-e.txEnd "ensGene.txEnd", \
-e.cdsStart "ensGene.cdsStart", \
-e.cdsEnd "ensGene.cdsEnd", \
-e.exonCount "ensGene.exonCount", \
-e.exonStarts "ensGene.exonStarts", \
-e.exonEnds "ensGene.exonEnds", \
-kte.name "knownToEnsembl.KnownGeneID", \
-kxr.mRNA "knownXref.mRNAID", \
-kxr.spID "knownXref.UniProtProteinAccessionNumber", \
-kxr.spDisplayID "knownXref.UniProtDisplayID", \
-kxr.genesymbol "knownXref.GeneSymbol", \
-kxr.refseq "knownXref.RefSeqID", \
-kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
-kxr.description "knownXref.Description", \
-kxr.rfamAcc "knownXref.RfamAccessionNumber", \
-kxr.tRnaName "knownXref.NameOfThetRNATrack", \
-kg.name "knownGene.GeneName", \
-kg.chrom "knownGene.chrom", \
-kg.txStart "knownGene.txStart", \
-kg.txEnd "knownGene.txEnd", \
-kg.cdsStart "knownGene.cdsStart", \
-kg.cdsEnd "knownGene.cdsEnd", \
-kg.exonStarts "knownGene.exonStarts", \
-kg.exonEnds "knownGene.exonEnds" \
-FROM hg19.ensGene AS e \
-JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
-JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
-JOIN hg19.knownGene AS kg on kg.name = kte.name \
-JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
-where e.name2 in (${geneList}) \
+SELECT count(*)
+FROM hg19.knownGene AS kg \
+left JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
+where kxr.kgID is null
 `)
 
   result.then(
@@ -232,42 +200,24 @@ const mySqlQuery = (genes) => {
 
   var result = db
     .query(`    
-SELECT \
-e.name "ensGene.TranscriptID", \
-e.name2 "ensGene.GeneID", \
-e.chrom "ensGene.chrom", \
-e.strand "ensGene.strand", \
-e.txStart "ensGene.txStart", \
-e.txEnd "ensGene.txEnd", \
-e.cdsStart "ensGene.cdsStart", \
-e.cdsEnd "ensGene.cdsEnd", \
-e.exonCount "ensGene.exonCount", \
-e.exonStarts "ensGene.exonStarts", \
-e.exonEnds "ensGene.exonEnds", \
-kte.name "knownToEnsembl.KnownGeneID", \
-kxr.mRNA "knownXref.mRNAID", \
-kxr.spID "knownXref.UniProtProteinAccessionNumber", \
-kxr.spDisplayID "knownXref.UniProtDisplayID", \
-kxr.genesymbol "knownXref.GeneSymbol", \
-kxr.refseq "knownXref.RefSeqID", \
-kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
-kxr.description "knownXref.Description", \
-kxr.rfamAcc "knownXref.RfamAccessionNumber", \
-kxr.tRnaName "knownXref.NameOfThetRNATrack", \
-kg.name "knownGene.GeneName", \
-kg.chrom "knownGene.chrom", \
-kg.txStart "knownGene.txStart", \
-kg.txEnd "knownGene.txEnd", \
-kg.cdsStart "knownGene.cdsStart", \
-kg.cdsEnd "knownGene.cdsEnd", \
-kg.exonStarts "knownGene.exonStarts", \
-kg.exonEnds "knownGene.exonEnds" \
-FROM hg19.ensGene AS e \
-JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
-JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
-JOIN hg19.knownGene AS kg on kg.name = kte.name \
-JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
-where e.name2 in (${geneList})\
+  SELECT \
+    e.name2 "name", \
+    min(e.txStart) "start", \
+    max(e.txEnd) "end", \
+    "ENSGene" as "track" \
+  FROM hg19.ensGene AS e \
+  WHERE e.name2 in (${geneList}) \
+  GROUP BY e.name2 \
+  UNION \
+  SELECT \
+    kxr.GeneSymbol "name", \
+    min(kg.txStart) "start", \
+    max(kg.txEnd) "end", \
+    "KnownGene" as "track" \
+  FROM hg19.knownGene AS kg \
+  LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
+  where kxr.GeneSymbol in (${geneList}) \
+  GROUP BY kxr.GeneSymbol \
 `)
 
   result.then(

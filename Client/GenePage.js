@@ -141,25 +141,8 @@ class GenePage extends Component {
 
                 //Check for no data
                 if(data.genes.length > 0){
-
-                    let index = 0
-                    let found = false
-
-                    for(const [i,row] of data.genes.entries()){
-                        if(row['ensGene.GeneID'] ==  this.props.geneSymbol){
-                            index = i
-                            found = true
-                            break
-                        }
-                    }
-
-                    if(!found){
-                        console.log("Gene query failed")
-                    }
-
                     return ({
                         geneData: data.genes,
-                        mainGeneIndex: index,
                         geneDataLoaded: true
                     })
                 }
@@ -258,13 +241,12 @@ class GenePage extends Component {
                     dataLoaded={this.state.geneDataLoaded}
                     filteredData={this.state.filteredData} />
                 <p>
-                    Gene Coding Regions
+                    Filters
                 </p>
                 <TranscriptPlot size={[1000,10]} 
-                    header="Ensembel Track"
+                    header="Ensembl Track"
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
-                    dataLoaded={this.state.geneDataLoaded}
                     filterResultsFunc={this.filterResultsFunc}
                     geneData={this.state.geneData}
                     filterValue={this.state.filterValue}/>
@@ -272,7 +254,6 @@ class GenePage extends Component {
                     header="KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
-                    dataLoaded={this.state.geneDataLoaded}
                     filterResultsFunc={this.filterResultsFunc}
                     geneData={this.state.geneData}
                     filterValue={this.state.filterValue}/>
