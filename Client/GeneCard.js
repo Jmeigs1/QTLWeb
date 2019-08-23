@@ -35,7 +35,7 @@ let GeneCard = (props) => {
     }
 
     //Test's if any of the transcripts could join between KG and ENS
-    const xRefIndex = props.mainGeneTranscripts.map(v => v["knownXref.GeneSymbol"] !== null).indexOf(true)
+    const xRefIndex = props.mainGeneTranscripts.map(v => v["knownCanonical.Transcript"] !== null).indexOf(true)
 
     if(xRefIndex === -1){
         return (

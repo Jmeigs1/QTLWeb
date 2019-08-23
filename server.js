@@ -127,19 +127,20 @@ SELECT \
   kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
   kxr.description "knownXref.Description", \
   kxr.rfamAcc "knownXref.RfamAccessionNumber", \
-  kxr.tRnaName "knownXref.NameOfThetRNATrack" \
+  kxr.tRnaName "knownXref.NameOfThetRNATrack", \
+  kc.transcript "knownCanonical.Transcript" \
 FROM hg19.ensGene AS e \
 LEFT JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
 LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
+LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
 WHERE 
   e.name2 = ${mysql.escape(gene)}
-`)
-
-
-
-  result.then(
-    () => {console.log("Closed getSiteRange");db.close()}
-  )
+`).then(
+  (rows) => {
+    console.log("Closing getSiteRange")
+    return db.close(rows)
+  }
+)
 
   return result
 
@@ -171,16 +172,17 @@ SELECT count(*)
 FROM hg19.knownGene AS kg \
 left JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
 where kxr.kgID is null
-`)
-
-  result.then(
-    () => {console.log("Closed mySqlQuery");db.close()}
-  )
+`   ).then(
+      (rows) => {
+        console.log("Closing mySqlQuery")
+        return db.close(rows)
+      }
+    )
 
   return result
 }
 
-const mySqlQuery = (genes) => {
+const mySqlQuery = (ensGenes,knownGenes) => {
 
   db = new Database({
     host     : 'genome-mysql.soe.ucsc.edu',
@@ -190,13 +192,20 @@ const mySqlQuery = (genes) => {
     // multipleStatements: true
   })
 
-  let geneList = ""
+  let ensGeneList   = ""
+  let knwonGeneList = ""
 
-  for(gene of genes){
-    geneList += `${mysql.escape(gene)},`
+  for(gene of ensGenes){
+    ensGeneList += `${mysql.escape(gene)},`
   }
 
-  geneList = geneList.substr(0,geneList.length - 1)
+  ensGeneList = ensGeneList.substr(0,ensGeneList.length - 1)
+
+  for(gene of knownGenes){
+    knwonGeneList += `${mysql.escape(gene)},`
+  }
+
+  knwonGeneList = knwonGeneList.substr(0,knwonGeneList.length - 1)
 
   var result = db
     .query(`    
@@ -206,7 +215,7 @@ const mySqlQuery = (genes) => {
     max(e.txEnd) "end", \
     "ENSGene" as "track" \
   FROM hg19.ensGene AS e \
-  WHERE e.name2 in (${geneList}) \
+  WHERE e.name2 in (${ensGeneList}) \
   GROUP BY e.name2 \
   UNION \
   SELECT \
@@ -216,14 +225,14 @@ const mySqlQuery = (genes) => {
     "KnownGene" as "track" \
   FROM hg19.knownGene AS kg \
   LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
-  where kxr.GeneSymbol in (${geneList}) \
+  where kxr.GeneSymbol in (${knwonGeneList}) \
   GROUP BY kxr.GeneSymbol \
-`)
-
-  result.then(
-    () => {console.log("Closed mySqlQuery");db.close()}
-  )
-
+`).then(
+  (rows) => {
+    console.log("Closing mySqlQuery")
+    return db.close(rows)
+  }
+)
   return result
 }
 
@@ -270,7 +279,7 @@ app.get('/api/gene/:geneID', (req, res) => {
 
 app.post('/api/gene/search', (req, res) => {
 
-  mySqlQuery(req.body.genes).then(rows => {
+  mySqlQuery(req.body.ensGenes,req.body.knownGenes).then(rows => {
     res.send(
       { 
         genes: rows

@@ -40,11 +40,13 @@ class GenePage extends Component {
     }
 
     componentDidMount() {
+        document.title = "QTL's - " + this.props.geneSymbol
         this.loadAllData()
     }
 
     componentDidUpdate() {
         if(this.props.geneSymbol != this.state.geneSymbol){
+            document.title = "QTL's - " + this.props.geneSymbol
             this.loadAllData()
             this.setState({
                 geneSymbol: this.props.geneSymbol
@@ -129,7 +131,8 @@ class GenePage extends Component {
             { 
                 method: "POST",
                 body: JSON.stringify({
-                    genes: genes
+                    ensGenes: genes,
+                    knownGenes: genes,
                 }),
                 headers:{
                     'Content-Type': 'application/json'
@@ -229,6 +232,18 @@ class GenePage extends Component {
             )
         }
 
+        let kgGenes   = []
+        let ensGenes  = []
+
+        for(let o of this.state.geneData){
+            if(o.track === "ENSGene"){
+                ensGenes.push(o)
+            }
+            else if(o.track === "KnownGene"){
+                kgGenes.push(o)
+            }
+        }
+
         return (
             <Page>
                 <GeneCard
@@ -248,14 +263,14 @@ class GenePage extends Component {
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
-                    geneData={this.state.geneData}
+                    geneData={ensGenes}
                     filterValue={this.state.filterValue}/>
                 <TranscriptPlot size={[1000,10]} 
                     header="KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
-                    geneData={this.state.geneData}
+                    geneData={kgGenes}
                     filterValue={this.state.filterValue}/>
                 <GenePageTableFilter
                     geneSymbol={this.state.geneSymbol}

@@ -13,6 +13,30 @@ const TranscriptionRect = styled.rect`
     cursor: pointer;
 `
 
+const buildTranscriptLayers = (geneData) => {
+ 
+    let geneDataCopy = geneData.slice(0)
+    let retGeneDataArray = []
+
+    while(geneDataCopy.length > 0){
+        let geneRow = []
+
+        let index = 0
+        geneRow.push(...geneDataCopy.splice(0,1))
+
+        for(var i = 0; i < geneDataCopy.length; i++){
+            if(geneRow[index].end - geneDataCopy[i].start < 0){
+                geneRow.push(...geneDataCopy.splice(i,1))
+                index++
+                i--
+            }
+        }
+
+        retGeneDataArray.push(geneRow.slice(0))
+    }
+    return retGeneDataArray
+}
+
 
 class TranscriptPlot extends Component {
 
@@ -52,71 +76,84 @@ class TranscriptPlot extends Component {
     }
 
     render() {
-        let items = []
-        if(this.props.geneData){
-            for(let gene of this.props.geneData){
-                // let starts = Buffer.from( this.props.geneData[gene]["ensGene.txStart"],'utf-8' ).toString()
-                let start = gene.start
-                // let ends = Buffer.from( this.props.geneData[gene]["ensGene.txEnd"],'utf-8' ).toString()
-                let end = gene.end
-                let name = gene.name
-                let ensID = gene.name
 
-                items.push({
-                    name: name,
-                    start: start,
-                    end: end,
-                    ensID: ensID
-                })
-            }
-        }
-        
         if(!this.props.d3Data)
             return (<div/>)
+        
+        let sortedGeneData = this.props.geneData.sort( (a,b) => (a.start - b.start) )
+        let layeredGeneData = buildTranscriptLayers(sortedGeneData)
+
+        if(layeredGeneData.length == 0){
+            return (
+                <div>
+                    <p>
+                        {this.props.header}
+                    </p>
+                </div>
+            )
+        }
 
         return (
             <div>
                 <p>
                     {this.props.header}
                 </p>
-                <Svg id="TranscriptArea" ref={node => this.node = node}
-                    width={this.props.size[0]} height={this.props.size[1]}>
-                         <g>
-                            <line
-                                x1 = {0}
-                                x2 = {this.props.size[0]}
-                                y1 = {this.props.size[1]/2}
-                                y2 = {this.props.size[1]/2}
-                                strokeWidth = {1}
-                                stroke = {'#bdbdbd'}
-                            />
-                        </g>
-                        <g
-                            transform = {'translate(' + this.props.d3Data.margin.left + ',0)'}
-                        >
-                        {items.map(
-                            (item) => {
-                                let d3Data = this.props.d3Data
-                                let fillcolor = this.props.filterValue == item.ensID ? 'brown' : 'black'
-
-                                return (
-                                <TranscriptionRect
-                                    height = {this.props.size[1]}
-                                    width = {d3Data.scaleX(item.end) - d3Data.scaleX(item.start)}
-                                    transform = {'translate(' + d3Data.scaleX(item.start) + ',0)'}
-                                    fill = {fillcolor}
-                                    key = {item.ensID}
-                                    data = {JSON.stringify(item)}
-                                    value={item.ensID}
-                                    onMouseEnter = {this.handleMouseOver}
-                                    onMouseLeave = {(e) => this.handleMouseOut(e,fillcolor)}
-                                    onClick={(e) => {this.props.filterResultsFunc(e.target.getAttribute("value"))}}
-                                    
+                <select
+                    size="3"
+                    value={sortedGeneData.map(o => o.name).includes(this.props.filterValue) ? this.props.filterValue : '' }
+                    onChange={(e) => {
+                        this.props.filterResultsFunc(e.target.value)
+                        }}>
+                    <option value="" disabled hidden>Choose here</option>
+                    {sortedGeneData.map(
+                        (gene) => (
+                            <option value={gene.name} key={gene.name}>{gene.name}</option>
+                        )
+                    )}
+                </select>
+                {layeredGeneData.map(
+                    (geneRow) => (
+                        <Svg id="TranscriptArea" ref={node => this.node = node}
+                            width={this.props.size[0]} height={this.props.size[1]}>
+                            <g>
+                                <line
+                                    x1 = {0}
+                                    x2 = {this.props.size[0]}
+                                    y1 = {this.props.size[1]/2}
+                                    y2 = {this.props.size[1]/2}
+                                    strokeWidth = {1}
+                                    stroke = {'#bdbdbd'}
                                 />
-                        )})}
-                        </g>
-                </Svg>
-            </div>
+                            </g>
+                            <g
+                                transform = {'translate(' + this.props.d3Data.margin.left + ',0)'}
+                            >
+                            {geneRow.map(
+                                (item) => {
+                                    let d3Data = this.props.d3Data
+                                    let fillcolor = this.props.filterValue == item.name ? 'brown' : 'black'
+
+                                    return (
+                                    <TranscriptionRect
+                                        height = {this.props.size[1]}
+                                        width = {d3Data.scaleX(item.end) - d3Data.scaleX(item.start)}
+                                        transform = {'translate(' + d3Data.scaleX(item.start) + ',0)'}
+                                        fill = {fillcolor}
+                                        key = {item.name}
+                                        data = {JSON.stringify(item)}
+                                        value={item.name}
+                                        onMouseEnter = {this.handleMouseOver}
+                                        onMouseLeave = {(e) => this.handleMouseOut(e,fillcolor)}
+                                        onClick={(e) => {this.props.filterResultsFunc(e.target.getAttribute("value"))}}
+                                        
+                                    />
+                            )})}
+                            </g>
+                    </Svg>
+                    )
+
+                )}
+                </div>
         );
     }
 }
