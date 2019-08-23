@@ -1,4 +1,5 @@
 import React,{Component} from 'react'
+import { findDOMNode } from 'react-dom'
 import styled from 'styled-components'
 import Autocomplete from 'react-autocomplete'
 import axios from 'axios'
@@ -52,14 +53,15 @@ class SearchBar extends Component {
         this.state = {
             redirect: '',
             isHidden: true,
-            suggestions: defaultGenes
+            suggestions: defaultGenes,
+            focus: false
         }
 
         this.getSuggestionsDebounce = debounce(
             250,
             this.getSuggestions
         )
-    }    
+    }
 
     getSuggestions = value => {
 
@@ -102,13 +104,27 @@ class SearchBar extends Component {
         if (this.state.redirect != ''){
             this.setState({
                 redirect: '',
+                focus: false,
+                isHidden: true
             })
+        }
+        else if(this.state.focus){
+            var test = findDOMNode(this.fadeInRef)
+            console.log(test)
+            window.test = test
+            test.addEventListener(
+                'transitionend', 
+                () => {
+                    this.searchBoxRef.focus()
+                }
+            )
         }
     }
 
     toggleHidden() {
         this.setState({
-            isHidden: !this.state.isHidden
+            isHidden: !this.state.isHidden,
+            focus: this.state.isHidden
         })
     }
 
@@ -121,7 +137,7 @@ class SearchBar extends Component {
             return (
                 <div>
                     <Button onClick={() => this.toggleHidden()}><FaSearch size={"3em"}/></Button>
-                    <FadeIn>
+                    <FadeIn ref={o => this.fadeInRef = o}>
                         <div style={{display: 'inline-block',position: 'absolute', left: '25px', width: '250px', paddingTop: '20px'}}>
                             <Autocomplete
                                 //The following line is important to make autoHighlighting work but breaks the
@@ -154,6 +170,7 @@ class SearchBar extends Component {
                                         redirect: item.link
                                     })
                                 }}
+                                ref={o => this.searchBoxRef = o}
                             />
                         </div>
                     </FadeIn>
