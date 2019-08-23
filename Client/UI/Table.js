@@ -7,6 +7,7 @@ export const StyledTableCell = styled.td`
     color: ${colors[0][2]} !important;
 
     padding: 10px;
+    text-align: center;
 `
 
 export const StyledTableCellHeader = styled.td`
@@ -15,6 +16,7 @@ export const StyledTableCellHeader = styled.td`
     background-color: ${colors[0][2]};
 
     padding: 10px;
+    text-align: center;
 `
 
 export const StyledTable = styled.table`
@@ -41,7 +43,6 @@ export const StyledTableRoot = styled.div`
 export const StyledTableRow = styled.tr`
     &:hover {
         background: ${colors[2][1]};
-        cursor: pointer;
     }
 
     &:hover td {

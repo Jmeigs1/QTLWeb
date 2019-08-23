@@ -37,12 +37,12 @@ const SearchboxItem = styled.div`
 `
 
 const defaultGenes = [
-    {label: 'ENSG00000171163', value: 'ENSG00000171163'},
-    {label: 'ENSG00000094975', value: 'ENSG00000094975'},
-    {label: 'ENSG00000135845', value: 'ENSG00000135845'},
-    {label: 'ENSG00000235492', value: 'ENSG00000235492'},
-    {label: 'ZNF692', value: 'ENSG00000171163'},
-    {label: 'PCSK9', value: 'ENSG00000169174'}
+    {label: 'ENSG00000171163', value: 'ENSG00000171163', link: 'ENSG00000171163'},
+    {label: 'ENSG00000094975', value: 'ENSG00000094975', link: 'ENSG00000094975'},
+    {label: 'ENSG00000135845', value: 'ENSG00000135845', link: 'ENSG00000135845'},
+    {label: 'ENSG00000235492', value: 'ENSG00000235492', link: 'ENSG00000235492'},
+    {label: 'ZNF692', value: 'ENSG00000171163', link: 'ENSG00000171163'},
+    {label: 'PCSK9', value: 'ENSG00000169174', link: 'ENSG00000169174'}
 ]
 
 class SearchBar extends Component {
@@ -79,8 +79,9 @@ class SearchBar extends Component {
                     }
 
                     let ret = {
-                        label: `${h._source[field]} (${h._source["EnsID"]})`,
-                        value: h._source.EnsID,
+                        label:  `${h._source[field]} (${h._source["EnsID"]})`,
+                        value:  h._source.EnsID,
+                        link:   h._source.EnsID,
                     }
                     return ret
                 })
@@ -123,9 +124,13 @@ class SearchBar extends Component {
                     <FadeIn>
                         <div style={{display: 'inline-block',position: 'absolute', left: '25px', width: '250px', paddingTop: '20px'}}>
                             <Autocomplete
-                                getItemValue={(item) => item.value}
+                                //The following line is important to make autoHighlighting work but breaks the
+                                //value argument to most functions related to items as it sets it to the input text
+                                getItemValue={(item) => this.state.value}
                                 items={this.state.suggestions}
-                                inputProps={{placeholder: "Search by gene"}}
+                                inputProps={{
+                                    placeholder: "Search by gene",
+                                }}
                                 renderInput={this.renderInput}
                                 renderItem={(item, isHighlighted) =>
                                     <SearchboxItem key={item.label} isHighlighted={isHighlighted}>
@@ -144,9 +149,9 @@ class SearchBar extends Component {
                                         this.getSuggestionsDebounce(trimVal)
                                     }
                                 }}
-                                onSelect={gene => {
+                                onSelect={(value,item) => {
                                     this.setState({
-                                        redirect: gene
+                                        redirect: item.link
                                     })
                                 }}
                             />
