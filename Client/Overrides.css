@@ -1,4 +1,9 @@
-Body {
+html, body {
+    width:100%;
+    min-width: 1200px;
+}
+
+body {
     background: linear-gradient(to right,#C3E5E7, #FFFFFF);
 }
 

@@ -36,7 +36,7 @@ export default function SideDrawer() {
 
     const links = [
         linkData('Home', '/'),
-        linkData('About', '/About'),
+        linkData('Downloads', '/Downloads'),
         linkData('Paper', '/Paper'),
         linkData('WingoLab', '/WingoLab'),
     ]

@@ -14,8 +14,8 @@ export default () => (
     <Router>
         <ScrollToTop>
             <div className={"appContainer"} style = {{
-                    background: 'linear-gradient(to right,#C3E5E7, #FFFFFF)',
-                    paddingBottom: '40px'
+                    paddingBottom: '40px',
+                    minWidth: "1200px",
                 }}>
                 <SideDrawer/>
                 <Switch>
