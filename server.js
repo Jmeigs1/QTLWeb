@@ -70,26 +70,38 @@ const esQuery = (searchTerm) => {
 
 const esQueryRange = (rangeData) => {
 
-  return axios.post('http://localhost:9200/searchresults/_search', {
-          "size":10000,
-          "query": {
-            "bool": {
-            "must": [{
-                "term": {
-                  "Chr": rangeData.chr
+  return axios.post(
+          'http://localhost:9200/searchresults/_search',
+          {
+            "size": 10000,
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "term": {
+                                "Chr": rangeData.chr
+                            }
+                        },
+                        {
+                            "range": {
+                                "Site": {
+                                    "gte": rangeData.start,
+                                    "lt": rangeData.end
+                                }
+                            }
+                        }
+                    ]
                 }
-              },
-              {
-                "range": {
-                  "Site": {
-                    "gte": rangeData.start,
-                    "lt": rangeData.end
-                  }
-                }
-              }
+            },
+            "_source": [
+                "Coordinate",
+                "Site",
+                "NonIndexedData.Log10pvalue",
+                "NonIndexedData.EnsemblGeneID",
+                "NonIndexedData.FDR",
+                "NonIndexedData.PValue",
+                "NonIndexedData.BonferroniPValue"
             ]
-          }
-        }
         })
 }
 
