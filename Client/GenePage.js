@@ -48,9 +48,6 @@ class GenePage extends Component {
         if(this.props.geneSymbol != this.state.geneSymbol){
             document.title = "QTL's - " + this.props.geneSymbol
             this.loadAllData()
-            this.setState({
-                geneSymbol: this.props.geneSymbol
-            })
         }
     }
 
@@ -205,6 +202,7 @@ class GenePage extends Component {
                     d3Data: d3Data
                 },
                 filteredData: resultsQueryResults.fullData,
+                geneSymbol: this.props.geneSymbol
             }
         )
     }
