@@ -16,7 +16,7 @@ const columnData = (displayName, dbName) => {
 }
 
 const cols = [
-    columnData('Associated Gene', (x) => x.EnsID),
+    columnData('Associated Gene', (x) => x.NonIndexedData.EnsemblGeneID),
     columnData('Genomic Coordinates', (x) => x.Coordinate),
     columnData('P-Value', (x) => x.NonIndexedData.PValue),
     columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.BonferroniPValue),
@@ -57,7 +57,7 @@ class GenePageTable extends Component {
                         <StyledTableRow 
                             key={i}>
                             <StyledTableCell key={i + '_Link'}> 
-                                    <Link to={"/gene/" + row.EnsID + "/site/" + row.Site}>Link for Now</Link>
+                                    <Link to={"/gene/" + row.NonIndexedData.EnsemblGeneID + "/site/" + row.Site}>Link for Now</Link>
                             </StyledTableCell>
                             {cols.map((col, j) =>
                                 (
