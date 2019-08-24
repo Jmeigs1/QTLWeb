@@ -14,6 +14,8 @@ const TranscriptionRect = styled.rect`
 `
 
 const buildTranscriptLayers = (geneData) => {
+
+    //Splits the gene regions into non-overlaping tracks for visualization
  
     let geneDataCopy = geneData.slice(0)
     let retGeneDataArray = []
@@ -21,11 +23,14 @@ const buildTranscriptLayers = (geneData) => {
     while(geneDataCopy.length > 0){
         let geneRow = []
 
+        //Aribrary padding of 100 bp
+        let padding = 100
+
         let index = 0
         geneRow.push(...geneDataCopy.splice(0,1))
 
         for(var i = 0; i < geneDataCopy.length; i++){
-            if(geneRow[index].end - geneDataCopy[i].start < 0){
+            if((geneRow[index].end + padding) - geneDataCopy[i].start < 0){
                 geneRow.push(...geneDataCopy.splice(i,1))
                 index++
                 i--
