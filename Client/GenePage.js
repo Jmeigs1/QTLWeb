@@ -202,7 +202,8 @@ class GenePage extends Component {
                     d3Data: d3Data
                 },
                 filteredData: resultsQueryResults.fullData,
-                geneSymbol: this.props.geneSymbol
+                geneSymbol: this.props.geneSymbol,
+                filterValue: ""
             }
         )
     }

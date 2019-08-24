@@ -1,13 +1,10 @@
 import React,{Component} from 'react'
-import { findDOMNode } from 'react-dom'
 import styled from 'styled-components'
 import Autocomplete from 'react-autocomplete'
 import axios from 'axios'
 import { debounce } from 'throttle-debounce'
 
-import {FaSearch} from 'react-icons/fa';
 import {Redirect} from 'react-router-dom'
-import Button from '@material-ui/core/Button';
 import FadeIn from 'react-fade-in';
 
 import Colors from './UI/Colors'
@@ -52,9 +49,7 @@ class SearchBar extends Component {
         super(props)
         this.state = {
             redirect: '',
-            isHidden: true,
             suggestions: defaultGenes,
-            focus: false
         }
 
         this.getSuggestionsDebounce = debounce(
@@ -107,28 +102,9 @@ class SearchBar extends Component {
         if (this.state.redirect != ''){
             this.setState({
                 redirect: '',
-                focus: false,
-                isHidden: true
+                value: ''
             })
         }
-        else if(this.state.focus){
-            var test = findDOMNode(this.fadeInRef)
-            console.log(test)
-            window.test = test
-            test.addEventListener(
-                'transitionend', 
-                () => {
-                    this.searchBoxRef.focus()
-                }
-            )
-        }
-    }
-
-    toggleHidden() {
-        this.setState({
-            isHidden: !this.state.isHidden,
-            focus: this.state.isHidden
-        })
     }
 
     render() {
@@ -136,54 +112,43 @@ class SearchBar extends Component {
             return <Redirect push to={'/gene/' + this.state.redirect} />
         }
 
-        if(!this.state.isHidden) {
-            return (
-                <div>
-                    <Button onClick={() => this.toggleHidden()}><FaSearch size={"3em"}/></Button>
-                    <FadeIn ref={o => this.fadeInRef = o}>
-                        <div style={{display: 'inline-block',position: 'absolute', left: '25px', width: '250px', paddingTop: '20px'}}>
-                            <Autocomplete
-                                //The following line is important to make autoHighlighting work but breaks the
-                                //value argument to most functions related to items as it sets it to the input text
-                                getItemValue={(item) => this.state.value}
-                                items={this.state.suggestions}
-                                inputProps={{
-                                    placeholder: "Search by gene",
-                                }}
-                                renderInput={this.renderInput}
-                                renderItem={(item, isHighlighted) =>
-                                    <SearchboxItem key={item.label} isHighlighted={isHighlighted}>
-                                        {item.label}
-                                    </SearchboxItem>
-                                }
-                                wrapperStyle={{
-                                    display: 'inline-block',
-                                    width: '100%',
-                                }}
-                                value={this.state.value}
-                                onChange={e => {
-                                    let trimVal = e.target.value.trim()
-                                    this.setState({ value: trimVal })
-                                    if(trimVal){
-                                        this.getSuggestionsDebounce(trimVal)
-                                    }
-                                }}
-                                onSelect={(value,item) => {
-                                    this.setState({
-                                        redirect: item.link
-                                    })
-                                }}
-                                ref={o => this.searchBoxRef = o}
-                            />
-                        </div>
-                    </FadeIn>
-                </div>
-            )
-        } else {
-            return(
-                <Button onClick={() => this.toggleHidden()}><FaSearch size={"3em"}/></Button>
-            );
-        }
+        return (
+            <div style={{display: 'inline-block',width: '250px', paddingTop: '20px'}}>
+                <Autocomplete
+                    //The following line is important to make autoHighlighting work but breaks the
+                    //value argument to most functions related to items as it sets it to the input text
+                    getItemValue={(item) => this.state.value}
+                    items={this.state.suggestions}
+                    inputProps={{
+                        placeholder: "Search by gene",
+                    }}
+                    renderInput={this.renderInput}
+                    renderItem={(item, isHighlighted) =>
+                        <SearchboxItem key={item.label} isHighlighted={isHighlighted}>
+                            {item.label}
+                        </SearchboxItem>
+                    }
+                    wrapperStyle={{
+                        display: 'inline-block',
+                        width: '100%',
+                    }}
+                    value={this.state.value}
+                    onChange={e => {
+                        let trimVal = e.target.value.trim()
+                        this.setState({ value: trimVal })
+                        if(trimVal){
+                            this.getSuggestionsDebounce(trimVal)
+                        }
+                    }}
+                    onSelect={(value,item) => {
+                        this.setState({
+                            redirect: item.link,
+                        })
+                    }}
+                    ref={o => this.searchBoxRef = o}
+                />
+            </div>
+        )
     }
 }
 

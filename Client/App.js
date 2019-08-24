@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 
 import HomePage from './HomePage'
 import GenePage from './GenePage'
+import SearchBar from './SearchBar';
 import SitePage from './SitePage'
 import SideDrawer from './Drawer'
 import { ScrollToTop } from './UI/BasicElements'
@@ -18,6 +19,7 @@ export default () => (
                     minWidth: "1200px",
                 }}>
                 <SideDrawer/>
+                <SearchBar/>
                 <Switch>
                     <Route exact path="/" component={HomePage} />
                     <Route exact path="/gene/:geneSymbol/site/:siteValue" 

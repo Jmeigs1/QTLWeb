@@ -61,11 +61,8 @@ export default function SideDrawer() {
     );
 
     return (
-        <div>
-            <FadeIn>
-                <Button onClick={toggleDrawer('left', true) }><FaBars size={"3em"}/></Button>
-                <SearchBar/>
-            </FadeIn>
+        <div id="test" style={{display:"inline"}}>
+            <Button onClick={toggleDrawer('left', true) }><FaBars size={"3em"}/></Button>
             <SwipeableDrawer
                 open={state.left}
                 onClose={toggleDrawer('left', false)}
