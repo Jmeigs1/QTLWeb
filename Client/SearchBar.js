@@ -78,10 +78,14 @@ class SearchBar extends Component {
                     let ensID = h._source.NonIndexedData && h._source.NonIndexedData.EnsemblGeneID  
                                 ? h._source.NonIndexedData.EnsemblGeneID : h._source.EnsID
 
+                    let label = h._source[field] == ensID 
+                                ? `${ensID}` : `${h._source[field]} (${ensID})`
+
                     let ret = {
-                        label:  `${h._source[field]} (${ensID})`,
-                        value:  ensID,
-                        link:   ensID,
+                        label:      label,
+                        value:      ensID,
+                        link:       ensID,
+                        highlight:  h._source[field]
                     }
                     return ret
                 })
@@ -102,7 +106,6 @@ class SearchBar extends Component {
         if (this.state.redirect != ''){
             this.setState({
                 redirect: '',
-                value: ''
             })
         }
     }
@@ -143,6 +146,7 @@ class SearchBar extends Component {
                     onSelect={(value,item) => {
                         this.setState({
                             redirect: item.link,
+                            value: item.highlight
                         })
                     }}
                     ref={o => this.searchBoxRef = o}
