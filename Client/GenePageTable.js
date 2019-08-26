@@ -16,10 +16,10 @@ const columnData = (displayName, dbName) => {
 }
 
 const cols = [
-    columnData('Associated Gene', (x) => x.NonIndexedData.EnsemblGeneID),
+    columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
     columnData('Genomic Coordinates', (x) => x.Coordinate),
-    columnData('P-Value', (x) => x.NonIndexedData.PValue),
-    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.BonferroniPValue),
+    columnData('P-Value', (x) => x.NonIndexedData.pvalue),
+    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
     columnData('FDR', (x) => x.NonIndexedData.FDR),
 ]
 

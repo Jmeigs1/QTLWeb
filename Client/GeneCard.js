@@ -54,7 +54,7 @@ let GeneCard = (props) => {
             <h3>{Buffer.from( geneInfo["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
             <dl>
                 <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{geneInfo["ensGene.GeneID"]}</dd></FlexDiv>
-                <FlexDiv><dt>Uniprot: </dt> <dd>{geneInfo["knownXref.UniProtDisplayID"]}</dd></FlexDiv>
+                <FlexDiv><dt>Uniprot: </dt> <dd>{geneInfo["knownXref.UniProtProteinAccessionNumber"]}</dd></FlexDiv>
                 <FlexDiv>
                     <dt>Location: </dt>
                     <dd>

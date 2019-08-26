@@ -83,6 +83,13 @@ const esQueryRange = (rangeData) => {
                             }
                         },
                         {
+                          "term": {
+                              "Dataset": {
+                                "value": "eqtloverlap"
+                              }
+                          }
+                        },
+                        {
                             "range": {
                                 "Site": {
                                     "gte": rangeData.start,
@@ -96,11 +103,12 @@ const esQueryRange = (rangeData) => {
             "_source": [
                 "Coordinate",
                 "Site",
-                "NonIndexedData.Log10pvalue",
+                "NonIndexedData.GeneSymbol",
+                "NonIndexedData.log10pvalue",
                 "NonIndexedData.EnsemblGeneID",
                 "NonIndexedData.FDR",
-                "NonIndexedData.PValue",
-                "NonIndexedData.BonferroniPValue"
+                "NonIndexedData.pvalue",
+                "NonIndexedData.Bonferronipvalue"
             ]
         })
 }
@@ -161,12 +169,17 @@ const mySqlQueryTest = (genes, pool) => {
   console.log(geneList)
 
   var result = db
-    .query(`    
-SELECT count(*)
-FROM hg19.knownGene AS kg \
-left JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
-where kxr.kgID is null
-`   )
+    .query(`SELECT
+    e.name2 "ens_id",
+    kxr.spID "uniprot_id",
+    kxr.genesymbol "genesymbol",
+    kg.name "protein_name",
+    kg.chrom "chr"
+    FROM hg19.knownGene AS kg
+    JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
+    LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name
+    LEFT JOIN hg19.ensGene AS e on e.name = kte.value
+    where e.chrom != "chrX" and e.chrom != "chrY" and kxr.genesymbol = "PCDHGC3"`   )
 
   return result
 }
@@ -269,7 +282,7 @@ app.post('/api/gene/search', (req, res) => {
 
 app.post('/api/gene/test', (req, res) => {
 
-  mySqlQueryTest(req.body.genes).then(rows => {
+  mySqlQueryTest(req.body.genes,connectionPool).then(rows => {
 
     console.log(rows)
     

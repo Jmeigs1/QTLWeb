@@ -189,7 +189,7 @@ const Plot = (props) => {
                     (item, index) => (
                         <circle 
                             cx = {x(item.Site)}
-                            cy = {y(item.NonIndexedData.Log10pvalue)}
+                            cy = {y(item.NonIndexedData.log10pvalue)}
                             r = "5"
                             fill = {Colors[0][0]}
                             style = {{cursor:"pointer"}}
@@ -204,7 +204,7 @@ const Plot = (props) => {
                     (item, index) => (
                         <circle 
                             cx = {x(item.Site)}
-                            cy = {y(item.NonIndexedData.Log10pvalue)}
+                            cy = {y(item.NonIndexedData.log10pvalue)}
                             r = "5"
                             fill = "brown"
                             style = {{cursor:"pointer"}}

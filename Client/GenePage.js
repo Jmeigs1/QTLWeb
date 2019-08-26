@@ -100,10 +100,10 @@ class GenePage extends Component {
             var lines = data.hits.hits
 
             var fullData = lines.map(x => x._source)
-            var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.Log10pvalue))
-            var genes = lines.map(x => x._source.NonIndexedData.EnsemblGeneID)
+            var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
+            var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
 
-            genes.push(geneSymbol)
+            // genes.push(geneSymbol)
 
             return {
                 geneName: geneSymbol,
@@ -211,7 +211,9 @@ class GenePage extends Component {
     filterResultsFunc = (filterText) => {
 
         let filteredData = this.state.resultsData.fullData.filter(
-            (dataPoint) => (dataPoint.NonIndexedData.EnsemblGeneID.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
+            (dataPoint) => ( !filterText ||
+                            dataPoint.NonIndexedData.GeneSymbol &&
+                            dataPoint.NonIndexedData.GeneSymbol.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
         )
 
         this.setState({
