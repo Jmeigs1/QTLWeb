@@ -57,7 +57,7 @@ class GenePage extends Component {
             (range) => this.loadDataResults(this.props.geneSymbol,range)
             .then(
                 (resultsQueryResults) => {
-                    this.loadDataGene(resultsQueryResults.genes)
+                    this.loadDataGene(resultsQueryResults.genes, resultsQueryResults.ensGenes)
                     .then(
                         (stateDI) => {this.loadD3Data(resultsQueryResults,stateDI)}
                     )
@@ -102,6 +102,7 @@ class GenePage extends Component {
             var fullData = lines.map(x => x._source)
             var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
             var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
+            var ensGenes = lines.map(x => x._source.NonIndexedData.EnsemblGeneID)
 
             // genes.push(geneSymbol)
 
@@ -111,6 +112,7 @@ class GenePage extends Component {
                 pvals: pvals,
                 mainGeneTranscripts: rangeQueryData.genes,
                 genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
+                ensGenes: ensGenes.filter( (value, index, self) => (self.indexOf(value) === index)),
                 range: {
                     'start':    txStart,
                     'end':      txEnd,
@@ -121,14 +123,14 @@ class GenePage extends Component {
         })
     }
 
-    loadDataGene(genes) {
+    loadDataGene(genes, ensGenes) {
 
         return fetch(
             window.location.origin + '/api/gene/search',
             { 
                 method: "POST",
                 body: JSON.stringify({
-                    ensGenes: genes,
+                    ensGenes: ensGenes,
                     knownGenes: genes,
                 }),
                 headers:{
@@ -208,12 +210,38 @@ class GenePage extends Component {
         )
     }
 
+    filterDataFields =  [
+        {
+            fieldName: "GeneSymbol",
+            getData: (d) => d.NonIndexedData.GeneSymbol
+        },
+        {
+            fieldName: "EnsID",
+            getData: (d) => d.NonIndexedData.EnsemblGeneID
+        },
+    ]
+
     filterResultsFunc = (filterText) => {
 
         let filteredData = this.state.resultsData.fullData.filter(
-            (dataPoint) => ( !filterText ||
-                            dataPoint.NonIndexedData.GeneSymbol &&
-                            dataPoint.NonIndexedData.GeneSymbol.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
+            (dataPoint) => 
+            {
+                if(!filterText){
+                    return true
+                }
+
+                let filterbool = false
+                for(let dataField of this.filterDataFields){
+
+                    let value = dataField.getData(dataPoint)
+                    if(value && value.toLowerCase().indexOf(filterText.toLowerCase()) > -1){
+                        filterbool = true
+                        break
+                    }
+ 
+                }
+                return filterbool
+            }
         )
 
         this.setState({
@@ -259,13 +287,13 @@ class GenePage extends Component {
                 <p>
                     Filters
                 </p>
-                <TranscriptPlot size={[1000,10]} 
+                {/* <TranscriptPlot size={[1000,10]} 
                     header="Ensembl Track"
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.state.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
                     geneData={ensGenes}
-                    filterValue={this.state.filterValue}/>
+                    filterValue={this.state.filterValue}/> */}
                 <TranscriptPlot size={[1000,10]} 
                     header="KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}
