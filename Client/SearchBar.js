@@ -129,10 +129,8 @@ class SearchBar extends Component {
                             {item.label}
                         </SearchboxItem>
                     }
-                    wrapperStyle={{
-                        display: 'inline-block',
-                        width: '100%',
-                    }}
+                    wrapperStyle={{ position: 'relative',width:"100%" }}
+                    menuStyle={{ position: 'absolute', top: '35px', left: 0,backgroundColor:"white" }}
                     value={this.state.value}
                     onChange={e => {
                         let trimVal = e.target.value.trim()
