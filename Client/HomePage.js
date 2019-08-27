@@ -1,10 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Link as RouteLink } from "react-router-dom"
 
 import Colors from './UI/Colors'
 import { Page, Link } from './UI/BasicElements'
-import { StyledTableRootInline } from './UI/Table'
+import Citations from './UI/Citations'
 
 import SearchBar from './SearchBar'
 
@@ -67,18 +66,6 @@ export default () => (
         <p>
             To download the results of an analysis, click <Link to='/Downloads'> here </Link>
         </p>
-        <h3>
-            Citations
-        </h3>
-        <p>
-            <sup>1</sup>Chloe Robins<sup>#</sup>, Aliza P. Wingo<sup>#</sup>, Wen Fan, Duc M. Duong, Jacob Meigs,
-            Ekaterina S. Gerasimov, Eric B. Dammer, David J. Cutler, Philip L. De Jager, David A. Bennett,
-        James J. Lah, Allan I. Levey<sup>*</sup>, Nicholas T, Seyfried<sup>*</sup>,
-        Thomas S. Wingo<sup>*</sup> “Genetic control of the human brain proteome”
-        </p>
-        <p>
-            <sup>#</sup>co-first authors, <sup>*</sup>co-senior authors
-        </p>
-
+        <Citations/>
     </HomePage>
 )

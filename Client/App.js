@@ -7,6 +7,7 @@ import SearchBar from './SearchBar';
 import SitePage from './SitePage'
 import SideDrawer from './Drawer'
 import { ScrollToTop } from './UI/BasicElements'
+import Citations from './UI/BasicElements'
 
 import './Overrides.css';
 
@@ -65,7 +66,6 @@ class App extends Component {
                             />
                         </Switch>
                     </div>
-                    <div id="footer" style={{height:"300px",width:"100%"}}/>
                 </ScrollToTop>
             </Router>
           )
