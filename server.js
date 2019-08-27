@@ -67,13 +67,13 @@ const esQuery = (searchTerm) => {
   }
   }
 
-  return axios.post('http://localhost:9200/searchresults/_search', reqBody)
+  return axios.post(esServerIP + '/searchresults/_search', reqBody)
 }
 
 const esQueryRange = (rangeData) => {
 
   return axios.post(
-          'http://localhost:9200/searchresults/_search',
+          esServerIP + '/searchresults/_search',
           {
             "size": 10000,
             "query": {

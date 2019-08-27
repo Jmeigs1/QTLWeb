@@ -276,7 +276,8 @@ class GenePage extends Component {
         return (
             <Page>
                 <GeneCard
-                    mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
+                    mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}
+                    dataset="pqtl"/>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot size={[1000,400]} 
                     d3Data={this.state.resultsData.d3Data}

@@ -56,6 +56,11 @@ class ScatterPlot extends Component{
 
     }
 
+    shouldComponentUpdate(prevProps){
+        return( 
+            prevProps.filteredData != this.props.filteredData)
+    }
+
     render() {
         return (
             <div>
@@ -119,7 +124,7 @@ const Plot = (props) => {
     otherGene = []
 
     for( let item of props.filteredData ){
-        if(item.NonIndexedData.EnsemblGeneID == props.geneSymbol){
+        if(item.NonIndexedData.GeneSymbol == props.geneSymbol){
             mainGene.push(item)
         } else {
             otherGene.push(item)
