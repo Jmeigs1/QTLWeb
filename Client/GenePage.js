@@ -104,7 +104,7 @@ class GenePage extends Component {
             var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
             var ensGenes = lines.map(x => x._source.NonIndexedData.EnsemblGeneID)
 
-            // genes.push(geneSymbol)
+            genes.push(geneSymbol)
 
             return {
                 geneName: geneSymbol,
