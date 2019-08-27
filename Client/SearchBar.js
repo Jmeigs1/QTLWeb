@@ -75,16 +75,15 @@ class SearchBar extends Component {
                         break
                     }
 
-                    let ensID = h._source.NonIndexedData && h._source.NonIndexedData.EnsemblGeneID  
-                                ? h._source.NonIndexedData.EnsemblGeneID : h._source.EnsID
+                    let GeneSymbol = h._source.NonIndexedData.GeneSymbol
 
-                    let label = h._source[field] == ensID 
-                                ? `${ensID}` : `${h._source[field]} (${ensID})`
+                    let label = h._source[field] == GeneSymbol 
+                                ? `${GeneSymbol}` : `${h._source[field]} (${GeneSymbol})`
 
                     let ret = {
                         label:      label,
-                        value:      ensID,
-                        link:       ensID,
+                        value:      GeneSymbol,
+                        link:       GeneSymbol,
                         highlight:  h._source[field]
                     }
                     return ret
