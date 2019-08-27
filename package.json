@@ -9,7 +9,8 @@
     "stop": "forever stop server.js",
     "client": "webpack-dev-server --mode development --hot",
     "server": "nodemon server.js",
-    "list": "forever list"
+    "list": "forever list",
+    "git": "npm stop && git fetch && git merge origin/master && npm start"
   },
   "author": "Jacob Meigs",
   "license": "ISC",

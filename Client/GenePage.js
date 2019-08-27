@@ -75,8 +75,8 @@ class GenePage extends Component {
 
     loadDataResults(geneSymbol,rangeQueryData) {
 
-        const txStart = Math.min(...rangeQueryData.genes.map(o => parseInt(o["ensGene.txStart"])))
-        const txEnd   = Math.max(...rangeQueryData.genes.map(o => parseInt(o["ensGene.txEnd"])))
+        const txStart = Math.min(...rangeQueryData.genes.map(o => parseInt(o["knownGene.txStart"])))
+        const txEnd   = Math.max(...rangeQueryData.genes.map(o => parseInt(o["knownGene.txEnd"])))
 
         return fetch(
             window.location.origin + '/api/es/range',
@@ -84,7 +84,7 @@ class GenePage extends Component {
                 method: "POST",
                 body: JSON.stringify({
                     rangeData:{
-                        chr: rangeQueryData.genes[0]["ensGene.chrom"],
+                        chr: rangeQueryData.genes[0]["knownGene.chrom"],
                         start: txStart - 100000,
                         end: txEnd + 100000,
                     }

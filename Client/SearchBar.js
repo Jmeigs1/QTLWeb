@@ -35,12 +35,11 @@ const SearchboxItem = styled.div`
 `
 
 const defaultGenes = [
-    {label: 'ENSG00000171163', value: 'ENSG00000171163', link: 'ENSG00000171163'},
-    {label: 'ENSG00000094975', value: 'ENSG00000094975', link: 'ENSG00000094975'},
-    {label: 'ENSG00000135845', value: 'ENSG00000135845', link: 'ENSG00000135845'},
-    {label: 'ENSG00000235492', value: 'ENSG00000235492', link: 'ENSG00000235492'},
-    {label: 'ZNF692', value: 'ENSG00000171163', link: 'ENSG00000171163'},
-    {label: 'PCSK9', value: 'ENSG00000169174', link: 'ENSG00000169174'}
+    {label: 'ENSG00000171163', value: 'ZNF692', link: 'ZNF692'},
+    {label: 'ENSG00000094975', value: 'SUCO', link: 'SUCO'},
+    {label: 'ENSG00000135845', value: 'PIGC', link: 'PIGC'},
+    {label: 'ZNF692', value: 'ZNF692', link: 'ZNF692'},
+    {label: 'PCSK9', value: 'PCSK9', link: 'PCSK9'}
 ]
 
 class SearchBar extends Component {

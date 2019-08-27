@@ -120,18 +120,11 @@ const getSiteRange = (gene,pool) => {
   var result = db
     .query(`
 SELECT \
-  e.name "ensGene.TranscriptID", \
-  e.name2 "ensGene.GeneID", \
-  e.chrom "ensGene.chrom", \
-  e.strand "ensGene.strand", \
-  e.txStart "ensGene.txStart", \
-  e.txEnd "ensGene.txEnd", \
-  e.cdsStart "ensGene.cdsStart", \
-  e.cdsEnd "ensGene.cdsEnd", \
-  e.exonCount "ensGene.exonCount", \
-  e.exonStarts "ensGene.exonStarts", \
-  e.exonEnds "ensGene.exonEnds", \
-  kte.name "knownToEnsembl.KnownGeneID", \
+  kg.name "knownGene.GeneName", \
+  kg.chrom "knownGene.chrom", \
+  kg.txStart "knownGene.txStart", \
+  kg.txEnd "knownGene.txEnd", \
+  kte.value "knownToEnsembl.EnsGeneID", \
   kxr.mRNA "knownXref.mRNAID", \
   kxr.spID "knownXref.UniProtProteinAccessionNumber", \
   kxr.spDisplayID "knownXref.UniProtDisplayID", \
@@ -142,12 +135,12 @@ SELECT \
   kxr.rfamAcc "knownXref.RfamAccessionNumber", \
   kxr.tRnaName "knownXref.NameOfThetRNATrack", \
   kc.transcript "knownCanonical.Transcript" \
-FROM hg19.ensGene AS e \
-LEFT JOIN hg19.knownToEnsembl AS kte ON kte.value = e.name \
-LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kte.name \
-LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kxr.kgID \
+FROM hg19.knownGene AS kg \
+LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name \
+LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
+LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name \
 WHERE 
-  e.name2 = ${mysql.escape(gene)}
+  kxr.genesymbol = ${mysql.escape(gene)}
 `)
 
   return result
