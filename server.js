@@ -29,6 +29,8 @@ const connectionPool = mysql.createPool({
     database : 'hg19'
 })
 
+const esServerIP = 'http://localhost:9200'
+
 class Database {
   constructor( pool ) {
       this.pool = pool
