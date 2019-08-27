@@ -108,7 +108,8 @@ const esQueryRange = (rangeData) => {
                 "NonIndexedData.EnsemblGeneID",
                 "NonIndexedData.FDR",
                 "NonIndexedData.pvalue",
-                "NonIndexedData.Bonferronipvalue"
+                "NonIndexedData.Bonferronipvalue",
+                "BystroData.gnomad.genomes.id"
             ]
         })
 }
