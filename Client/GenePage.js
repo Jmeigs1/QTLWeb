@@ -2,11 +2,12 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { debounce } from 'throttle-debounce'
 
-import ScatterPlot from './ScatterPlot'
-import TranscriptPlot from './TranscriptPlot'
+import DatasetFilter from './DatasetFilter'
+import GeneCard from './GeneCard'
 import GenePageTable from './GenePageTable'
 import GenePageTableFilter from './GenePageTableFilter'
-import GeneCard from './GeneCard'
+import ScatterPlot from './ScatterPlot'
+import TranscriptPlot from './TranscriptPlot'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
@@ -18,6 +19,12 @@ const Page = styled.div`
     padding: 0 30px;
     margin: 0 auto;
     font-size: 16px;
+`
+
+const CardBox = styled.div`
+    margin: 10px;
+    padding: 0 10px;
+    float: left;
 `
 
 class GenePage extends Component {
@@ -44,8 +51,8 @@ class GenePage extends Component {
         this.loadAllData()
     }
 
-    componentDidUpdate() {
-        if(this.props.geneSymbol != this.state.geneSymbol){
+    componentDidUpdate(prevProps) {
+        if(this.props.geneSymbol != this.state.geneSymbol || prevProps.dataset != this.props.dataset){
             document.title = "QTL's - " + this.props.geneSymbol
             this.loadAllData()
         }
@@ -87,6 +94,7 @@ class GenePage extends Component {
                         chr: rangeQueryData.genes[0]["knownGene.chrom"],
                         start: txStart - 100000,
                         end: txEnd + 100000,
+                        dataset: this.props.dataset,
                     }
                 }),
                 headers:{
@@ -253,6 +261,7 @@ class GenePage extends Component {
     render() {
 
         console.log("this.state:",this.state)
+        console.log("this.props:",this.props)
 
         if (!this.state.geneDataLoaded){
             return (
@@ -275,9 +284,13 @@ class GenePage extends Component {
 
         return (
             <Page>
-                <GeneCard
-                    mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}
-                    dataset="pqtl"/>
+                <CardBox>
+                    <GeneCard
+                        mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
+                    <DatasetFilter
+                        dataset={this.props.dataset}
+                        setDatasetFunc={this.props.setDatasetFunc}/>
+                </CardBox>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot size={[1000,400]} 
                     d3Data={this.state.resultsData.d3Data}
@@ -310,6 +323,7 @@ class GenePage extends Component {
                     />
                 <GenePageTable size={[1000,500]} 
                     filteredData={this.state.filteredData}
+                    dataset="eqtloverlap"
                     />
             </Page>
         )

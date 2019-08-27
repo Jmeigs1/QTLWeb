@@ -24,6 +24,15 @@ const StyleLink = styled.a`
 
 export const Link = StyleLink.withComponent(RouteLink)
 
+export const Page = styled.div`
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 30px;
+    margin: 0 auto;
+    font-size: 16px;
+`
+
 let ScrollToTop = ({ children, location: { pathname } }) => {
     useEffect(() => {
       window.scrollTo(0, 0);

@@ -7,7 +7,6 @@ export const StyledTableCell = styled.td`
     color: ${colors[0][2]} !important;
 
     padding: 10px;
-    text-align: center;
 `
 
 export const StyledTableCellHeader = styled.td`
@@ -16,12 +15,12 @@ export const StyledTableCellHeader = styled.td`
     background-color: ${colors[0][2]};
 
     padding: 10px;
-    text-align: center;
 `
 
 export const StyledTable = styled.table`
-    min-width: 650px;
     width:100%;
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
+    background-color: white;
 `
 
 export const StyledTableHead = styled.thead`
@@ -35,9 +34,16 @@ export const StyledTableRoot = styled.div`
     margin-top: 0px;
     overflow-x: auto;
     /* height: 500px; */
+    margin: 0;
+`
 
-    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
-    background-color: white;
+export const StyledTableRootInline = styled.div`
+    overflow-x: auto;
+    width: 50%;
+    display: inline-block;
+    padding: 20px;
+    margin: 0;
+    box-sizing: border-box;
 `
 
 export const StyledTableRow = styled.tr`

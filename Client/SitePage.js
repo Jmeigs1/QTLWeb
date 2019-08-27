@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import { bystroCols, bystroData, sampleSiteResult, sampleSiteResultHeader } from './TestData'
 import * as tableStyle from './UI/Table'
+import GeneCard from './GeneCard'
 
 const Page = styled.div`
     box-sizing: border-box;
@@ -16,6 +16,7 @@ const Page = styled.div`
 const CardBox = styled.div`
     margin: 10px;
     padding: 0 10px;
+    float: left;
 `
 
 const popColumns = [
@@ -42,18 +43,18 @@ const siteAnnoColumns = [
     "refSeq.strand"
 ]
 
-
 const TableFunc = (props) => {
 
-    let [headers, rows, colsMapFunc] = [props.headers, props.rows, props.colsMapFunc]
+    let [label, headers, rows, colsMapFunc] = [props.label, props.headers, props.rows, props.colsMapFunc]
 
     return (
-        <tableStyle.StyledTableRoot style = {{width:'700px'}}>
+        <tableStyle.StyledTableRootInline style={props.style ? props.style : {}}>
+            <h3>{label}</h3>
             <tableStyle.StyledTable>
                 <tableStyle.StyledTableHead>
                     <tr>
-                        {headers.map((o,i) => 
-                            (<tableStyle.StyledTableCellHeader key ={i}>
+                        {headers.map((o, i) =>
+                            (<tableStyle.StyledTableCellHeader key={i}>
                                 {o}
                             </tableStyle.StyledTableCellHeader>))
                         }
@@ -63,55 +64,109 @@ const TableFunc = (props) => {
                     {rows.map(colsMapFunc)}
                 </tbody>
             </tableStyle.StyledTable>
-        </tableStyle.StyledTableRoot>
+        </tableStyle.StyledTableRootInline>
     )
 }
 
 class SitePage extends Component {
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            dataLoaded: false,
+            varientData: {},
+            siteRangeData: {},
+        }
+    }
+
+    componentDidMount() {
+        this.loadData()
+    }
+
+    componentDidUpdate() {
+
+    }
+
+    loadData() {
+        this.getSiteRange().then((siteRangeData) => {
+            this.getVarientData().then(
+                data => {
+                    this.setState({
+                        siteRangeData: siteRangeData.genes,
+                        varientData: data._source,
+                        dataLoaded: true
+                    })
+                }
+            )
+        }
+        )
+    }
+
+    getSiteRange() {
+        return fetch(
+            window.location.origin + '/api/gene/' + this.props.geneSymbol
+        ).then(response => response.json())
+    }
+
+    getVarientData() {
+        return fetch(
+            window.location.origin +
+            `/api/es/varient/${this.props.geneSymbol}` +
+            `/site/${this.props.site}/chr/${this.props.chr}/dataset/${this.props.dataset}`
+        ).then(resp => {
+            // console.log(resp)
+            return resp.json()
+        })
+    }
+
     render() {
 
-        let bystroObj = {}
-        let i = 0
-        for(let o of bystroCols){
-            bystroObj[o] = bystroData[i]
-            i++
+        console.log(this.state)
+        if (!this.state.dataLoaded) {
+            return (
+                <Page>
+                </Page>
+            )
         }
 
-        console.log("bystroObj: ", bystroObj)
-        console.log("N_samples: ", bystroObj.N_samples)
+        let bystroObj = this.state.varientData.BystroData
 
         return (
             <Page>
-                <h2>{this.props.geneSymbol}</h2>
-                <h3>{this.props.siteValue}</h3>
-
-                <h3>Result Data</h3>
+                <CardBox>
+                    <GeneCard
+                        mainGeneTranscripts={this.state.siteRangeData}
+                    />
+                </CardBox>
+                <br style={{clear:"both"}}/>
                 <TableFunc
-                    headers = {[
+                    label="Site Annotation Data"
+                    headers={[
                         'Label',
                         'Data',
                     ]}
-                    colsMapFunc = {(data, i) => (
-                        <tableStyle.StyledTableRow key = {i}>
+                    colsMapFunc={(data, i) => (
+                        <tableStyle.StyledTableRow key={i}>
                             <tableStyle.StyledTableCell>
                                 {data}
                             </tableStyle.StyledTableCell>
                             <tableStyle.StyledTableCell>
-                                {sampleSiteResult[i]}
+                                {bystroObj[data]}
                             </tableStyle.StyledTableCell>
                         </tableStyle.StyledTableRow>
                     )}
-                    rows = {sampleSiteResultHeader}
+                    rows={siteAnnoColumns}
                 />
-                <h3> Population Frequencies </h3>
                 <TableFunc
-                    headers = {[
+                    label="Population Frequencies"
+                    headers={[
                         'Population',
                         'Genomes',
                         'Exomes',
                     ]}
-                    colsMapFunc = {(data, i) => (
-                        <tableStyle.StyledTableRow key = {i}>
+                    colsMapFunc={(data, i) => (
+                        <tableStyle.StyledTableRow key={i}>
                             <tableStyle.StyledTableCell>
                                 {data}
                             </tableStyle.StyledTableCell>
@@ -123,26 +178,28 @@ class SitePage extends Component {
                             </tableStyle.StyledTableCell>
                         </tableStyle.StyledTableRow>
                     )}
-                    rows = {popColumns}
+                    rows={popColumns}
                 />
-                <h3>Site Annotation Data</h3>
+                <br />
                 <TableFunc
-                    headers = {[
+                    label="Result Data"
+                    headers={[
                         'Label',
                         'Data',
                     ]}
-                    colsMapFunc = {(data, i) => (
-                        <tableStyle.StyledTableRow key = {i}>
+                    colsMapFunc={(data, i) => (
+                        <tableStyle.StyledTableRow key={i}>
                             <tableStyle.StyledTableCell>
                                 {data}
                             </tableStyle.StyledTableCell>
                             <tableStyle.StyledTableCell>
-                                {bystroObj[data]}
+                                {this.state.varientData.NonIndexedData[data]}
                             </tableStyle.StyledTableCell>
                         </tableStyle.StyledTableRow>
                     )}
-                    rows = {siteAnnoColumns}
+                    rows={Object.keys(this.state.varientData.NonIndexedData)}
                 />
+
             </Page>
         );
     }

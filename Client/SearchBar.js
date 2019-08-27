@@ -114,7 +114,7 @@ class SearchBar extends Component {
         }
 
         return (
-            <div style={{display: 'inline-block',width: '250px', paddingTop: '20px'}}>
+            <div style={this.props.style ? this.props.style : {display: 'inline-block',width: '250px', paddingTop: '20px'}}>
                 <Autocomplete
                     //The following line is important to make autoHighlighting work but breaks the
                     //value argument to most functions related to items as it sets it to the input text

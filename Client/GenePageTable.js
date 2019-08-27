@@ -57,7 +57,11 @@ class GenePageTable extends Component {
                         <StyledTableRow 
                             key={i}>
                             <StyledTableCell key={i + '_Link'}> 
-                                    <Link to={"/gene/" + row.NonIndexedData.GeneSymbol + "/site/" + row.Site}>
+                                    <Link to={
+                                        `/gene/${row.NonIndexedData.GeneSymbol}`+
+                                        `/site/${row.Site}`+
+                                        `/chr/${row.Chr}`+
+                                        `/dataset/${this.props.dataset}`}>
                                         {row.BystroData["gnomad.genomes.id"]}
                                     </Link>
                             </StyledTableCell>

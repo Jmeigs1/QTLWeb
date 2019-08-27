@@ -55,7 +55,7 @@ const esQuery = (searchTerm) => {
           "analyze_wildcard": true,
           "query":    esSanitize(searchTerm) + "*",
           "analyzer": "lowercasespaceanalyzer",
-          "fields": [ "GeneSymbol", "UniprotID", "EnsID", "ProteinName","Coordinate","RsNum" ] 
+          "fields": [ "GeneSymbol", "UniprotID", "EnsID", "ProteinName","Coordinate","RsNum" ]
         }
     },
     "highlight" : {
@@ -64,8 +64,45 @@ const esQuery = (searchTerm) => {
       },
       "number_of_fragments":1,
       "type":"plain"
+    }
   }
+
+  return axios.post(esServerIP + '/searchresults/_search', reqBody)
+}
+
+const esVarientQuery = (geneSymbol,site,chr,dataset) => {
+
+  if(!geneSymbol || !site || !chr || !dataset){
+    let resp = {
+      error: "esVarientQuery() failed.  Missing argument"
+    }
+    return resp
   }
+
+  var reqBody = {
+    "size": 100,
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "term": {
+              "Chr": esSanitize(chr)
+            }
+          },
+          {
+            "term": {
+              "Dataset": esSanitize(dataset)
+            }
+          },
+          {
+            "term": {
+              "Site": esSanitize(site)
+            }
+          }
+        ]
+      }
+    }
+}
 
   return axios.post(esServerIP + '/searchresults/_search', reqBody)
 }
@@ -87,7 +124,7 @@ const esQueryRange = (rangeData) => {
                         {
                           "term": {
                               "Dataset": {
-                                "value": "eqtloverlap"
+                                "value": rangeData.dataset
                               }
                           }
                         },
@@ -105,6 +142,7 @@ const esQueryRange = (rangeData) => {
             "_source": [
                 "Coordinate",
                 "Site",
+                "Chr",
                 "NonIndexedData.GeneSymbol",
                 "NonIndexedData.log10pvalue",
                 "NonIndexedData.EnsemblGeneID",
@@ -142,7 +180,7 @@ FROM hg19.knownGene AS kg \
 LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name \
 LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
 LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name \
-WHERE 
+WHERE
   kxr.genesymbol = ${mysql.escape(gene)}
 `)
 
@@ -200,7 +238,7 @@ const mySqlQuery = (ensGenes,knownGenes,pool) => {
   knownGeneList = knownGeneList.substr(0,knownGeneList.length - 1)
 
   var result = db
-    .query(`    
+    .query(`
   SELECT \
     e.name2 "name", \
     min(e.txStart) "start", \
@@ -247,6 +285,26 @@ app.get('/api/es/:searchTerm', (req, res) => {
   })
 })
 
+app.get('/api/es/varient/:geneSymbol/site/:site/chr/:chr/dataset/:dataset', (req, res) => {
+
+  console.log(req.params.geneSymbol,req.params.site,req.params.chr,req.params.dataset)
+
+  esVarientQuery(
+    req.params.geneSymbol,
+    req.params.site,
+    req.params.chr,
+    req.params.dataset
+  ).then( results => {
+
+    //Didn't index geneSymbol.  Fix later. Search results for now
+    let ret = results.data.hits.hits.filter( o => (o._source.NonIndexedData.GeneSymbol == req.params.geneSymbol))
+
+    res.send(
+      ret[0]
+      )
+  })
+})
+
 app.post('/api/es/range', compression() ,(req, res) => {
   esQueryRange(req.body.rangeData).then( results => {
     res.send(
@@ -269,7 +327,7 @@ app.post('/api/gene/search', (req, res) => {
 
   mySqlQuery(req.body.ensGenes,req.body.knownGenes,connectionPool).then(rows => {
     res.send(
-      { 
+      {
         genes: rows
       }
     )
@@ -281,9 +339,9 @@ app.post('/api/gene/test', (req, res) => {
   mySqlQueryTest(req.body.genes,connectionPool).then(rows => {
 
     console.log(rows)
-    
+
     res.send(
-      { 
+      {
         genes: rows
       }
     )
