@@ -58,13 +58,13 @@ let GeneCard = (props) => {
                 <FlexDiv>
                     <dt>Location: </dt>
                     <dd>
-                        {geneInfo["ensGene.chrom"]}: {geneInfo["ensGene.txStart"]} - {geneInfo["ensGene.txEnd"]}
+                        {geneInfo["knownGene.chrom"]}: {geneInfo["knownGene.txStart"]} - {geneInfo["knownGene.txEnd"]}
                     </dd>
                 </FlexDiv>
                 <FlexDiv>
                 <dt>Size: </dt>
                     <dd>
-                        {0 + geneInfo["ensGene.txEnd"] - geneInfo["ensGene.txStart"]}
+                        {0 + geneInfo["knownGene.txEnd"] - geneInfo["knownGene.txStart"]}
                     </dd>
                 </FlexDiv>
             </dl>
