@@ -238,7 +238,7 @@ class GenePage extends Component {
         },
     ]
 
-    filterResultsFunc = (filterText) => {
+    filterResultsFunc = (filterText,cb) => {
 
         let filteredData = this.state.resultsData.fullData.filter(
             (dataPoint) => 
@@ -264,7 +264,7 @@ class GenePage extends Component {
         this.setState({
             filteredData: filteredData,
             filterValue: filterText
-        })
+        },cb)
     }
 
     render() {

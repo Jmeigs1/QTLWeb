@@ -21,16 +21,16 @@ class App extends Component {
         }
     }
 
-    setDatasetFunc = (newDataset) => {
+    setDatasetFunc = (newDataset,cb) => {
         this.setState({
             dataset: newDataset,
-        })
+        },cb)
     }
 
-    setLoadingFunc = (newLoading) => {
+    setLoadingFunc = (newLoading,cb) => {
         this.setState({
             loading: newLoading,
-        })
+        },cb)
     }
 
     render() {
