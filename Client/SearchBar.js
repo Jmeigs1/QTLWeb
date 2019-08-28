@@ -1,11 +1,9 @@
 import React,{Component} from 'react'
+import { withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 import Autocomplete from 'react-autocomplete'
 import axios from 'axios'
 import { debounce } from 'throttle-debounce'
-
-import {Redirect} from 'react-router-dom'
-import FadeIn from 'react-fade-in';
 
 import Colors from './UI/Colors'
 
@@ -35,11 +33,11 @@ const SearchboxItem = styled.div`
 `
 
 const defaultGenes = [
-    {label: 'ENSG00000171163', value: 'ZNF692', link: 'ZNF692'},
-    {label: 'ENSG00000094975', value: 'SUCO', link: 'SUCO'},
-    {label: 'ENSG00000135845', value: 'PIGC', link: 'PIGC'},
-    {label: 'ZNF692', value: 'ZNF692', link: 'ZNF692'},
-    {label: 'PCSK9', value: 'PCSK9', link: 'PCSK9'}
+    {label: 'ENSG00000171163', value: 'ZNF692', link: '/gene/ZNF692'},
+    {label: 'ENSG00000094975', value: 'SUCO', link: '/gene/SUCO'},
+    {label: 'ENSG00000135845', value: 'PIGC', link: '/gene/PIGC'},
+    {label: 'ZNF692', value: 'ZNF692', link: '/gene/ZNF692'},
+    {label: 'PCSK9', value: 'PCSK9', link: '/gene/PCSK9'}
 ]
 
 class SearchBar extends Component {
@@ -47,7 +45,6 @@ class SearchBar extends Component {
     constructor (props) {
         super(props)
         this.state = {
-            redirect: '',
             suggestions: defaultGenes,
         }
 
@@ -64,7 +61,7 @@ class SearchBar extends Component {
             url: window.location.origin + "/api/es/" + value
         }).then(res => {
 
-            if(res.data && res.data.hits && res.data.hits.hits){
+            if(res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0){
                 const results = res.data.hits.hits.map(h => {
 
                     let field
@@ -82,12 +79,18 @@ class SearchBar extends Component {
                     let ret = {
                         label:      label,
                         value:      GeneSymbol,
-                        link:       GeneSymbol,
+                        link:       '/gene/' + GeneSymbol,
                         highlight:  h._source[field]
                     }
                     return ret
                 })
                 this.setState({ suggestions: results })
+            }
+            else {
+                let ret = [{
+                    label:      "No results found",
+                }]
+                this.setState({ suggestions: ret })
             }
         })
 
@@ -101,18 +104,10 @@ class SearchBar extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.redirect != ''){
-            this.setState({
-                redirect: '',
-            })
-        }
+
     }
 
     render() {
-        if (this.state.redirect != ''){
-            return <Redirect push to={'/gene/' + this.state.redirect} />
-        }
-
         return (
             <div style={this.props.style ? this.props.style : {display: 'inline-block',width: '250px', paddingTop: '20px'}}>
                 <Autocomplete
@@ -140,10 +135,12 @@ class SearchBar extends Component {
                         }
                     }}
                     onSelect={(value,item) => {
-                        this.setState({
-                            redirect: item.link,
-                            value: item.highlight
-                        })
+                        if(item.link){
+                            this.props.history.push(item.link)
+                            this.setState({
+                                value: item.highlight
+                            })
+                        }
                     }}
                     ref={o => this.searchBoxRef = o}
                 />
@@ -152,4 +149,4 @@ class SearchBar extends Component {
     }
 }
 
-export default SearchBar;
+export default withRouter(SearchBar);
