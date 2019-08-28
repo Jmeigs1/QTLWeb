@@ -72,7 +72,7 @@ class GenePage extends Component {
             (range) => this.loadDataResults(this.props.geneSymbol,range)
             .then(
                 (resultsQueryResults) => {
-                    this.loadDataGene(resultsQueryResults.genes, resultsQueryResults.ensGenes)
+                    this.loadDataGene(resultsQueryResults.genes)
                     .then(
                         (stateDI) => {this.loadD3Data(resultsQueryResults,stateDI)}
                     )
@@ -118,7 +118,6 @@ class GenePage extends Component {
             var fullData = lines.map(x => x._source)
             var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
             var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
-            var ensGenes = lines.map(x => x._source.NonIndexedData.EnsemblGeneID)
 
             genes.push(geneSymbol)
 
@@ -128,7 +127,6 @@ class GenePage extends Component {
                 pvals: pvals,
                 mainGeneTranscripts: rangeQueryData.genes,
                 genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
-                ensGenes: ensGenes.filter( (value, index, self) => (self.indexOf(value) === index)),
                 range: {
                     'start':    txStart,
                     'end':      txEnd,
@@ -139,14 +137,13 @@ class GenePage extends Component {
         })
     }
 
-    loadDataGene(genes, ensGenes) {
+    loadDataGene(genes) {
 
         return fetch(
             window.location.origin + '/api/gene/search',
             { 
                 method: "POST",
                 body: JSON.stringify({
-                    ensGenes: ensGenes,
                     knownGenes: genes,
                 }),
                 headers:{
@@ -157,18 +154,11 @@ class GenePage extends Component {
             .then(response => response.json())
             .then( data => {
 
-                //Check for no data
-                if(data.genes.length > 0){
-                    return ({
-                        geneData: data.genes,
-                        geneDataLoaded: true
-                    })
-                }
-                else{
-                    return({
-                        geneDataLoaded: false
-                    })
-                }
+                return ({
+                    geneData: data.genes,
+                    geneDataLoaded: true
+                })
+
             })
     }
 
@@ -185,8 +175,8 @@ class GenePage extends Component {
         let pvals = resultsQueryResults.pvals
 
         //Calculate here because we need the scale across components
-        const d3Min = min(pvals),
-        d3Max = max(pvals),
+        const d3Min = pvals ? min(pvals) : 0,
+        d3Max = pvals ? max(pvals) : 10,
         dataMinSite = resultsQueryResults.range.start - resultsQueryResults.range.padding,
         dataMaxSite = resultsQueryResults.range.end + resultsQueryResults.range.padding
 
@@ -279,18 +269,6 @@ class GenePage extends Component {
             )
         }
 
-        let kgGenes   = []
-        let ensGenes  = []
-
-        for(let o of this.state.geneData){
-            if(o.track === "ENSGene"){
-                ensGenes.push(o)
-            }
-            else if(o.track === "KnownGene"){
-                kgGenes.push(o)
-            }
-        }
-
         return (
             <Page>
                 <CardBox>
@@ -322,7 +300,7 @@ class GenePage extends Component {
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.props.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
-                    geneData={kgGenes}
+                    geneData={this.state.geneData}
                     filterValue={this.state.filterValue}/>
                 <GenePageTableFilter
                     geneSymbol={this.props.geneSymbol}

@@ -203,17 +203,25 @@ const mySqlQueryTest = (genes, pool) => {
   console.log(geneList)
 
   var result = db
-    .query(`SELECT
-    e.name2 "ens_id",
-    kxr.spID "uniprot_id",
-    kxr.genesymbol "genesymbol",
-    kg.name "protein_name",
-    kg.chrom "chr"
-    FROM hg19.knownGene AS kg
-    JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
-    LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name
-    LEFT JOIN hg19.ensGene AS e on e.name = kte.value
-    where e.chrom != "chrX" and e.chrom != "chrY" and kxr.genesymbol = "PCDHGC3"`   )
+    .query(
+`SELECT e.name2                                AS name2
+    "name"                                 AS name,
+    min(e.txStart)                         AS txStart
+    "start"                                AS start,
+    max(e.txEnd) as "end", "ENSGene"          AS "track" 
+FROM hg19.ensGene                      AS e 
+WHERE e.name2 in () 
+GROUP BY e.name2 UNION SELECT kxr.GeneSymbol AS geneSymbol
+    "name"                                 AS name,
+    min(kg.txStart)                        AS txStart
+    "start"                                AS start,
+    max(kg.txEnd) as "end", "KnownGene"       AS "track" 
+FROM hg19.knownGene                    AS kg 
+LEFT JOIN hg19.kgXref                  AS kxr 
+ ON kxr.kgID = kg.name 
+WHERE kxr.GeneSymbol in ('SUCO') 
+GROUP BY kxr.GeneSymbol`
+)
 
   return result
 }
@@ -222,32 +230,19 @@ const mySqlQuery = (ensGenes,knownGenes,pool) => {
 
   db = new Database(pool)
 
-  let ensGeneList   = ""
   let knownGeneList = ""
 
-  for(gene of ensGenes){
-    ensGeneList += `${mysql.escape(gene)},`
+  if(knownGenes.length == 0){
+    knownGeneList   = `''`
+  } else {
+    for(gene of knownGenes){
+      knownGeneList += `${mysql.escape(gene)},`
+    }
+  
+    knownGeneList = knownGeneList.substr(0,knownGeneList.length - 1)
   }
 
-  ensGeneList = ensGeneList.substr(0,ensGeneList.length - 1)
-
-  for(gene of knownGenes){
-    knownGeneList += `${mysql.escape(gene)},`
-  }
-
-  knownGeneList = knownGeneList.substr(0,knownGeneList.length - 1)
-
-  var result = db
-    .query(`
-  SELECT \
-    e.name2 "name", \
-    min(e.txStart) "start", \
-    max(e.txEnd) "end", \
-    "ENSGene" as "track" \
-  FROM hg19.ensGene AS e \
-  WHERE e.name2 in (${ensGeneList}) \
-  GROUP BY e.name2 \
-  UNION \
+  let query = `
   SELECT \
     kxr.GeneSymbol "name", \
     min(kg.txStart) "start", \
@@ -257,7 +252,10 @@ const mySqlQuery = (ensGenes,knownGenes,pool) => {
   LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
   where kxr.GeneSymbol in (${knownGeneList}) \
   GROUP BY kxr.GeneSymbol \
-`)
+`
+
+var result = db
+  .query(query)
 
 return result
 }
