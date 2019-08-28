@@ -7,7 +7,6 @@ import SearchBar from './SearchBar';
 import SitePage from './SitePage'
 import SideDrawer from './Drawer'
 import { ScrollToTop } from './UI/BasicElements'
-import Citations from './UI/BasicElements'
 
 import './Overrides.css';
 
@@ -17,13 +16,20 @@ class App extends Component {
         super(props)
 
         this.state = {
-            dataset: "pqtl"
+            dataset: "pqtl",
+            loading: false
         }
     }
 
     setDatasetFunc = (newDataset) => {
         this.setState({
             dataset: newDataset,
+        })
+    }
+
+    setLoadingFunc = (newLoading) => {
+        this.setState({
+            loading: newLoading,
         })
     }
 
@@ -59,12 +65,17 @@ class App extends Component {
                                         return (
                                             <GenePage geneSymbol={match.params.geneSymbol}
                                                 dataset={this.state.dataset}
-                                                setDatasetFunc={this.setDatasetFunc}/>
+                                                setDatasetFunc={this.setDatasetFunc}
+                                                loading={this.state.loading}
+                                                setLoadingFunc={this.setLoadingFunc}/>
                                         )
                                     }
                                 }
                             />
                         </Switch>
+                    </div>
+                    <div class="loading style-2" style={this.state.loading ? {} : {display: "none"}}>
+                        <div class="loading-wheel"></div>
                     </div>
                 </ScrollToTop>
             </Router>

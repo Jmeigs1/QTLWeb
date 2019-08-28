@@ -1,13 +1,13 @@
-import React from 'react';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import FadeIn from 'react-fade-in';
-import SearchBar from "./SearchBar";
-import {FaBars} from 'react-icons/fa';
+import React from 'react'
+import { withRouter } from 'react-router-dom'
+
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer'
+import Button from '@material-ui/core/Button'
+import List from '@material-ui/core/List'
+import Divider from '@material-ui/core/Divider'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemText from '@material-ui/core/ListItemText'
+import {FaBars} from 'react-icons/fa'
 
 import styled from 'styled-components'
 
@@ -17,7 +17,8 @@ const StyledListItemText = styled(ListItemText)`
     font-size: 16px;
 `
 
-export default function SideDrawer() {
+
+let Drawer = (props) => {
     const [state, setState] = React.useState({
         left: false,
     });
@@ -40,17 +41,18 @@ export default function SideDrawer() {
         linkData('WingoLab', 'http://wingolab.org'),
     ]
 
+    const goToLink = (link) => {
+        props.history.push(link)
+        setState({
+            left: false
+        })
+    }
+
     const sideList = side => (
-        <div
-            role="presentation"
-            onClick={ () => {
-                toggleDrawer(side, false)
-            }}
-            onKeyDown={toggleDrawer(side, false)}
-        >
+        <div>
             <List>
                 {links.map((link, index) => (
-                    <ListItem button key={link.label} onClick={() => (window.location = link.url)}>
+                    <ListItem button key={link.label} onClick={() => goToLink(link.url)}>
                         <StyledListItemText disableTypography primary={link.label}/>
                     </ListItem>
                 ))}
@@ -68,13 +70,15 @@ export default function SideDrawer() {
                 onOpen={toggleDrawer('left', true)}
             >
 
-                <img 
-                    src="https://www.biography.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cg_face%2Cq_auto:good%2Cw_300/MTIwNjA4NjMzOTc0MTk1NzI0/john-smith-9486928-1-402.jpg"
-                    onClick={() => window.location = ('')}
-                    style={{cursor:'pointer'}}
-                />
+                <div
+                    onClick={() => goToLink('/')}
+                    style={{cursor:'pointer',backgroundColor:"grey",height:"300px", width:"300px"}}
+                >
+                </div>
                 {sideList('left')}
             </SwipeableDrawer>
         </div>
     );
 }
+
+export default withRouter(Drawer)

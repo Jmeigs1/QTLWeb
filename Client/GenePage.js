@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component,PureComponent } from 'react'
 import styled from 'styled-components'
 import { debounce } from 'throttle-debounce'
 
@@ -34,10 +34,9 @@ class GenePage extends Component {
 
         this.state = {
             geneData: [],
-            geneSymbol: this.props.geneSymbol,
             resultsData: {},
             filteredData: {},
-            filterValue: ""
+            filterValue: "",
           }
 
         this.filterResultsFuncDB = debounce(
@@ -46,19 +45,28 @@ class GenePage extends Component {
         )
     }
 
+    shouldComponentUpdate(prevProps){
+        //this change will always happen by itself
+        return prevProps.loading == this.props.loading 
+    }
+
     componentDidMount() {
         document.title = "QTL's - " + this.props.geneSymbol
         this.loadAllData()
     }
 
     componentDidUpdate(prevProps) {
-        if(this.props.geneSymbol != this.state.geneSymbol || prevProps.dataset != this.props.dataset){
+        if(this.props.geneSymbol != prevProps.geneSymbol || prevProps.dataset != this.props.dataset){
             document.title = "QTL's - " + this.props.geneSymbol
             this.loadAllData()
         }
     }
 
     loadAllData(){
+        if(!this.props.loading){
+            this.props.setLoadingFunc(true)
+        }
+
         this.getSiteRange()
         .then( 
             (range) => this.loadDataResults(this.props.geneSymbol,range)
@@ -213,8 +221,9 @@ class GenePage extends Component {
                 },
                 filteredData: resultsQueryResults.fullData,
                 geneSymbol: this.props.geneSymbol,
-                filterValue: ""
-            }
+                filterValue: "",
+            },
+            () => {this.props.setLoadingFunc(false)}
         )
     }
 
@@ -295,7 +304,7 @@ class GenePage extends Component {
                 <ScatterPlot size={[1000,400]} 
                     d3Data={this.state.resultsData.d3Data}
                     range={this.state.resultsData.range}
-                    geneSymbol={this.state.geneSymbol}
+                    geneSymbol={this.props.geneSymbol}
                     dataLoaded={this.state.geneDataLoaded}
                     filteredData={this.state.filteredData} />
                 <p>
@@ -304,19 +313,19 @@ class GenePage extends Component {
                 {/* <TranscriptPlot size={[1000,10]} 
                     header="Ensembl Track"
                     d3Data={this.state.resultsData.d3Data}
-                    geneSymbol={this.state.geneSymbol}
+                    geneSymbol={this.props.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
                     geneData={ensGenes}
                     filterValue={this.state.filterValue}/> */}
                 <TranscriptPlot size={[1000,10]} 
                     header="KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}
-                    geneSymbol={this.state.geneSymbol}
+                    geneSymbol={this.props.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
                     geneData={kgGenes}
                     filterValue={this.state.filterValue}/>
                 <GenePageTableFilter
-                    geneSymbol={this.state.geneSymbol}
+                    geneSymbol={this.props.geneSymbol}
                     filterResultsFunc={this.filterResultsFuncDB}
                     filteredData={this.state.filteredData}
                     filterValue={this.state.filterValue}
