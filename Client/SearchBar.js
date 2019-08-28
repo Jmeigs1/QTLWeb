@@ -23,6 +23,7 @@ const Searchbox = styled.input`
     outline: currentcolor none medium;
     background-image: none;
     text-align: center;
+    height:36px;
 `
 
 const SearchboxItem = styled.div`
@@ -125,7 +126,7 @@ class SearchBar extends Component {
                         </SearchboxItem>
                     }
                     wrapperStyle={{ position: 'relative',width:"100%" }}
-                    menuStyle={{ position: 'absolute', top: '35px', left: 0,backgroundColor:"white" }}
+                    menuStyle={{ position: 'absolute', top: '36px', left: 0,backgroundColor:"white" }}
                     value={this.state.value}
                     onChange={e => {
                         let trimVal = e.target.value.trim()
@@ -142,7 +143,6 @@ class SearchBar extends Component {
                             })
                         }
                     }}
-                    ref={o => this.searchBoxRef = o}
                 />
             </div>
         )
