@@ -310,7 +310,7 @@ class GenePage extends Component {
                     />
                 <GenePageTable size={[1000,500]} 
                     filteredData={this.state.filteredData}
-                    dataset="eqtloverlap"
+                    dataset={this.props.dataset}
                     />
             </Page>
         )
