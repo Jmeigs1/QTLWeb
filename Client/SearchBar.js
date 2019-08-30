@@ -6,6 +6,7 @@ import axios from 'axios'
 import { debounce } from 'throttle-debounce'
 
 import Colors from './UI/Colors'
+import {DatasetDisplayName} from './UI/BasicElements'
 
 const Searchbox = styled.input`
     box-sizing: border-box;
@@ -68,19 +69,27 @@ class SearchBar extends Component {
                     let field
 
                     for(var prop in h.highlight){
-                        field = prop
-                        break
+                        if(prop != "Dataset"){
+                            field = prop
+                            break
+                        }
                     }
 
-                    let GeneSymbol = h._source.NonIndexedData.GeneSymbol
+                    let geneSymbol = h._source.NonIndexedData.GeneSymbol
 
-                    let label = h._source[field] == GeneSymbol 
-                                ? `${GeneSymbol}` : `${h._source[field]} (${GeneSymbol})`
+                    let geneSymbolLabel = 
+                        h._source[field] == geneSymbol 
+                        ? `${geneSymbol}` 
+                        : `${h._source[field]} (${geneSymbol})`
+
+                    let datasetLabel = h._source.Dataset ? `(${DatasetDisplayName[h._source.Dataset].displayName})` : ``
+
+                    let label = `${geneSymbolLabel} ${datasetLabel}`
 
                     let ret = {
                         label:      label,
-                        value:      GeneSymbol,
-                        link:       '/gene/' + GeneSymbol,
+                        value:      geneSymbol,
+                        link:       '/gene/' + geneSymbol,
                         highlight:  h._source[field]
                     }
                     return ret

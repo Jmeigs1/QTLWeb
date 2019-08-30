@@ -49,21 +49,52 @@ class Database {
 const esQuery = (searchTerm) => {
 
   var reqBody = {
-    "size":10,
+    "size": 10,
     "query": {
-      "query_string" : {
-          "analyze_wildcard": true,
-          "query":    esSanitize(searchTerm) + "*",
-          "analyzer": "lowercasespaceanalyzer",
-          "fields": [ "GeneSymbol", "UniprotID", "EnsID", "ProteinName","Coordinate","RsNum" ]
-        }
+      "bool": {
+        "must": [
+          {
+            "query_string": {
+              "analyze_wildcard": true,
+              "query": esSanitize(searchTerm) + "*",
+              "analyzer": "lowercasespaceanalyzer",
+              "fields": ["GeneSymbol", "UniprotID", "EnsID", "ProteinName", "Coordinate", "RsNum"]
+            }
+          },
+          {
+            "bool": {
+              "should": [
+                {
+                  "term": {
+                    "Dataset": "pqtl"
+                  }
+                },
+                {
+                  "term": {
+                    "Dataset": "pqtloverlap"
+                  }
+                },
+                {
+                  "bool": {
+                    "must_not": {
+                        "exists": {
+                            "field": "Dataset"
+                        }
+                    }
+                }
+                }
+              ]
+            }
+          }
+        ]
+      }
     },
-    "highlight" : {
-      "fields" : {
-          "*" : {}
+    "highlight": {
+      "fields": {
+        "*": {}
       },
-      "number_of_fragments":1,
-      "type":"plain"
+      "number_of_fragments": 1,
+      "type": "plain"
     }
   }
 
