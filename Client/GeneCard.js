@@ -27,16 +27,7 @@ let GeneCard = (props) => {
     const xRefIndex = props.mainGeneTranscripts.map(v => v["knownCanonical.Transcript"] !== null).indexOf(true)
     const ensIndex = props.mainGeneTranscripts.map(v => v["ensGene.GeneID"] !== null).indexOf(true)
 
-    if(xRefIndex === -1){
-        return (
-            <div>
-                <h2>{props.mainGeneTranscripts[0]["ensGene.GeneID"]}</h2>
-                <h3>Gene could not be cross track joined between ENS and KG</h3>
-            </div>
-        )
-    }
-
-    const geneInfo  = props.mainGeneTranscripts[xRefIndex]
+    const geneInfo  = props.mainGeneTranscripts[xRefIndex > -1 ? xRefIndex : 0]
     const ensInfo   = ensIndex > -1 ? props.mainGeneTranscripts[ensIndex]["ensGene.GeneID"] : ""
 
     return (

@@ -160,28 +160,29 @@ const getSiteRange = (gene,pool) => {
 
   var result = db
     .query(`
-SELECT \
-  kg.name "knownGene.GeneName", \
-  kg.chrom "knownGene.chrom", \
-  kg.txStart "knownGene.txStart", \
-  kg.txEnd "knownGene.txEnd", \
-  kte.value "knownToEnsembl.EnsGeneID", \
-  kxr.mRNA "knownXref.mRNAID", \
-  kxr.spID "knownXref.UniProtProteinAccessionNumber", \
-  kxr.spDisplayID "knownXref.UniProtDisplayID", \
-  kxr.genesymbol "knownXref.GeneSymbol", \
-  kxr.refseq "knownXref.RefSeqID", \
-  kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
-  kxr.description "knownXref.Description", \
-  kxr.rfamAcc "knownXref.RfamAccessionNumber", \
-  kxr.tRnaName "knownXref.NameOfThetRNATrack", \
-  kc.transcript "knownCanonical.Transcript" \
-FROM hg19.knownGene AS kg \
-LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name \
-LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
-LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name \
+SELECT
+  kg.name "knownGene.GeneName",
+  kg.chrom "knownGene.chrom",
+  kg.txStart "knownGene.txStart",
+  kg.txEnd "knownGene.txEnd",
+  kte.value "knownToEnsembl.EnsGeneID",
+  kxr.mRNA "knownXref.mRNAID",
+  kxr.spID "knownXref.UniProtProteinAccessionNumber",
+  kxr.spDisplayID "knownXref.UniProtDisplayID",
+  kxr.genesymbol "knownXref.GeneSymbol",
+  kxr.refseq "knownXref.RefSeqID",
+  kxr.protAcc "knownXref.NCBIProteinAccessionNumber",
+  kxr.description "knownXref.Description",
+  kxr.rfamAcc "knownXref.RfamAccessionNumber",
+  kxr.tRnaName "knownXref.NameOfThetRNATrack",
+  kc.transcript "knownCanonical.Transcript"
+FROM hg19.knownGene AS kg
+LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name
+LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
+LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name
 WHERE
   kxr.genesymbol = ${mysql.escape(gene)}
+  and kg.chrom not like '%#_%' ESCAPE '#'
 `)
 
   return result
@@ -200,28 +201,33 @@ const mySqlQueryTest = (genes, pool) => {
 
   geneList = geneList.substr(0,geneList.length - 1)
 
-  console.log(geneList)
+  let query = 
+`SELECT \
+kg.name "knownGene.GeneName", \
+kg.chrom "knownGene.chrom", \
+kg.txStart "knownGene.txStart", \
+kg.txEnd "knownGene.txEnd", \
+kte.value "knownToEnsembl.EnsGeneID", \
+kxr.mRNA "knownXref.mRNAID", \
+kxr.spID "knownXref.UniProtProteinAccessionNumber", \
+kxr.spDisplayID "knownXref.UniProtDisplayID", \
+kxr.genesymbol "knownXref.GeneSymbol", \
+kxr.refseq "knownXref.RefSeqID", \
+kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
+kxr.description "knownXref.Description", \
+kxr.rfamAcc "knownXref.RfamAccessionNumber", \
+kxr.tRnaName "knownXref.NameOfThetRNATrack", \
+kc.transcript "knownCanonical.Transcript" \
+FROM hg19.knownGene AS kg \
+LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name \
+LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
+LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name \
+WHERE
+kxr.genesymbol = "HLA-B" and kg.chrom not like '%#_%' ESCAPE '#'`
+  
 
   var result = db
-    .query(
-`SELECT e.name2                                AS name2
-    "name"                                 AS name,
-    min(e.txStart)                         AS txStart
-    "start"                                AS start,
-    max(e.txEnd) as "end", "ENSGene"          AS "track" 
-FROM hg19.ensGene                      AS e 
-WHERE e.name2 in () 
-GROUP BY e.name2 UNION SELECT kxr.GeneSymbol AS geneSymbol
-    "name"                                 AS name,
-    min(kg.txStart)                        AS txStart
-    "start"                                AS start,
-    max(kg.txEnd) as "end", "KnownGene"       AS "track" 
-FROM hg19.knownGene                    AS kg 
-LEFT JOIN hg19.kgXref                  AS kxr 
- ON kxr.kgID = kg.name 
-WHERE kxr.GeneSymbol in ('SUCO') 
-GROUP BY kxr.GeneSymbol`
-)
+    .query(query)
 
   return result
 }
@@ -251,6 +257,7 @@ const mySqlQuery = (ensGenes,knownGenes,pool) => {
   FROM hg19.knownGene AS kg \
   LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
   where kxr.GeneSymbol in (${knownGeneList}) \
+  and kg.chrom not like '%#_%' ESCAPE '#' \
   GROUP BY kxr.GeneSymbol \
 `
 
@@ -263,6 +270,7 @@ return result
 app.get('*.js', function (req, res, next) {
   req.url = req.url + '.gz'
   res.set('Content-Encoding', 'gzip')
+  res.set('Content-Type', 'text/javascript')
   next()
 })
 
@@ -336,7 +344,7 @@ app.post('/api/gene/test', (req, res) => {
 
   mySqlQueryTest(req.body.genes,connectionPool).then(rows => {
 
-    console.log(rows)
+    console.log(rows.length)
 
     res.send(
       {
