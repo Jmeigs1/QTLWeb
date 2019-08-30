@@ -59,7 +59,7 @@ export default () => (
         <h3>Examples</h3>
         <p>
             <p>Gene : <Link to='/gene/TAB1'>TAB1</Link></p>
-            <p>SNP location (HSPB11) : <Link to='/gene/HSPB11'>chr1:7587349</Link></p>
+            <p>SNP location (HSPB11) : <Link to='/gene/HSPB11'>chr1:54289020</Link></p>
             <p>UniProt protein ID : <Link to='/gene/ARHGAP22'>B4DED8</Link></p>
             <p>RefSNP # (SHB) : <Link to='/gene/SHB'>rs7020901</Link></p>
 
