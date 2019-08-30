@@ -10,8 +10,8 @@
     "client": "webpack-dev-server --mode development --hot",
     "server": "nodemon server.js",
     "list": "forever list",
-    "git": "npm stop && git fetch && git merge origin/master && npm start",
-    "git-reset": "npm stop && git fetch && git reset origin/master --hard && npm start"
+    "git": "npm stop; git fetch && git merge origin/master && npm start",
+    "git-reset": "npm stop; git fetch && git reset origin/master --hard && npm start"
   },
   "author": "Jacob Meigs",
   "license": "ISC",
