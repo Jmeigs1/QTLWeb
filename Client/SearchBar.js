@@ -47,7 +47,7 @@ class SearchBar extends Component {
     constructor (props) {
         super(props)
         this.state = {
-            suggestions: defaultGenes,
+            suggestions: [],
         }
 
         this.getSuggestionsDebounce = debounce(
@@ -57,6 +57,16 @@ class SearchBar extends Component {
     }
 
     getSuggestions = value => {
+
+        if(value == ''){
+            
+            let ret = [{
+                label:      "No results found",
+            }]
+            this.setState({ suggestions: ret })
+
+            return
+        }
 
         axios({
             method: "get",
@@ -103,8 +113,6 @@ class SearchBar extends Component {
                 this.setState({ suggestions: ret })
             }
         })
-
-        console.log("value:", value)
     }
 
     renderInput = props => {
@@ -140,9 +148,7 @@ class SearchBar extends Component {
                     onChange={e => {
                         let trimVal = e.target.value.trim()
                         this.setState({ value: trimVal })
-                        if(trimVal){
-                            this.getSuggestionsDebounce(trimVal)
-                        }
+                        this.getSuggestionsDebounce(trimVal)
                     }}
                     onSelect={(value,item) => {
                         if(item.link){
