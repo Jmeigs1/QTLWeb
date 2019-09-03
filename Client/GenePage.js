@@ -10,6 +10,7 @@ import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 
 import {Page} from './UI/BasicElements'
+import {Datasets} from './UI/Datasets'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
@@ -99,7 +100,7 @@ class GenePage extends Component {
                         chr: rangeQueryData.genes[0]["knownGene.chrom"],
                         start: txStart - 100000,
                         end: txEnd + 100000,
-                        dataset: this.props.dataset,
+                        dataset: Datasets[this.props.dataset].datasets,
                     }
                 }),
                 headers:{

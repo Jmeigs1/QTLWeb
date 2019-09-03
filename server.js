@@ -140,49 +140,57 @@ const esVarientQuery = (geneSymbol,site,chr,dataset) => {
 
 const esQueryRange = (rangeData) => {
 
+  let datasetTerms = []
+
+  for(let i = 0; i < rangeData.dataset.length; i++){
+    datasetTerms.push({
+      "term": {
+          "Dataset": {
+            "value": rangeData.dataset[i]
+          }
+      }
+    })
+  }
+
+  let reqObj = {
+    "size": 10000,
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "Chr": rangeData.chr
+                    }
+                },
+                {
+                    "range": {
+                        "Site": {
+                            "gte": rangeData.start,
+                            "lt": rangeData.end
+                        }
+                    }
+                },
+                {
+                  "bool": {
+                    "should": datasetTerms
+                  }
+                }
+            ]
+        }
+    },
+    "_source": [
+      "Coordinate",
+      "Site",
+      "Chr",
+      "Dataset",
+      "NonIndexedData.*",
+      "BystroData.gnomad.genomes.id"
+    ]
+  }
+
   return axios.post(
           esServerIP + '/searchresults/_search',
-          {
-            "size": 10000,
-            "query": {
-                "bool": {
-                    "must": [
-                        {
-                            "term": {
-                                "Chr": rangeData.chr
-                            }
-                        },
-                        {
-                          "term": {
-                              "Dataset": {
-                                "value": rangeData.dataset
-                              }
-                          }
-                        },
-                        {
-                            "range": {
-                                "Site": {
-                                    "gte": rangeData.start,
-                                    "lt": rangeData.end
-                                }
-                            }
-                        }
-                    ]
-                }
-            },
-            "_source": [
-                "Coordinate",
-                "Site",
-                "Chr",
-                "NonIndexedData.GeneSymbol",
-                "NonIndexedData.log10pvalue",
-                "NonIndexedData.EnsemblGeneID",
-                "NonIndexedData.FDR",
-                "NonIndexedData.pvalue",
-                "NonIndexedData.Bonferronipvalue",
-                "BystroData.gnomad.genomes.id"
-            ]
-        })
+          reqObj)
 }
 
 const getSiteRange = (gene,pool) => {

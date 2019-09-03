@@ -1,11 +1,12 @@
 import React from 'react'
 import { withRouter } from "react-router-dom"
 
-
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
+
+import { Datasets } from './UI/Datasets'
 
 const DatasetFilter = (props) => {
 
@@ -31,25 +32,21 @@ const DatasetFilter = (props) => {
                 paddingTop: "5px",
             }} component="fieldset">
                 <RadioGroup aria-label="position" name="position" value={props.dataset} onChange={handleChange} row>
-                    <FormControlLabel
-                        value="pqtl"
-                        control={<Radio color="primary" />}
-                        label={<div style={{ fontSize: "20px" }}>PQTL</div>}
-                        labelPlacement="top"
-                        style={{ fontSize: "20px" }}
-                    />
-                    <FormControlLabel
-                        value="eqtloverlap"
-                        control={<Radio color="primary" />}
-                        label={<div style={{ fontSize: "20px" }}>EQTL-Overlap</div>}
-                        labelPlacement="top"
-                    />
-                    <FormControlLabel
-                        value="pqtloverlap"
-                        control={<Radio color="primary" />}
-                        label={<div style={{ fontSize: "20px" }}>PQTL-Overlap</div>}
-                        labelPlacement="top"
-                    />
+                    {
+                        Object.keys(Datasets).map(
+                            (dataset, i) => (
+                                <FormControlLabel
+                                    value={dataset}
+                                    control={<Radio color="primary" />}
+                                    label={<div style={{ fontSize: "20px" }}>{Datasets[dataset].displayName}</div>}
+                                    labelPlacement="top"
+                                    style={{ fontSize: "20px" }}
+                                    key={i}
+                                />
+
+                            )
+                        )
+                    }
                 </RadioGroup>
             </FormControl>
         </div>
