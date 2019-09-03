@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 
-import HomePage from './HomePage'
+import DownloadPage from './DownloadPage'
+import DatasetPage from './DatasetPage'
 import GenePage from './GenePage'
+import HomePage from './HomePage'
 import SearchBar from './SearchBar';
-import SitePage from './SitePage'
 import SideDrawer from './Drawer'
+import SitePage from './SitePage'
+
 import { ScrollToTop } from './UI/BasicElements'
 
 import './Overrides.css';
@@ -68,6 +71,24 @@ class App extends Component {
                                                 setDatasetFunc={this.setDatasetFunc}
                                                 loading={this.state.loading}
                                                 setLoadingFunc={this.setLoadingFunc}/>
+                                        )
+                                    }
+                                }
+                            />
+                            <Route exact path="/downloads" 
+                                render={
+                                    () => {
+                                        return (
+                                            <DownloadPage/>
+                                        )
+                                    }
+                                }
+                            />
+                            <Route exact path="/datasets" 
+                                render={
+                                    () => {
+                                        return (
+                                            <DatasetPage/>
                                         )
                                     }
                                 }

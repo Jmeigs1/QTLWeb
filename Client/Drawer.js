@@ -31,28 +31,34 @@ let Drawer = (props) => {
         setState({ ...state, [side]: open });
     };
 
-    const linkData = (label, url) => {
-        return {label, url}
+    const linkData = (label, url, isExternal) => {
+        return {label, url, isExternal}
     }
 
     const links = [
-        linkData('Home', '/'),
-        linkData('Downloads', '/Downloads'),
-        linkData('WingoLab', 'http://wingolab.org'),
+        linkData('Home', '/', 0),
+        linkData('Dataset Descriptions', '/Datasets', 0),
+        linkData('Downloads', '/Downloads', 0),
+        linkData('WingoLab', 'http://wingolab.org', 1),
     ]
 
-    const goToLink = (link) => {
-        props.history.push(link)
-        setState({
-            left: false
-        })
+    const goToLink = (link, isExternal) => {
+        if(isExternal){
+            window.location = link
+        }
+        else {
+            props.history.push(link)
+            setState({
+                left: false
+            })
+        }
     }
 
     const sideList = side => (
         <div>
             <List>
                 {links.map((link, index) => (
-                    <ListItem button key={link.label} onClick={() => goToLink(link.url)}>
+                    <ListItem button key={link.label} onClick={() => goToLink(link.url,link.isExternal)}>
                         <StyledListItemText disableTypography primary={link.label}/>
                     </ListItem>
                 ))}

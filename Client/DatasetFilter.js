@@ -29,7 +29,7 @@ const DatasetFilter = (props) => {
                         labelPlacement="top"
                         style={{ fontSize: "20px" }}
                     />
-                    {/* <FormControlLabel
+                    <FormControlLabel
                         value="eqtloverlap"
                         control={<Radio color="primary" />}
                         label={<div style={{ fontSize: "20px" }}>EQTL-Overlap</div>}
@@ -40,7 +40,7 @@ const DatasetFilter = (props) => {
                         control={<Radio color="primary" />}
                         label={<div style={{ fontSize: "20px" }}>PQTL-Overlap</div>}
                         labelPlacement="top"
-                    /> */}
+                    />
                 </RadioGroup>
             </FormControl>
         </div>
