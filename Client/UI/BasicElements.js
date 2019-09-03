@@ -24,18 +24,6 @@ const StyleLink = styled.a`
 
 export const Link = StyleLink.withComponent(RouteLink)
 
-export const DatasetDisplayName = {
-    "pqtl":{
-        displayName: "PQTL"
-    },
-    "pqtlOverlap":{
-        displayName: "PQTL vs EQTL",
-    },
-    "eqtlOverlap":{
-        displayName: "PQTL vs EQTL",
-    },
-}
-
 export const Page = styled.div`
     box-sizing: border-box;
     width: 100%;

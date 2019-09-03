@@ -6,7 +6,7 @@ import axios from 'axios'
 import { debounce } from 'throttle-debounce'
 
 import Colors from './UI/Colors'
-import {DatasetDisplayName} from './UI/BasicElements'
+import {DatasetDisplayName,Datasets} from './UI/Datasets'
 
 const Searchbox = styled.input`
     box-sizing: border-box;
@@ -96,7 +96,7 @@ class SearchBar extends Component {
 
                     let label = `${geneSymbolLabel} ${datasetLabel}`
 
-                    let linkDataset = h._source.Dataset ? h._source.Dataset.toLowerCase() : this.props.dataset
+                    let linkDataset = h._source.Dataset ? DatasetDisplayName[h._source.Dataset].value : this.props.dataset
 
                     let ret = {
                         label:      label,

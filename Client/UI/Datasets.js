@@ -13,3 +13,18 @@ export const Datasets = {
         ]
     }
 }
+
+export const DatasetDisplayName = {
+    "pqtl":{
+        displayName: "PQTL",
+        value: 'pqtl',
+    },
+    "pqtlOverlap":{
+        displayName: "PQTL vs EQTL",
+        value: 'overlap',
+    },
+    "eqtlOverlap":{
+        displayName: "PQTL vs EQTL",
+        value: 'overlap',
+    },
+}
