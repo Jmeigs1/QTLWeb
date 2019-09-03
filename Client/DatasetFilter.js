@@ -1,4 +1,6 @@
-import React,{useState} from 'react'
+import React from 'react'
+import { withRouter } from "react-router-dom"
+
 
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
@@ -8,7 +10,14 @@ import FormControl from '@material-ui/core/FormControl'
 const DatasetFilter = (props) => {
 
     const handleChange = (event) => {
-        props.setDatasetFunc(event.target.value)
+
+        let dataset = event.target.value
+        let geneSymbol = props.geneSymbol
+
+
+        props.history.push({
+            pathname: `/gene/${geneSymbol}/dataset/${dataset}`,
+        })
     }
 
     return (
@@ -47,4 +56,4 @@ const DatasetFilter = (props) => {
     )
 }
 
-export default DatasetFilter
+export default withRouter(DatasetFilter)

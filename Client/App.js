@@ -19,9 +19,14 @@ class App extends Component {
         super(props)
 
         this.state = {
-            dataset: "pqtl",
+            dataset: 'pqtl',
             loading: false
         }
+    }
+
+    shouldComponentUpdate(prevProps, prevState){
+        //this change will always happen by itself
+        return prevState.dataset == this.state.dataset 
     }
 
     setDatasetFunc = (newDataset,cb) => {
@@ -45,9 +50,17 @@ class App extends Component {
                             minWidth: "1200px",
                         }}>
                         <SideDrawer/>
-                        <SearchBar/>
+                        <SearchBar
+                            dataset={this.state.dataset}
+                            />
                         <Switch>
-                            <Route exact path="/" component={HomePage} />
+                            <Route exact path="/" 
+                                render={
+                                    () => 
+                                        (<HomePage
+                                            dataset={this.state.dataset}
+                                        />)
+                                } />
                             <Route exact path="/gene/:geneSymbol/site/:site/chr/:chr/dataset/:dataset" 
                                 render={
                                     ({ match }) => {
@@ -62,12 +75,12 @@ class App extends Component {
                                     }
                                 }
                             />
-                            <Route exact path="/gene/:geneSymbol" 
+                            <Route exact path="/gene/:geneSymbol/dataset/:dataset" 
                                 render={
                                     ({ match }) => {
                                         return (
                                             <GenePage geneSymbol={match.params.geneSymbol}
-                                                dataset={this.state.dataset}
+                                                dataset={match.params.dataset}
                                                 setDatasetFunc={this.setDatasetFunc}
                                                 loading={this.state.loading}
                                                 setLoadingFunc={this.setLoadingFunc}/>
@@ -104,4 +117,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default App

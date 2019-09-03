@@ -96,10 +96,13 @@ class SearchBar extends Component {
 
                     let label = `${geneSymbolLabel} ${datasetLabel}`
 
+                    let linkDataset = h._source.Dataset ? h._source.Dataset.toLowerCase() : this.props.dataset
+
                     let ret = {
                         label:      label,
                         value:      geneSymbol,
-                        link:       '/gene/' + geneSymbol,
+                        link:       `/gene/${geneSymbol}/dataset/${linkDataset}`,
+                        dataset:    h._source.Dataset,
                         highlight:  h._source[field]
                     }
                     return ret
@@ -150,9 +153,13 @@ class SearchBar extends Component {
                         this.setState({ value: trimVal })
                         this.getSuggestionsDebounce(trimVal)
                     }}
-                    onSelect={(value,item) => {
+                    onSelect={(unusedVar_Value,item) => {
                         if(item.link){
-                            this.props.history.push(item.link)
+
+                            this.props.history.push({
+                                pathname: item.link,
+                            })
+
                             this.setState({
                                 value: item.highlight
                             })

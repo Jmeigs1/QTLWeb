@@ -1,4 +1,4 @@
-import React, { Component,PureComponent } from 'react'
+import React, { Component } from 'react'
 import styled from 'styled-components'
 import { debounce } from 'throttle-debounce'
 
@@ -9,17 +9,10 @@ import GenePageTableFilter from './GenePageTableFilter'
 import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 
+import {Page} from './UI/BasicElements'
+
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
-
-const Page = styled.div`
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 1200px;
-    padding: 0 30px;
-    margin: 0 auto;
-    font-size: 16px;
-`
 
 const CardBox = styled.div`
     margin: 10px;
@@ -64,7 +57,11 @@ class GenePage extends Component {
 
     loadAllData(){
         if(!this.props.loading){
-            this.props.setLoadingFunc(true)
+            this.props.setLoadingFunc(true, 
+                () => {
+                    this.props.setDatasetFunc(this.props.dataset)
+                }    
+            )
         }
 
         this.getSiteRange()
@@ -275,6 +272,7 @@ class GenePage extends Component {
                     <GeneCard
                         mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
                     <DatasetFilter
+                        geneSymbol={this.props.geneSymbol}
                         dataset={this.props.dataset}
                         setDatasetFunc={this.props.setDatasetFunc}/>
                 </CardBox>
@@ -317,4 +315,4 @@ class GenePage extends Component {
     }
 }
 
-export default GenePage;
+export default GenePage

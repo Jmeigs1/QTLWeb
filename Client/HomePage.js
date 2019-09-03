@@ -35,40 +35,47 @@ const GraphicDiv = styled.div`
     background-color: grey;
 `
 
-export default () => (
-    <HomePage>
-        <HeadingContainer>
-            <h1>BrainQTL</h1>
-            <h3>
-                A resource for genetic investigations of the human brain
-            </h3>
-        </HeadingContainer>
+export default (props) => 
+    {
+        const dataset = props.dataset ? props.dataset : 'pqtl'
 
-        <GraphicDiv />
+        return (
+            <HomePage>
+                <HeadingContainer>
+                    <h1>BrainQTL</h1>
+                    <h3>
+                        A resource for genetic investigations of the human brain
+                    </h3>
+                </HeadingContainer>
 
-        <br />
+                <GraphicDiv />
 
-        <h3>
-            Search - Visualization and Download
-        </h3>
-        <p>
-            Search for genetic variants associated with quantitative molecular traits by gene name,
-            UniProt protein ID, Ensembl gene ID, reference SNP ID, or SNP location
-        </p>
-        <SearchBar style={{ display: 'inline-block', width: '700px', paddingTop: '20px', margin: "0 auto" }} />
-        <h3>Examples</h3>
-        <p>
-            <p>Gene : <Link to='/gene/TAB1'>TAB1</Link></p>
-            <p>SNP location (HSPB11) : <Link to='/gene/HSPB11'>chr1:54289020</Link></p>
-            <p>UniProt protein ID : <Link to='/gene/ARHGAP22'>B4DED8</Link></p>
-            <p>RefSNP # (SHB) : <Link to='/gene/SHB'>rs7020901</Link></p>
+                <br />
 
-            
-        </p>
-        <h3>Download</h3>
-        <p>
-            To download the results of an analysis, click <Link to='/Downloads'> here </Link>
-        </p>
-        <Citations/>
-    </HomePage>
-)
+                <h3>
+                    Search - Visualization and Download
+                </h3>
+                <p>
+                    Search for genetic variants associated with quantitative molecular traits by gene name,
+                    UniProt protein ID, Ensembl gene ID, reference SNP ID, or SNP location
+                </p>
+                <SearchBar 
+                    dataset={props.dataset}
+                    style={{ display: 'inline-block', width: '700px', paddingTop: '20px', margin: "0 auto" }} />
+                <h3>Examples</h3>
+                <p>
+                    <p>Gene : <Link to={`/gene/TAB1/dataset/${dataset}`}>TAB1</Link></p>
+                    <p>SNP location (HSPB11) : <Link to={`/gene/HSPB11/dataset/${dataset}`}>chr1:54289020</Link></p>
+                    <p>UniProt protein ID (ARHGAP22) : <Link to={`/gene/ARHGAP22/dataset/${dataset}`}>B4DED8</Link></p>
+                    <p>RefSNP # (SHB) : <Link to={`/gene/SHB/dataset/${dataset}`}>rs7020901</Link></p>
+
+                    
+                </p>
+                <h3>Download</h3>
+                <p>
+                    To download the results of an analysis, click <Link to='/Downloads'> here </Link>
+                </p>
+                <Citations/>
+            </HomePage>
+        )
+    }
