@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import styled from 'styled-components'
 
 import Colors from './UI/Colors'
@@ -51,8 +51,8 @@ class TranscriptPlot extends Component {
 
     state = {
         resultsData: {
-            geneName: ''
-        }
+            geneName: '',
+        },
     }
 
     componentDidMount() {
@@ -159,8 +159,8 @@ class TranscriptPlot extends Component {
 
                 )}
                 </div>
-        );
+        )
     }
 }
 
-export default TranscriptPlot;
+export default TranscriptPlot

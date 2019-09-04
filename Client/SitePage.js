@@ -40,7 +40,7 @@ const siteAnnoColumns = [
     "refSeq.altAminoAcid",
     "refSeq.codonPosition",
     "refSeq.codonNumber",
-    "refSeq.strand"
+    "refSeq.strand",
 ]
 
 const TableFunc = (props) => {
@@ -95,7 +95,7 @@ class SitePage extends Component {
                     this.setState({
                         siteRangeData: siteRangeData.genes,
                         varientData: data._source,
-                        dataLoaded: true
+                        dataLoaded: true,
                     })
                 }
             )
@@ -201,9 +201,9 @@ class SitePage extends Component {
                 />
 
             </Page>
-        );
+        )
     }
 }
 
 
-export default SitePage;
+export default SitePage

@@ -5,7 +5,7 @@
     "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parser": "babel-eslint",
     "rules": {
-        "comma-dangle":["error","always"],
+        "comma-dangle":["error","always-multiline"],
         "semi":["error","never"]
     },
     "env":{

@@ -83,4 +83,4 @@ class GenePageTable extends Component {
     }
 }
 
-export default GenePageTable;
+export default GenePageTable

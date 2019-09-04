@@ -823,7 +823,7 @@ export const bystroCols = [
     "gnomad.exomes.af_oth",
     "gnomad.exomes.af_sas",
     "gnomad.exomes.af_male",
-    "gnomad.exomes.af_female"
+    "gnomad.exomes.af_female",
 ]
 
 export const bystroData = [
@@ -935,7 +935,7 @@ export const bystroData = [
     "!",
     "!",
     "!",
-    "!"
+    "!",
 ]
 
 export const sampleSiteResult = [
@@ -963,7 +963,7 @@ export const sampleSiteResult = [
     "Q7L8J4 249059216",
     2.80339389397347,
     0,
-    1.59599868666734
+    1.59599868666734,
 ]
 
 export const sampleSiteResultHeader = [
@@ -991,7 +991,7 @@ export const sampleSiteResultHeader = [
     "uniquename",
     "log10pvalue",
     "log10bonf",
-    "log10fdr"
+    "log10fdr",
 
 ]
 

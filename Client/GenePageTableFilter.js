@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import styled from 'styled-components'
 
 const TableFilter = styled.input`
@@ -11,14 +11,14 @@ class GenePageTableFilter extends Component {
         super(props)
 
         this.state = {
-            filterValue: this.props.filterValue
+            filterValue: this.props.filterValue,
         }
     }
 
     componentDidUpdate(prevProps, prevState){
         if(prevProps.filterValue != this.props.filterValue){
             this.setState({
-                filterValue: this.props.filterValue
+                filterValue: this.props.filterValue,
             })
         }
     }
@@ -29,7 +29,7 @@ class GenePageTableFilter extends Component {
                 <TableFilter 
                     onChange={(e) => {
                         this.setState({
-                            filterValue: e.target.value
+                            filterValue: e.target.value,
                         },(prevState, props) => {
                             this.props.filterResultsFunc(this.state.filterValue)
                         })
@@ -41,7 +41,7 @@ class GenePageTableFilter extends Component {
                     filteredData = {this.props.filteredData}
                 />
             </div>
-        );
+        )
     }
 }
 
@@ -105,8 +105,8 @@ class GenePageTableDownloadButton extends Component {
             > 
                 Download
             </button>
-        );
+        )
     }
 }
 
-export default GenePageTableFilter;
+export default GenePageTableFilter

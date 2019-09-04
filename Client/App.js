@@ -1,17 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 
 import DownloadPage from './DownloadPage'
 import DatasetPage from './DatasetPage'
 import GenePage from './GenePage'
 import HomePage from './HomePage'
-import SearchBar from './SearchBar';
+import SearchBar from './SearchBar'
 import SideDrawer from './Drawer'
 import SitePage from './SitePage'
 
 import { ScrollToTop } from './UI/BasicElements'
 
-import './Overrides.css';
+import './Overrides.css'
 
 class App extends Component {
 
@@ -20,7 +20,7 @@ class App extends Component {
 
         this.state = {
             dataset: 'pqtl',
-            loading: false
+            loading: false,
         }
     }
 
@@ -108,8 +108,8 @@ class App extends Component {
                             />
                         </Switch>
                     </div>
-                    <div class="loading style-2" style={this.state.loading ? {} : {display: "none"}}>
-                        <div class="loading-wheel"></div>
+                    <div className="loading style-2" style={this.state.loading ? {} : {display: "none"}}>
+                        <div className="loading-wheel"></div>
                     </div>
                 </ScrollToTop>
             </Router>

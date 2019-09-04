@@ -14,4 +14,4 @@ class DownloadPage extends Component {
     }
 }
 
-export default DownloadPage;
+export default DownloadPage

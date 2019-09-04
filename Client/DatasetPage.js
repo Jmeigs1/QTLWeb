@@ -14,4 +14,4 @@ class DatasetPage extends Component {
     }
 }
 
-export default DatasetPage;
+export default DatasetPage

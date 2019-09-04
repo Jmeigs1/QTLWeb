@@ -102,11 +102,11 @@ class GenePage extends Component {
                         start: txStart - 100000,
                         end: txEnd + 100000,
                         dataset: Datasets[this.props.dataset].datasets,
-                    }
+                    },
                 }),
                 headers:{
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             }
         )
         .then(response => response.json())
@@ -129,7 +129,7 @@ class GenePage extends Component {
                 range: {
                     'start':    txStart,
                     'end':      txEnd,
-                    'padding':  100000
+                    'padding':  100000,
                 },
             }
 
@@ -146,8 +146,8 @@ class GenePage extends Component {
                     knownGenes: genes,
                 }),
                 headers:{
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             }
         )
             .then(response => response.json())
@@ -155,7 +155,7 @@ class GenePage extends Component {
 
                 return ({
                     geneData: data.genes,
-                    geneDataLoaded: true
+                    geneDataLoaded: true,
                 })
 
             })
@@ -197,7 +197,7 @@ class GenePage extends Component {
             height: d3Height,
             width:  d3Width,
             margin: d3Margin,
-            size: size
+            size: size,
         }
 
         this.setState(
@@ -206,7 +206,7 @@ class GenePage extends Component {
                 resultsData:{
                     ...resultsQueryResults,
                     dataLoaded: true,
-                    d3Data: d3Data
+                    d3Data: d3Data,
                 },
                 filteredData: resultsQueryResults.fullData,
                 geneSymbol: this.props.geneSymbol,
@@ -219,11 +219,11 @@ class GenePage extends Component {
     filterDataFields =  [
         {
             fieldName: "GeneSymbol",
-            getData: (d) => d.NonIndexedData.GeneSymbol
+            getData: (d) => d.NonIndexedData.GeneSymbol,
         },
         {
             fieldName: "EnsID",
-            getData: (d) => d.NonIndexedData.EnsemblGeneID
+            getData: (d) => d.NonIndexedData.EnsemblGeneID,
         },
     ]
 
@@ -252,7 +252,7 @@ class GenePage extends Component {
 
         this.setState({
             filteredData: filteredData,
-            filterValue: filterText
+            filterValue: filterText,
         },cb)
     }
 

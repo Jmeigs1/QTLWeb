@@ -39,7 +39,7 @@ const defaultGenes = [
     {label: 'ENSG00000094975', value: 'SUCO', link: '/gene/SUCO'},
     {label: 'ENSG00000135845', value: 'PIGC', link: '/gene/PIGC'},
     {label: 'ZNF692', value: 'ZNF692', link: '/gene/ZNF692'},
-    {label: 'PCSK9', value: 'PCSK9', link: '/gene/PCSK9'}
+    {label: 'PCSK9', value: 'PCSK9', link: '/gene/PCSK9'},
 ]
 
 class SearchBar extends Component {
@@ -70,7 +70,7 @@ class SearchBar extends Component {
 
         axios({
             method: "get",
-            url: window.location.origin + "/api/es/" + value
+            url: window.location.origin + "/api/es/" + value,
         }).then(res => {
 
             if(res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0){
@@ -103,7 +103,7 @@ class SearchBar extends Component {
                         value:      geneSymbol,
                         link:       `/gene/${geneSymbol}/dataset/${linkDataset}`,
                         dataset:    h._source.Dataset,
-                        highlight:  h._source[field]
+                        highlight:  h._source[field],
                     }
                     return ret
                 })
@@ -161,7 +161,7 @@ class SearchBar extends Component {
                             })
 
                             this.setState({
-                                value: item.highlight
+                                value: item.highlight,
                             })
                         }
                     }}
@@ -171,4 +171,4 @@ class SearchBar extends Component {
     }
 }
 
-export default withRouter(SearchBar);
+export default withRouter(SearchBar)

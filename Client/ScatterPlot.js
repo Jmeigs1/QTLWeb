@@ -17,7 +17,7 @@ class ScatterPlot extends Component{
     }
 
     state = {
-        dataLoaded: false
+        dataLoaded: false,
     }
 
     componentDidMount() {
@@ -175,4 +175,4 @@ const Plot = (props) => {
     </Svg>
 )}
 
-export default ScatterPlot;
+export default ScatterPlot

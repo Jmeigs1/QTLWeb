@@ -21,15 +21,15 @@ const StyledListItemText = styled(ListItemText)`
 let Drawer = (props) => {
     const [state, setState] = React.useState({
         left: false,
-    });
+    })
 
     const toggleDrawer = (side, open) => event => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-            return;
+            return
         }
 
-        setState({ ...state, [side]: open });
-    };
+        setState({ ...state, [side]: open })
+    }
 
     const linkData = (label, url, isExternal) => {
         return {label, url, isExternal}
@@ -49,7 +49,7 @@ let Drawer = (props) => {
         else {
             props.history.push(link)
             setState({
-                left: false
+                left: false,
             })
         }
     }
@@ -65,7 +65,7 @@ let Drawer = (props) => {
             </List>
             <Divider />
         </div>
-    );
+    )
 
     return (
         <div id="test" style={{display:"inline"}}>
@@ -84,7 +84,7 @@ let Drawer = (props) => {
                 {sideList('left')}
             </SwipeableDrawer>
         </div>
-    );
+    )
 }
 
 export default withRouter(Drawer)
