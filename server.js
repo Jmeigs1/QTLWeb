@@ -12,193 +12,194 @@ const axios = require('axios')
 const app = express()
 
 const esSanitize = (query) => {
-  return query
-    .replace(/[\*\+\-=~><\"\?^\${}\(\)\:\!\/[\]\\\s]/g, '\\$&') // replace single character special characters
-    .replace(/\|\|/g, '\\||') // replace ||
-    .replace(/\&\&/g, '\\&&') // replace &&
-    .replace(/AND/g, '\\A\\N\\D') // replace AND
-    .replace(/OR/g, '\\O\\R') // replace OR
-    .replace(/NOT/g, '\\N\\O\\T'); // replace NOT
+    return query
+        .replace(/[\*\+\-=~><\"\?^\${}\(\)\:\!\/[\]\\\s]/g, '\\$&') // replace single character special characters
+        .replace(/\|\|/g, '\\||') // replace ||
+        .replace(/\&\&/g, '\\&&') // replace &&
+        .replace(/AND/g, '\\A\\N\\D') // replace AND
+        .replace(/OR/g, '\\O\\R') // replace OR
+        .replace(/NOT/g, '\\N\\O\\T'); // replace NOT
 }
 
 const connectionPool = mysql.createPool({
-    connectionLimit : 10,
-    host     : 'genome-mysql.soe.ucsc.edu',
-    user     : 'genome',
-    port     : '3306',
-    database : 'hg19'
+    connectionLimit: 10,
+    host: 'genome-mysql.soe.ucsc.edu',
+    user: 'genome',
+    port: '3306',
+    database: 'hg19'
 })
 
-const esServerIP = 'http://localhost:9200'
+// const esServerIP = 'http://localhost:9200'
+const esServerIP = 'http://brainqtl.org:9200'
 
 class Database {
-  constructor( pool ) {
-      this.pool = pool
-  }
-  query( sql, args ) {
-      return new Promise( ( resolve, reject ) => {
-        this.pool.query( sql, args, ( err, rows, fields ) => {
-              if ( err )
-                  return reject( err )
-              resolve( rows )
-          } )
-      } )
-  }
+    constructor(pool) {
+        this.pool = pool
+    }
+    query(sql, args) {
+        return new Promise((resolve, reject) => {
+            this.pool.query(sql, args, (err, rows, fields) => {
+                if (err)
+                    return reject(err)
+                resolve(rows)
+            })
+        })
+    }
 }
 
 const esQuery = (searchTerm) => {
 
-  var reqBody = {
-    "size": 10,
-    "query": {
-      "bool": {
-        "must": [
-          {
-            "query_string": {
-              "analyze_wildcard": true,
-              "query": esSanitize(searchTerm) + "*",
-              "analyzer": "lowercasespaceanalyzer",
-              "fields": ["GeneSymbol", "UniprotID", "EnsID", "ProteinName", "Coordinate", "RsNum"]
-            }
-          },
-          {
+    var reqBody = {
+        "size": 10,
+        "query": {
             "bool": {
-              "should": [
-                {
-                  "term": {
-                    "Dataset": "pqtl"
-                  }
-                },
-                {
-                  "term": {
-                    "Dataset": "pqtloverlap"
-                  }
-                },
-                {
-                  "bool": {
-                    "must_not": {
-                        "exists": {
-                            "field": "Dataset"
+                "must": [
+                    {
+                        "query_string": {
+                            "analyze_wildcard": true,
+                            "query": esSanitize(searchTerm) + "*",
+                            "analyzer": "lowercasespaceanalyzer",
+                            "fields": ["GeneSymbol", "UniprotID", "EnsID", "ProteinName", "Coordinate", "RsNum"]
+                        }
+                    },
+                    {
+                        "bool": {
+                            "should": [
+                                {
+                                    "term": {
+                                        "Dataset": "pqtl"
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "Dataset": "pqtloverlap"
+                                    }
+                                },
+                                {
+                                    "bool": {
+                                        "must_not": {
+                                            "exists": {
+                                                "field": "Dataset"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
-                }
-                }
-              ]
+                ]
             }
-          }
-        ]
-      }
-    },
-    "highlight": {
-      "fields": {
-        "*": {}
-      },
-      "number_of_fragments": 1,
-      "type": "plain"
+        },
+        "highlight": {
+            "fields": {
+                "*": {}
+            },
+            "number_of_fragments": 1,
+            "type": "plain"
+        }
     }
-  }
 
-  return axios.post(esServerIP + '/searchresults/_search', reqBody)
+    return axios.post(esServerIP + '/searchresults/_search', reqBody)
 }
 
-const esVarientQuery = (geneSymbol,site,chr,dataset) => {
+const esVarientQuery = (geneSymbol, site, chr, dataset) => {
 
-  if(!geneSymbol || !site || !chr || !dataset){
-    let resp = {
-      error: "esVarientQuery() failed.  Missing argument"
+    if (!geneSymbol || !site || !chr || !dataset) {
+        let resp = {
+            error: "esVarientQuery() failed.  Missing argument"
+        }
+        return resp
     }
-    return resp
-  }
 
-  var reqBody = {
-    "size": 100,
-    "query": {
-      "bool": {
-        "must": [
-          {
-            "term": {
-              "Chr": esSanitize(chr)
+    var reqBody = {
+        "size": 100,
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "term": {
+                            "Chr": esSanitize(chr)
+                        }
+                    },
+                    {
+                        "term": {
+                            "Dataset": esSanitize(dataset)
+                        }
+                    },
+                    {
+                        "term": {
+                            "Site": esSanitize(site)
+                        }
+                    }
+                ]
             }
-          },
-          {
-            "term": {
-              "Dataset": esSanitize(dataset)
-            }
-          },
-          {
-            "term": {
-              "Site": esSanitize(site)
-            }
-          }
-        ]
-      }
+        }
     }
-}
 
-  return axios.post(esServerIP + '/searchresults/_search', reqBody)
+    return axios.post(esServerIP + '/searchresults/_search', reqBody)
 }
 
 const esQueryRange = (rangeData) => {
 
-  let datasetTerms = []
+    let datasetTerms = []
 
-  for(let i = 0; i < rangeData.dataset.length; i++){
-    datasetTerms.push({
-      "term": {
-          "Dataset": {
-            "value": rangeData.dataset[i]
-          }
-      }
-    })
-  }
+    for (let i = 0; i < rangeData.dataset.length; i++) {
+        datasetTerms.push({
+            "term": {
+                "Dataset": {
+                    "value": rangeData.dataset[i]
+                }
+            }
+        })
+    }
 
-  let reqObj = {
-    "size": 10000,
-    "query": {
-        "bool": {
-            "must": [
-                {
-                    "term": {
-                        "Chr": rangeData.chr
-                    }
-                },
-                {
-                    "range": {
-                        "Site": {
-                            "gte": rangeData.start,
-                            "lt": rangeData.end
+    let reqObj = {
+        "size": 10000,
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "term": {
+                            "Chr": rangeData.chr
+                        }
+                    },
+                    {
+                        "range": {
+                            "Site": {
+                                "gte": rangeData.start,
+                                "lt": rangeData.end
+                            }
+                        }
+                    },
+                    {
+                        "bool": {
+                            "should": datasetTerms
                         }
                     }
-                },
-                {
-                  "bool": {
-                    "should": datasetTerms
-                  }
-                }
-            ]
-        }
-    },
-    "_source": [
-      "Coordinate",
-      "Site",
-      "Chr",
-      "Dataset",
-      "NonIndexedData.*",
-      "BystroData.gnomad.genomes.id"
-    ]
-  }
+                ]
+            }
+        },
+        "_source": [
+            "Coordinate",
+            "Site",
+            "Chr",
+            "Dataset",
+            "NonIndexedData.*",
+            "BystroData.gnomad.genomes.id"
+        ]
+    }
 
-  return axios.post(
-          esServerIP + '/searchresults/_search',
-          reqObj)
+    return axios.post(
+        esServerIP + '/searchresults/_search',
+        reqObj)
 }
 
-const getSiteRange = (gene,pool) => {
+const getSiteRange = (gene, pool) => {
 
-  db = new Database(pool)
+    db = new Database(pool)
 
-  var result = db
-    .query(`
+    var result = db
+        .query(`
 SELECT
   kg.name "knownGene.GeneName",
   kg.chrom "knownGene.chrom",
@@ -224,24 +225,24 @@ WHERE
   and kg.chrom not like '%#_%' ESCAPE '#'
 `)
 
-  return result
+    return result
 
 }
 
 const mySqlQueryTest = (genes, pool) => {
 
-  db = new Database(pool)
+    db = new Database(pool)
 
-  let geneList = ""
+    let geneList = ""
 
-  for(gene of genes){
-    geneList += `${mysql.escape(gene)},`
-  }
+    for (gene of genes) {
+        geneList += `${mysql.escape(gene)},`
+    }
 
-  geneList = geneList.substr(0,geneList.length - 1)
+    geneList = geneList.substr(0, geneList.length - 1)
 
-  let query = 
-`SELECT \
+    let query =
+        `SELECT \
 kg.name "knownGene.GeneName", \
 kg.chrom "knownGene.chrom", \
 kg.txStart "knownGene.txStart", \
@@ -263,31 +264,31 @@ LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
 LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name \
 WHERE
 kxr.genesymbol = "HLA-B" and kg.chrom not like '%#_%' ESCAPE '#'`
-  
 
-  var result = db
-    .query(query)
 
-  return result
+    var result = db
+        .query(query)
+
+    return result
 }
 
-const mySqlQuery = (ensGenes,knownGenes,pool) => {
+const mySqlQuery = (ensGenes, knownGenes, pool) => {
 
-  db = new Database(pool)
+    db = new Database(pool)
 
-  let knownGeneList = ""
+    let knownGeneList = ""
 
-  if(knownGenes.length == 0){
-    knownGeneList   = `''`
-  } else {
-    for(gene of knownGenes){
-      knownGeneList += `${mysql.escape(gene)},`
+    if (knownGenes.length == 0) {
+        knownGeneList = `''`
+    } else {
+        for (gene of knownGenes) {
+            knownGeneList += `${mysql.escape(gene)},`
+        }
+
+        knownGeneList = knownGeneList.substr(0, knownGeneList.length - 1)
     }
-  
-    knownGeneList = knownGeneList.substr(0,knownGeneList.length - 1)
-  }
 
-  let query = `
+    let query = `
   SELECT \
     kxr.GeneSymbol "name", \
     min(kg.txStart) "start", \
@@ -300,17 +301,17 @@ const mySqlQuery = (ensGenes,knownGenes,pool) => {
   GROUP BY kxr.GeneSymbol \
 `
 
-var result = db
-  .query(query)
+    var result = db
+        .query(query)
 
-return result
+    return result
 }
 
 app.get('*.js', function (req, res, next) {
-  req.url = req.url + '.gz'
-  res.set('Content-Encoding', 'gzip')
-  res.set('Content-Type', 'text/javascript')
-  next()
+    req.url = req.url + '.gz'
+    res.set('Content-Encoding', 'gzip')
+    res.set('Content-Type', 'text/javascript')
+    next()
 })
 
 const publicDir = path.resolve(__dirname, 'dist')
@@ -323,78 +324,78 @@ app.options('localhost:3000', cors());
 app.use(bodyParser.json())
 
 app.get('/api/es/:searchTerm', (req, res) => {
-  esQuery(req.params.searchTerm).then( results => {
-    res.send(
-        results.data
-      )
-  })
+    esQuery(req.params.searchTerm).then(results => {
+        res.send(
+            results.data
+        )
+    })
 })
 
 app.get('/api/es/varient/:geneSymbol/site/:site/chr/:chr/dataset/:dataset', (req, res) => {
 
-  console.log(req.params.geneSymbol,req.params.site,req.params.chr,req.params.dataset)
+    console.log(req.params.geneSymbol, req.params.site, req.params.chr, req.params.dataset)
 
-  esVarientQuery(
-    req.params.geneSymbol,
-    req.params.site,
-    req.params.chr,
-    req.params.dataset
-  ).then( results => {
+    esVarientQuery(
+        req.params.geneSymbol,
+        req.params.site,
+        req.params.chr,
+        req.params.dataset
+    ).then(results => {
 
-    //Didn't index geneSymbol.  Fix later. Search results for now
-    let ret = results.data.hits.hits.filter( o => (o._source.NonIndexedData.GeneSymbol == req.params.geneSymbol))
+        //Didn't index geneSymbol.  Fix later. Search results for now
+        let ret = results.data.hits.hits.filter(o => (o._source.NonIndexedData.GeneSymbol == req.params.geneSymbol))
 
-    res.send(
-      ret[0]
-      )
-  })
+        res.send(
+            ret[0]
+        )
+    })
 })
 
-app.post('/api/es/range', compression() ,(req, res) => {
-  esQueryRange(req.body.rangeData).then( results => {
-    res.send(
-        results.data
-      )
-  })
+app.post('/api/es/range', compression(), (req, res) => {
+    esQueryRange(req.body.rangeData).then(results => {
+        res.send(
+            results.data
+        )
+    })
 })
 
 app.get('/api/gene/:geneID', (req, res) => {
-  getSiteRange(req.params.geneID,connectionPool).then( rows => {
-    res.send(
-      {
-        genes: rows
-      }
-    )
-  })
+    getSiteRange(req.params.geneID, connectionPool).then(rows => {
+        res.send(
+            {
+                genes: rows
+            }
+        )
+    })
 })
 
 app.post('/api/gene/search', (req, res) => {
 
-  mySqlQuery(req.body.ensGenes,req.body.knownGenes,connectionPool).then(rows => {
-    res.send(
-      {
-        genes: rows
-      }
-    )
-  })
+    mySqlQuery(req.body.ensGenes, req.body.knownGenes, connectionPool).then(rows => {
+        res.send(
+            {
+                genes: rows
+            }
+        )
+    })
 })
 
 app.post('/api/gene/test', (req, res) => {
 
-  mySqlQueryTest(req.body.genes,connectionPool).then(rows => {
+    mySqlQueryTest(req.body.genes, connectionPool).then(rows => {
 
-    console.log(rows.length)
+        console.log(rows.length)
 
-    res.send(
-      {
-        genes: rows
-      }
-    )
-  })
+        res.send(
+            {
+                genes: rows
+            }
+        )
+    })
 })
 
 app.get('*', (request, response) => {
-  response.sendFile(path.join(publicDir,'index.html'))
+    response.sendFile(path.join(publicDir, 'index.html'))
 })
 
 app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))
