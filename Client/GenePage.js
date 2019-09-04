@@ -6,6 +6,7 @@ import DatasetFilter from './DatasetFilter'
 import GeneCard from './GeneCard'
 import GenePageTable from './GenePageTable'
 import GenePageTableFilter from './GenePageTableFilter'
+import Legend from './Legend'
 import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 
@@ -278,22 +279,25 @@ class GenePage extends Component {
                         setDatasetFunc={this.props.setDatasetFunc}/>
                 </CardBox>
                 {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
-                <ScatterPlot size={[1000,400]} 
-                    d3Data={this.state.resultsData.d3Data}
-                    range={this.state.resultsData.range}
-                    geneSymbol={this.props.geneSymbol}
-                    dataLoaded={this.state.geneDataLoaded}
-                    filteredData={this.state.filteredData} />
+                {Datasets[this.props.dataset].datasets.map(
+                    (dataset, i) => {
+                        return (
+                            <ScatterPlot size={[1000,400]} 
+                            header={Datasets[this.props.dataset].datasetLabels[i]}
+                            d3Data={this.state.resultsData.d3Data}
+                            range={this.state.resultsData.range}
+                            geneSymbol={this.props.geneSymbol}
+                            dataLoaded={this.state.geneDataLoaded}
+                            filteredData={this.state.filteredData.filter(
+                                (o) => (o.Dataset.toLowerCase() == dataset)
+                            )} />
+                        )
+                    }
+                )}
+                <Legend/>
                 <p>
                     Filters
                 </p>
-                {/* <TranscriptPlot size={[1000,10]} 
-                    header="Ensembl Track"
-                    d3Data={this.state.resultsData.d3Data}
-                    geneSymbol={this.props.geneSymbol}
-                    filterResultsFunc={this.filterResultsFunc}
-                    geneData={ensGenes}
-                    filterValue={this.state.filterValue}/> */}
                 <TranscriptPlot size={[1000,10]} 
                     header="KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}

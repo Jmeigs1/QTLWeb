@@ -4,12 +4,19 @@ export const Datasets = {
         datasets: [
             "pqtl"
         ],
+        datasetLabels:[
+            "PQTL",
+        ]
     },
     "overlap":{
         displayName: "PQTL vs EQTL",
         datasets:[
             "pqtloverlap",
             "eqtloverlap",
+        ],
+        datasetLabels:[
+            "PQTL",
+            "EQTL",
         ]
     }
 }
