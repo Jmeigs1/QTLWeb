@@ -9,8 +9,6 @@ import SearchBar from './SearchBar'
 import SideDrawer from './Drawer'
 import SitePage from './SitePage'
 
-import { ScrollToTop } from './UI/BasicElements'
-
 import './Overrides.css'
 
 class App extends Component {
@@ -44,74 +42,73 @@ class App extends Component {
     render() {
         return (
             <Router>
-                <ScrollToTop>
-                    <div className={"appContainer"} style = {{
-                            paddingBottom: '40px',
-                            minWidth: "1200px",
-                        }}>
-                        <SideDrawer/>
-                        <SearchBar
-                            dataset={this.state.dataset}
-                            />
-                        <Switch>
-                            <Route exact path="/" 
-                                render={
-                                    () => 
-                                        (<HomePage
-                                            dataset={this.state.dataset}
-                                        />)
-                                } />
-                            <Route exact path="/gene/:geneSymbol/site/:site/chr/:chr/dataset/:dataset" 
-                                render={
-                                    ({ match }) => {
-                                        return (
-                                            <SitePage 
-                                                geneSymbol={match.params.geneSymbol}
-                                                site={match.params.site}
-                                                chr={match.params.chr}
-                                                dataset={match.params.dataset}
-                                                />
-                                        )
-                                    }
+                <div id="appContainer" className={"appContainer"} style = {{
+                        paddingBottom: '40px',
+                        minWidth: "1200px",
+                    }}>
+                    <SideDrawer/>
+                    <SearchBar
+                        dataset={this.state.dataset}
+                        />
+                    <Switch>
+                        <Route exact path="/" 
+                            render={
+                                () => 
+                                    (<HomePage
+                                        dataset={this.state.dataset}
+                                        setDatasetFunc={this.setDatasetFunc}
+                                    />)
+                            } />
+                        <Route exact path="/gene/:geneSymbol/site/:site/chr/:chr/dataset/:dataset" 
+                            render={
+                                ({ match }) => {
+                                    return (
+                                        <SitePage 
+                                            geneSymbol={match.params.geneSymbol}
+                                            site={match.params.site}
+                                            chr={match.params.chr}
+                                            dataset={match.params.dataset}
+                                            />
+                                    )
                                 }
-                            />
-                            <Route exact path="/gene/:geneSymbol/dataset/:dataset" 
-                                render={
-                                    ({ match }) => {
-                                        return (
-                                            <GenePage geneSymbol={match.params.geneSymbol}
-                                                dataset={match.params.dataset}
-                                                setDatasetFunc={this.setDatasetFunc}
-                                                loading={this.state.loading}
-                                                setLoadingFunc={this.setLoadingFunc}/>
-                                        )
-                                    }
+                            }
+                        />
+                        <Route exact path="/gene/:geneSymbol/dataset/:dataset" 
+                            render={
+                                ({ match }) => {
+                                    return (
+                                        <GenePage geneSymbol={match.params.geneSymbol}
+                                            dataset={match.params.dataset}
+                                            setDatasetFunc={this.setDatasetFunc}
+                                            loading={this.state.loading}
+                                            setLoadingFunc={this.setLoadingFunc}/>
+                                    )
                                 }
-                            />
-                            <Route exact path="/downloads" 
-                                render={
-                                    () => {
-                                        return (
-                                            <DownloadPage/>
-                                        )
-                                    }
+                            }
+                        />
+                        <Route exact path="/downloads" 
+                            render={
+                                () => {
+                                    return (
+                                        <DownloadPage/>
+                                    )
                                 }
-                            />
-                            <Route exact path="/datasets" 
-                                render={
-                                    () => {
-                                        return (
-                                            <DatasetPage/>
-                                        )
-                                    }
+                            }
+                        />
+                        <Route exact path="/datasets" 
+                            render={
+                                () => {
+                                    return (
+                                        <DatasetPage/>
+                                    )
                                 }
-                            />
-                        </Switch>
-                    </div>
-                    <div className="loading style-2" style={this.state.loading ? {} : {display: "none"}}>
-                        <div className="loading-wheel"></div>
-                    </div>
-                </ScrollToTop>
+                            }
+                        />
+                    </Switch>
+                </div>
+                <div className="loading style-2" style={this.state.loading ? {} : {display: "none"}}>
+                    <div className="loading-wheel"></div>
+                </div>
             </Router>
           )
     }

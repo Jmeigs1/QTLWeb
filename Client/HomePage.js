@@ -3,7 +3,13 @@ import styled from 'styled-components'
 
 import Colors from './UI/Colors'
 import { Page, Link } from './UI/BasicElements'
+import InlineDiv from './UI/InlineDiv'
 import Citations from './UI/Citations'
+
+import Radio from '@material-ui/core/Radio'
+import RadioGroup from '@material-ui/core/RadioGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import FormControl from '@material-ui/core/FormControl'
 
 import SearchBar from './SearchBar'
 
@@ -61,7 +67,65 @@ export default (props) =>
                 </p>
                 <SearchBar 
                     dataset={props.dataset}
-                    style={{ display: 'inline-block', width: '700px', paddingTop: '20px', margin: "0 auto" }} />
+                    style={{ display: 'inline-block', width: '700px', padding: '20px 0', margin: "0 auto" }} />
+
+                <div style={{
+                    boxSizing:"border-box",
+                    width:"100%",
+                    padding:"0 50px",
+                    margin:"0",
+                    }}>
+                    
+
+                    <h3>
+                        Datasets
+                    </h3>
+
+                    <InlineDiv style={{
+                        
+                    }}>
+                        <div style={{
+                            boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
+                            0px 1px 1px 0px rgba(0,0,0,0.14), \
+                            0px 2px 1px -1px rgba(0,0,0,0.12)",
+                            background: "#FFF",
+                            padding:"10px",
+                        }}>
+                            <h3 style={{}}>
+                                PQTL
+                            </h3>
+                            <p>
+                                View SNVs associated with protein abundance
+                            </p>
+                            <br/>
+                            <p>
+                                <Link to="/datasets">
+                                    Detailed Dataset Decription
+                                </Link>
+                            </p>
+                        </div>
+                        <div style={{
+                            boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
+                            0px 1px 1px 0px rgba(0,0,0,0.14), \
+                            0px 2px 1px -1px rgba(0,0,0,0.12)",
+                            background: "#FFF",
+                            padding:"10px",
+                        }}>
+                            <h3 style={{}}>
+                                PQTL vs EQTL
+                            </h3>
+                            <p>
+                                Compare SNVs associated with both protein abundance and gene expression
+                            </p>
+                            <p>
+                                <Link to="/datasets">
+                                    Detailed Dataset Decription
+                                </Link>
+                            </p>
+                        </div>
+                    </InlineDiv>
+                </div>
+
                 <h3>Examples</h3>
                 <p>
                     <p>Gene : <Link to={`/gene/TAB1/dataset/${dataset}`}>TAB1</Link></p>
