@@ -24,6 +24,8 @@ const StyleLink = styled.a`
 
 export const Link = StyleLink.withComponent(RouteLink)
 
+export const ExternalLink = StyleLink
+
 export const Page = styled.div`
     box-sizing: border-box;
     width: 100%;

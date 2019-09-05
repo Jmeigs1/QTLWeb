@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Colors from './UI/Colors'
-import { Page, Link } from './UI/BasicElements'
+import { Page, Link, ExternalLink } from './UI/BasicElements'
 import InlineDiv from './UI/InlineDiv'
 import Citations from './UI/Citations'
 
@@ -103,6 +103,16 @@ export default (props) =>
                                     Detailed Dataset Decription
                                 </Link>
                             </p>
+                            <p>
+                                {'Download Dataset: '}
+                                <ExternalLink 
+                                    href="https://brainqtl-downloads.s3.amazonaws.com/pQTLresults_for_brainqtl_Aug21.csv"
+                                    download
+                                    type="application/octet-stream"
+                                    >
+                                    PQTL
+                                </ExternalLink>
+                            </p>
                         </div>
                         <div style={{
                             boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
@@ -122,6 +132,24 @@ export default (props) =>
                                     Detailed Dataset Decription
                                 </Link>
                             </p>
+                            <p>
+                                {'Download Dataset: '}
+                                <ExternalLink 
+                                    href="https://brainqtl-downloads.s3.amazonaws.com/pQTLoverlapeQTL_for_brainqtl_Aug21.csv"
+                                    download
+                                    type="data:text/csv;charset=utf-8"
+                                    >
+                                    PQTL
+                                </ExternalLink>
+                                {' '}
+                                <ExternalLink 
+                                    href="https://brainqtl-downloads.s3.amazonaws.com/eQTLoverlappQTL_for_brainqtl_Aug21.csv"
+                                    download        
+                                    type="data:text/csv;charset=utf-8"
+                                    >
+                                    EQTL
+                                </ExternalLink>
+                            </p>
                         </div>
                     </InlineDiv>
                 </div>
@@ -132,12 +160,6 @@ export default (props) =>
                     <p>SNP location (HSPB11) : <Link to={`/gene/HSPB11/dataset/${dataset}`}>chr1:54289020</Link></p>
                     <p>UniProt protein ID (ARHGAP22) : <Link to={`/gene/ARHGAP22/dataset/${dataset}`}>B4DED8</Link></p>
                     <p>RefSNP # (SHB) : <Link to={`/gene/SHB/dataset/${dataset}`}>rs7020901</Link></p>
-
-                    
-                </p>
-                <h3>Download</h3>
-                <p>
-                    To download the results of an analysis, click <Link to='/Downloads'> here </Link>
                 </p>
                 <Citations/>
             </HomePage>

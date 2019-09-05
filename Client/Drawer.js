@@ -38,7 +38,6 @@ let Drawer = (props) => {
     const links = [
         linkData('Home', '/', 0),
         linkData('Dataset Descriptions', '/Datasets', 0),
-        linkData('Downloads', '/Downloads', 0),
         linkData('WingoLab', 'http://wingolab.org', 1),
     ]
 
