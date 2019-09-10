@@ -85,14 +85,17 @@ class GenePageTableDownloadButton extends Component {
 
         const header = Object.keys(props.filteredData[0].NonIndexedData)
 
+        csv += `Dataset,`
+
         for(let i = 0; i < header.length; i++){
             csv += `${header[i]},`
         }
-
         csv = csv.slice(0,-1)
         csv += `\n`
 
         for(let i = 0; i < props.filteredData.length; i++){
+            csv += `${props.filteredData[i].Dataset},`
+
             for(let j = 0; j < header.length; j++){
                 csv += `${props.filteredData[i].NonIndexedData[header[j]]},`
             }
