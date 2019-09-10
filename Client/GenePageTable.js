@@ -61,7 +61,7 @@ class GenePageTable extends Component {
                                         `/gene/${row.NonIndexedData.GeneSymbol}`+
                                         `/site/${row.Site}`+
                                         `/chr/${row.Chr}`+
-                                        `/dataset/${this.props.dataset}`}>
+                                        `/dataset/${row.Dataset}`}>
                                         {row.BystroData["gnomad.genomes.id"]}
                                     </Link>
                             </StyledTableCell>

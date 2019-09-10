@@ -117,17 +117,17 @@ const esVarientQuery = (geneSymbol, site, chr, dataset) => {
                 "must": [
                     {
                         "term": {
-                            "Chr": esSanitize(chr)
+                            "Chr": esSanitize(chr.toLowerCase())
                         }
                     },
                     {
                         "term": {
-                            "Dataset": esSanitize(dataset)
+                            "Dataset": esSanitize(dataset.toLowerCase())
                         }
                     },
                     {
                         "term": {
-                            "Site": esSanitize(site)
+                            "Site": esSanitize(site.toLowerCase())
                         }
                     }
                 ]
