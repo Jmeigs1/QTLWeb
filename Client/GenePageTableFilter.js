@@ -57,6 +57,10 @@ class GenePageTableDownloadButton extends Component {
 
     downloadHander(props) {
 
+        if(props.filteredData.length == 0){
+            return
+        }
+
         const baseFileName = "QTLWeb_" + this.props.geneSymbol + "_"
 
         const date = new Date()
@@ -77,14 +81,31 @@ class GenePageTableDownloadButton extends Component {
             .padStart(2, '0')}`
 
         let data = props.filteredData
-        var csv = JSON.stringify(props.filteredData)
+        let csv = ""
 
-        const blob = new Blob([csv], { type: 'application/json' })
+        const header = Object.keys(props.filteredData[0].NonIndexedData)
+
+        for(let i = 0; i < header.length; i++){
+            csv += `${header[i]},`
+        }
+
+        csv = csv.slice(0,-1)
+        csv += `\n`
+
+        for(let i = 0; i < props.filteredData.length; i++){
+            for(let j = 0; j < header.length; j++){
+                csv += `${props.filteredData[i].NonIndexedData[header[j]]},`
+            }
+            csv = csv.slice(0,-1)
+            csv += `\n`
+        }
+
+        const blob = new Blob([csv], { type: 'text/csv' })
         const url = URL.createObjectURL(blob)
 
         const link = document.createElement('a')
         link.setAttribute('href', url)
-        link.setAttribute('download', `${baseFileName.replace(/\s+/g, '_')}_${timestamp}.json`)
+        link.setAttribute('download', `${baseFileName.replace(/\s+/g, '_')}_${timestamp}.csv`)
         link.onClick = () => {
             console.log('revoke')
             URL.revokeObjectURL(url)
