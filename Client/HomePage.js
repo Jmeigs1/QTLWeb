@@ -92,7 +92,7 @@ export default (props) =>
                             padding:"10px",
                         }}>
                             <h3 style={{}}>
-                                PQTL
+                                pQTL
                             </h3>
                             <p>
                                 View SNVs associated with protein abundance
@@ -110,7 +110,7 @@ export default (props) =>
                                     download
                                     type="application/octet-stream"
                                     >
-                                    PQTL
+                                    pQTL
                                 </ExternalLink>
                             </p>
                         </div>
@@ -122,7 +122,7 @@ export default (props) =>
                             padding:"10px",
                         }}>
                             <h3 style={{}}>
-                                PQTL vs EQTL
+                                pQTL vs eQTL
                             </h3>
                             <p>
                                 Compare SNVs associated with both protein abundance and gene expression
@@ -139,7 +139,7 @@ export default (props) =>
                                     download
                                     type="data:text/csv;charset=utf-8"
                                     >
-                                    PQTL
+                                    pQTL
                                 </ExternalLink>
                                 {' '}
                                 <ExternalLink 
@@ -147,7 +147,7 @@ export default (props) =>
                                     download        
                                     type="data:text/csv;charset=utf-8"
                                     >
-                                    EQTL
+                                    eQTL
                                 </ExternalLink>
                             </p>
                         </div>

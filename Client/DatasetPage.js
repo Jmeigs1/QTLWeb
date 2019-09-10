@@ -28,7 +28,7 @@ class DatasetPage extends Component {
                 </div>
 
                 <h2>
-                    PQTL
+                    pQTL
                 </h2>
                 <div>
                     <p>
@@ -41,7 +41,7 @@ class DatasetPage extends Component {
                 </div>
 
                 <h2>
-                    PQTL vs EQTL
+                    pQTL vs eQTL
                 </h2>
                 <div>
                     <p>

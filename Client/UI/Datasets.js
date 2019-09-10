@@ -1,37 +1,37 @@
 export const Datasets = {
     "pqtl":{
-        displayName: "PQTL",
+        displayName: "pQTL",
         datasets: [
             "pqtl"
         ],
         datasetLabels:[
-            "PQTL",
+            "pQTL",
         ]
     },
     "overlap":{
-        displayName: "PQTL vs EQTL",
+        displayName: "pQTL vs eQTL",
         datasets:[
             "pqtloverlap",
             "eqtloverlap",
         ],
         datasetLabels:[
-            "PQTL",
-            "EQTL",
+            "pQTL",
+            "eQTL",
         ]
     }
 }
 
 export const DatasetDisplayName = {
     "pqtl":{
-        displayName: "PQTL",
+        displayName: "pQTL",
         value: 'pqtl',
     },
     "pqtlOverlap":{
-        displayName: "PQTL vs EQTL",
+        displayName: "pQTL vs pQTL",
         value: 'overlap',
     },
     "eqtlOverlap":{
-        displayName: "PQTL vs EQTL",
+        displayName: "pQTL vs eQTL",
         value: 'overlap',
     },
 }
