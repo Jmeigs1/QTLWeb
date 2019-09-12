@@ -62,11 +62,6 @@ module.exports = smp.wrap({
       template: './public/index.html'
       // favicon: './public/favicon.ico'
     }),
-    new DefinePlugin({
-      'process.env': {
-        'NODE_ENV': JSON.stringify('production')
-      }
-    }),
     new optimize.AggressiveMergingPlugin(),
     new CompressionPlugin({
       filename: "[path].gz[query]",
