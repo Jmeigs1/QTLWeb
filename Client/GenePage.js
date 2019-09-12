@@ -283,6 +283,7 @@ class GenePage extends Component {
                     (dataset, i) => {
                         return (
                             <ScatterPlot size={[1000,400]} 
+                            key={i}
                             header={Datasets[this.props.dataset].datasetLabels[i]}
                             d3Data={this.state.resultsData.d3Data}
                             range={this.state.resultsData.range}

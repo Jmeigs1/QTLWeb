@@ -117,8 +117,8 @@ class TranscriptPlot extends Component {
                     )}
                 </select>
                 {layeredGeneData.map(
-                    (geneRow) => (
-                        <Svg id="TranscriptArea" ref={node => this.node = node}
+                    (geneRow,i) => (
+                        <Svg key={i} id="TranscriptArea" ref={node => this.node = node}
                             width={this.props.size[0]} height={this.props.size[1]}>
                             <g>
                                 <line
