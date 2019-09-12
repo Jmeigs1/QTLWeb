@@ -45,6 +45,8 @@ export default (props) =>
     {
         const dataset = props.dataset ? props.dataset : 'pqtl'
 
+        document.title = 'BrainQTL'
+
         return (
             <HomePage>
                 <HeadingContainer>

@@ -81,11 +81,16 @@ class SitePage extends Component {
     }
 
     componentDidMount() {
+        document.title = 
+`QTL's - ${this.props.geneSymbol} \
+- ${this.props.site} \
+- ${this.props.dataset}`
+
         this.loadData()
     }
 
     componentDidUpdate() {
-
+        
     }
 
     loadData() {
