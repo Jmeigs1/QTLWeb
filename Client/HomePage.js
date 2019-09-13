@@ -5,6 +5,8 @@ import Colors from './UI/Colors'
 import { Page, Link, ExternalLink } from './UI/BasicElements'
 import InlineDiv from './UI/InlineDiv'
 import Citations from './UI/Citations'
+import { pQTL, overlap } from './Data/NotableGenes'
+
 
 import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
@@ -12,6 +14,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
 
 import SearchBar from './SearchBar'
+import NotableGenesTable from './NotableGenesTable'
 
 const InfoPage = styled(Page)`
     p {
@@ -71,98 +74,106 @@ export default (props) =>
                     dataset={props.dataset}
                     style={{ display: 'inline-block', width: '700px', padding: '20px 0', margin: "0 auto" }} />
 
-                <div style={{
-                    boxSizing:"border-box",
-                    width:"100%",
-                    padding:"0 50px",
-                    margin:"0",
-                    }}>
-                    
+                <h3>
+                    Datasets
+                </h3>
 
-                    <h3>
-                        Datasets
-                    </h3>
-
-                    <InlineDiv style={{
-                        
+                <InlineDiv>
+                    <div style={{
+                        boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
+                        0px 1px 1px 0px rgba(0,0,0,0.14), \
+                        0px 2px 1px -1px rgba(0,0,0,0.12)",
+                        background: "#FFF",
+                        padding:"10px",
                     }}>
-                        <div style={{
-                            boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
-                            0px 1px 1px 0px rgba(0,0,0,0.14), \
-                            0px 2px 1px -1px rgba(0,0,0,0.12)",
-                            background: "#FFF",
-                            padding:"10px",
-                        }}>
-                            <h3 style={{}}>
+                        <h3 style={{}}>
+                            pQTL
+                        </h3>
+                        <p>
+                            View SNVs associated with protein abundance
+                        </p>
+                        <br/>
+                        <p>
+                            <Link to="/datasets">
+                                Detailed Dataset Decription
+                            </Link>
+                        </p>
+                        <p>
+                            {'Download Dataset: '}
+                            <ExternalLink 
+                                href="https://brainqtl-downloads.s3.amazonaws.com/pQTLresults_for_brainqtl_Aug21.csv"
+                                download
+                                type="application/octet-stream"
+                                >
                                 pQTL
-                            </h3>
-                            <p>
-                                View SNVs associated with protein abundance
-                            </p>
-                            <br/>
-                            <p>
-                                <Link to="/datasets">
-                                    Detailed Dataset Decription
-                                </Link>
-                            </p>
-                            <p>
-                                {'Download Dataset: '}
-                                <ExternalLink 
-                                    href="https://brainqtl-downloads.s3.amazonaws.com/pQTLresults_for_brainqtl_Aug21.csv"
-                                    download
-                                    type="application/octet-stream"
-                                    >
-                                    pQTL
-                                </ExternalLink>
-                            </p>
-                        </div>
-                        <div style={{
-                            boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
-                            0px 1px 1px 0px rgba(0,0,0,0.14), \
-                            0px 2px 1px -1px rgba(0,0,0,0.12)",
-                            background: "#FFF",
-                            padding:"10px",
-                        }}>
-                            <h3 style={{}}>
-                                pQTL vs eQTL
-                            </h3>
-                            <p>
-                                Compare SNVs associated with both protein abundance and gene expression
-                            </p>
-                            <p>
-                                <Link to="/datasets">
-                                    Detailed Dataset Decription
-                                </Link>
-                            </p>
-                            <p>
-                                {'Download Dataset: '}
-                                <ExternalLink 
-                                    href="https://brainqtl-downloads.s3.amazonaws.com/pQTLoverlapeQTL_for_brainqtl_Aug21.csv"
-                                    download
-                                    type="data:text/csv;charset=utf-8"
-                                    >
-                                    pQTL
-                                </ExternalLink>
-                                {' '}
-                                <ExternalLink 
-                                    href="https://brainqtl-downloads.s3.amazonaws.com/eQTLoverlappQTL_for_brainqtl_Aug21.csv"
-                                    download        
-                                    type="data:text/csv;charset=utf-8"
-                                    >
-                                    eQTL
-                                </ExternalLink>
-                            </p>
-                        </div>
-                    </InlineDiv>
-                </div>
+                            </ExternalLink>
+                        </p>
+                    </div>
+                    <div style={{
+                        boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
+                        0px 1px 1px 0px rgba(0,0,0,0.14), \
+                        0px 2px 1px -1px rgba(0,0,0,0.12)",
+                        background: "#FFF",
+                        padding:"10px",
+                    }}>
+                        <h3 style={{}}>
+                            pQTL vs eQTL
+                        </h3>
+                        <p>
+                            Compare SNVs associated with both protein abundance and gene expression
+                        </p>
+                        <p>
+                            <Link to="/datasets">
+                                Detailed Dataset Decription
+                            </Link>
+                        </p>
+                        <p>
+                            {'Download Dataset: '}
+                            <ExternalLink 
+                                href="https://brainqtl-downloads.s3.amazonaws.com/pQTLoverlapeQTL_for_brainqtl_Aug21.csv"
+                                download
+                                type="data:text/csv;charset=utf-8"
+                                >
+                                pQTL
+                            </ExternalLink>
+                            {' '}
+                            <ExternalLink 
+                                href="https://brainqtl-downloads.s3.amazonaws.com/eQTLoverlappQTL_for_brainqtl_Aug21.csv"
+                                download        
+                                type="data:text/csv;charset=utf-8"
+                                >
+                                eQTL
+                            </ExternalLink>
+                        </p>
+                    </div>
+                </InlineDiv>
 
-                <h3>Examples</h3>
+                <h3>
+                    Notable Genes
+                </h3>
+
                 <p>
-                    <p>Gene : <Link to={`/gene/TAB1/dataset/${dataset}`}>TAB1</Link></p>
-                    <p>SNP location (HSPB11) : <Link to={`/gene/HSPB11/dataset/${dataset}`}>chr1:54289020</Link></p>
-                    <p>UniProt protein ID (ARHGAP22) : <Link to={`/gene/ARHGAP22/dataset/${dataset}`}>B4DED8</Link></p>
-                    <p>RefSNP # (SHB) : <Link to={`/gene/SHB/dataset/${dataset}`}>rs7020901</Link></p>
+                    Genes within the results set with the largest number of bonferroni corrected significant results
                 </p>
+
+                <InlineDiv>
+                    <div>
+                        <h4>
+                            pQTL
+                        </h4>
+                        <NotableGenesTable
+                            dataset={dataset}
+                            geneData={pQTL}/>
+                    </div>
+                    <div>
+                        <h4>
+                            pQTL vs eQTL
+                        </h4>
+                        <NotableGenesTable
+                            dataset={dataset}
+                            geneData={overlap}/>
+                    </div>
+                </InlineDiv>
                 <Citations/>
             </HomePage>
         )

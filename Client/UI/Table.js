@@ -1,6 +1,16 @@
 import styled from 'styled-components'
 import colors from './Colors'
 
+export const StyledTable = styled.table`
+    width:100%;
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
+    background-color: white;
+`
+
+export const StyledTableBody = styled.tbody`
+    overflow: scroll;
+`
+
 export const StyledTableCell = styled.td`
     font-size: 12px !important;
     font-family: Raleway, sans-serif !important;
@@ -17,12 +27,6 @@ export const StyledTableCellHeader = styled.td`
     padding: 10px;
 `
 
-export const StyledTable = styled.table`
-    width:100%;
-    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
-    background-color: white;
-`
-
 export const StyledTableHead = styled.thead`
     position: sticky;
     top: 0px;
@@ -35,6 +39,7 @@ export const StyledTableRoot = styled.div`
     overflow-x: auto;
     /* height: 500px; */
     margin: 0;
+    overflow-y: scroll;
 `
 
 export const StyledTableRootInline = styled.div`
@@ -54,4 +59,7 @@ export const StyledTableRow = styled.tr`
     &:hover td {
 
     }
+`
+
+export const StyledTableRowHead = styled.tr`
 `

@@ -2,12 +2,14 @@ import React, { Component } from 'react'
 
 import { Link } from './UI/BasicElements'
 import {
+    StyledTable,
+    StyledTableBody,
     StyledTableCell,
     StyledTableCellHeader,
-    StyledTable,
     StyledTableHead,
     StyledTableRoot,
     StyledTableRow,
+    StyledTableRowHead,
 }
 from './UI/Table'
 
@@ -46,11 +48,7 @@ class GenePageTable extends Component {
                   ))}
                   </tr>
                 </StyledTableHead>
-                <tbody style={{height: '500px',
-                    overflow: 'hidden auto',
-                    // willChange: 'transform',
-                    // display: 'block',
-                    width: this.props.size[0]}}>
+                <StyledTableBody>
                     {
                         rows ?
                         rows.map((row, i) => (
@@ -76,7 +74,7 @@ class GenePageTable extends Component {
                         )) :
                         (<StyledTableRow/>)
                     }
-                </tbody>
+                </StyledTableBody>
               </StyledTable>
             </StyledTableRoot>
           )
