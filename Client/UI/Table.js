@@ -3,7 +3,6 @@ import colors from './Colors'
 
 export const StyledTable = styled.table`
     width:100%;
-    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
     background-color: white;
 `
 
@@ -40,6 +39,7 @@ export const StyledTableRoot = styled.div`
     /* height: 500px; */
     margin: 0;
     overflow-y: scroll;
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
 `
 
 export const StyledTableRootInline = styled.div`
