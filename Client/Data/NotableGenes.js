@@ -21,7 +21,7 @@ export const pQTL =
         "pQTLs": 110
     },
     {
-        "GeneSymbol": "KYAT3",
+        "GeneSymbol": "CCBL2",
         "UniprotID": "Q6YP21",
         "pQTLs": 108
     },
@@ -131,7 +131,7 @@ export const pQTL =
         "pQTLs": 43
     },
     {
-        "GeneSymbol": "NAXD",
+        "GeneSymbol": "CARKD",
         "UniprotID": "Q8IW45",
         "pQTLs": 39
     },
@@ -321,12 +321,12 @@ export const pQTL =
         "pQTLs": 8
     },
     {
-        "GeneSymbol": "NAPRT",
+        "GeneSymbol": "NAPRT1",
         "UniprotID": "Q6XQN6",
         "pQTLs": 8
     },
     {
-        "GeneSymbol": "DGLUCY",
+        "GeneSymbol": "C14orf159",
         "UniprotID": "Q7Z3D6",
         "pQTLs": 7
     },
@@ -346,7 +346,7 @@ export const pQTL =
         "pQTLs": 6
     },
     {
-        "GeneSymbol": "MYORG",
+        "GeneSymbol": "KIAA1161",
         "UniprotID": "Q6NSJ0",
         "pQTLs": 6
     },
@@ -381,7 +381,7 @@ export const pQTL =
         "pQTLs": 5
     },
     {
-        "GeneSymbol": "GSTT2B",
+        "GeneSymbol": "GSTT2",
         "UniprotID": "P0CG30",
         "pQTLs": 5
     },
