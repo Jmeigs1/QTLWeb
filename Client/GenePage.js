@@ -302,7 +302,7 @@ class GenePage extends Component {
                     Filters
                 </h3>
                 <TranscriptPlot size={[1000,10]} 
-                    header="KnownGene Track"
+                    header="UCSC KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}
                     geneSymbol={this.props.geneSymbol}
                     filterResultsFunc={this.filterResultsFunc}
