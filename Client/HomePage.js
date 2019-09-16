@@ -162,7 +162,7 @@ export default (props) =>
                             pQTL
                         </h4>
                         <NotableGenesTable
-                            dataset={dataset}
+                            dataset='pqtl'
                             geneData={pQTL}/>
                     </div>
                     <div>
@@ -170,7 +170,7 @@ export default (props) =>
                             pQTL vs eQTL
                         </h4>
                         <NotableGenesTable
-                            dataset={dataset}
+                            dataset='overlap'
                             geneData={overlap}/>
                     </div>
                 </InlineDiv>
