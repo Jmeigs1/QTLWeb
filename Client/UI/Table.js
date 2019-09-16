@@ -4,6 +4,7 @@ import colors from './Colors'
 export const StyledTable = styled.table`
     width:100%;
     background-color: white;
+    overflow: scroll;
 `
 
 export const StyledTableBody = styled.tbody`
@@ -27,9 +28,6 @@ export const StyledTableCellHeader = styled.td`
 `
 
 export const StyledTableHead = styled.thead`
-    position: sticky;
-    top: 0px;
-    z-index: 10;
 `
 
 export const StyledTableRoot = styled.div`
@@ -38,7 +36,6 @@ export const StyledTableRoot = styled.div`
     overflow-x: auto;
     /* height: 500px; */
     margin: 0;
-    overflow-y: scroll;
     box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
 `
 
@@ -62,4 +59,7 @@ export const StyledTableRow = styled.tr`
 `
 
 export const StyledTableRowHead = styled.tr`
+    position: sticky;
+    top: 0px;
+    z-index: 10;
 `

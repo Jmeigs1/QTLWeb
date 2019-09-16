@@ -41,12 +41,12 @@ class GenePageTable extends Component {
             <StyledTableRoot style={{height:"500px"}}>
               <StyledTable>
                 <StyledTableHead>
-                  <tr>
+                  <StyledTableRowHead>
                     <StyledTableCellHeader key={'_index'} >RefSNP Number</StyledTableCellHeader>
                   {cols.map((col, i) => (
                     <StyledTableCellHeader key={i} >{col.displayName}</StyledTableCellHeader>
                   ))}
-                  </tr>
+                  </StyledTableRowHead>
                 </StyledTableHead>
                 <StyledTableBody>
                     {
