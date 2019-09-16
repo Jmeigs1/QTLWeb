@@ -33,9 +33,9 @@ const Legend = (props) => {
     
     return (
         <div>
-            <p>
+            <h3>
                 Legend
-            </p>
+            </h3>
             <LegendDiv>
                     <LegendIconSquare style={{
                         background: '#3A32769A',

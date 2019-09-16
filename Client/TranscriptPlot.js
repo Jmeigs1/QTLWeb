@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
+import {Axis,axisPropsFromTickScale, BOTTOM} from 'react-d3-axis'
+
 import Colors from './UI/Colors'
 
 const Svg = styled.svg`
@@ -82,9 +84,14 @@ class TranscriptPlot extends Component {
 
     render() {
 
-        if(!this.props.d3Data)
+        if(!this.props.d3Data){
             return (<div/>)
+        }
         
+        const margin = this.props.d3Data.margin,
+            width = this.props.d3Data.width
+        const padding = 5
+
         let sortedGeneData = this.props.geneData.sort( (a,b) => (a.start - b.start) )
         let layeredGeneData = buildTranscriptLayers(sortedGeneData)
 
@@ -100,9 +107,9 @@ class TranscriptPlot extends Component {
 
         return (
             <div>
-                <p>
+                <h3 style={{textAlign:"center"}}>
                     {this.props.header}
-                </p>
+                </h3>
                 <select
                     size="3"
                     value={sortedGeneData.map(o => o.name).includes(this.props.filterValue) ? this.props.filterValue : '' }
@@ -118,21 +125,23 @@ class TranscriptPlot extends Component {
                 </select>
                 {layeredGeneData.map(
                     (geneRow,i) => (
-                        <Svg key={i} id="TranscriptArea" ref={node => this.node = node}
-                            width={this.props.size[0]} height={this.props.size[1]}>
-                            <g>
+                        <Svg 
+                            key={i}
+                            id={`TranscriptArea${i}`} 
+                            width={this.props.size[0]}
+                            height={this.props.size[1]}
+                            >
+                            <g transform= {`translate(${margin.left},0)`}>                        
                                 <line
                                     x1 = {0}
-                                    x2 = {this.props.size[0]}
+                                    x2 = {width}
                                     y1 = {this.props.size[1]/2}
                                     y2 = {this.props.size[1]/2}
                                     strokeWidth = {1}
-                                    stroke = {'#bdbdbd'}
+                                    stroke = {'black'}
                                 />
                             </g>
-                            <g
-                                transform = {'translate(' + this.props.d3Data.margin.left + ',0)'}
-                            >
+                            <g width = {width} transform= {`translate(${margin.left},0)`}>
                             {geneRow.map(
                                 (item) => {
                                     let d3Data = this.props.d3Data
@@ -156,9 +165,19 @@ class TranscriptPlot extends Component {
                             </g>
                     </Svg>
                     )
-
                 )}
-                </div>
+                <Svg
+                    width={this.props.size[0]}
+                    height={40}>
+                    <g transform= {`translate(${margin.left},0)`}>
+                        <Axis {...axisPropsFromTickScale(this.props.d3Data.scaleX)} 
+                            style={{
+                                orient: BOTTOM,
+                            }}
+                        />
+                    </g>
+                </Svg>
+            </div>
         )
     }
 }

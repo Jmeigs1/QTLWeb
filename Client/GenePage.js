@@ -167,7 +167,7 @@ class GenePage extends Component {
 
         const size = [1000,400]
 
-        const d3Margin = {top: 10, right: 10, bottom: 40, left: 50},
+        const d3Margin = {top: 10, right: 50, bottom: 40, left: 50},
         d3Width = size[0] - d3Margin.left - d3Margin.right,
         d3Height = size[1] - d3Margin.top - d3Margin.bottom
 
@@ -176,11 +176,11 @@ class GenePage extends Component {
         //Calculate here because we need the scale across components
         const d3Min = pvals ? min(pvals) : 0,
         d3Max = pvals ? max(pvals) : 10,
-        dataMinSite = resultsQueryResults.range.start - resultsQueryResults.range.padding,
+        dataMinSite = Math.max(resultsQueryResults.range.start - resultsQueryResults.range.padding,0),
         dataMaxSite = resultsQueryResults.range.end + resultsQueryResults.range.padding
 
         var d3ScaleX = scaleLinear()
-            .domain([Math.max(dataMinSite,0), dataMaxSite])
+            .domain([dataMinSite, dataMaxSite])
             .range([0, d3Width])
             .nice()
 
@@ -192,6 +192,8 @@ class GenePage extends Component {
         var d3Data ={
             min:    d3Min,
             max:    d3Max,
+            dataMinSite: dataMinSite,
+            dataMaxSite: dataMaxSite,
             scaleX: d3ScaleX,
             scaleY: d3ScaleY,
             height: d3Height,
@@ -296,9 +298,9 @@ class GenePage extends Component {
                     }
                 )}
                 <Legend/>
-                <p>
+                <h3>
                     Filters
-                </p>
+                </h3>
                 <TranscriptPlot size={[1000,10]} 
                     header="KnownGene Track"
                     d3Data={this.state.resultsData.d3Data}
