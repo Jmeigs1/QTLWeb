@@ -19,7 +19,7 @@ const columnData = (displayName, dbName) => {
 
 const cols = [
     columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
-    columnData('Genomic Coordinates', (x) => x.Coordinate),
+    columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
     columnData('P-Value', (x) => x.NonIndexedData.pvalue),
     columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
     columnData('FDR', (x) => x.NonIndexedData.FDR),
@@ -42,7 +42,7 @@ class GenePageTable extends Component {
               <StyledTable>
                 <StyledTableHead>
                   <StyledTableRowHead>
-                    <StyledTableCellHeader key={'_index'} >RefSNP Number</StyledTableCellHeader>
+                    <StyledTableCellHeader key={'_index'} >Genomic Coordinates</StyledTableCellHeader>
                   {cols.map((col, i) => (
                     <StyledTableCellHeader key={i} >{col.displayName}</StyledTableCellHeader>
                   ))}
@@ -60,7 +60,7 @@ class GenePageTable extends Component {
                                         `/site/${row.Site}`+
                                         `/chr/${row.Chr}`+
                                         `/dataset/${row.Dataset}`}>
-                                        {row.BystroData["gnomad.genomes.id"]}
+                                        {row.Coordinate}
                                     </Link>
                             </StyledTableCell>
                             {cols.map((col, j) =>
