@@ -12,12 +12,14 @@ import {
     StyledTableRowHead,
 }
 from './UI/Table'
+import {DatasetDisplayName} from './UI/Datasets'
 
 const columnData = (displayName, dbName) => {
     return {displayName, dbName}
 }
 
 const cols = [
+    columnData('Dataset', (x) => DatasetDisplayName[x.Dataset].downloadLabel),
     columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
     columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
     columnData('P-Value', (x) => x.NonIndexedData.pvalue),
