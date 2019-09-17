@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
+import {DatasetDisplayName} from './UI/Datasets'
+
 const TableFilter = styled.input`
     text-align: center;
 `
@@ -83,7 +85,9 @@ class GenePageTableDownloadButton extends Component {
         let data = props.filteredData
         let csv = ""
 
-        const header = Object.keys(props.filteredData[0].NonIndexedData)
+        let header = Object.keys(props.filteredData[0].NonIndexedData)
+
+        header = header.filter( o => (o != "EnsemblGeneID" && o != "UniprotID"))
 
         csv += `Dataset,`
 
@@ -94,7 +98,7 @@ class GenePageTableDownloadButton extends Component {
         csv += `\n`
 
         for(let i = 0; i < props.filteredData.length; i++){
-            csv += `${props.filteredData[i].Dataset},`
+            csv += `${DatasetDisplayName[props.filteredData[i].Dataset].downloadLabel},`
 
             for(let j = 0; j < header.length; j++){
                 csv += `${props.filteredData[i].NonIndexedData[header[j]]},`
