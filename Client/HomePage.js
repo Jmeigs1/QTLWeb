@@ -153,7 +153,7 @@ export default (props) =>
                 </h3>
 
                 <p>
-                    Genes within the results set with the largest number of bonferroni corrected significant results
+                    Genes within the results set with the largest number of significant results
                 </p>
 
                 <InlineDiv>
