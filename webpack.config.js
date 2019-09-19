@@ -5,6 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin")
  
 const smp = new SpeedMeasurePlugin();
 
@@ -36,8 +37,15 @@ module.exports = smp.wrap({
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
-      }
+        use: {
+          loader: "file-loader",
+          options: {
+            name: "[path][name].[hash].[ext]",
+            outputPath: 'img/',
+            publicPath:'img/',
+          },
+        },
+      },
     ]
   },
   optimization: {
@@ -69,6 +77,9 @@ module.exports = smp.wrap({
       test: /\.js$|\.css$|\.html$/,
       threshold: 10240,
       minRatio: 0.8
-    })
+    }),
+    new CopyWebpackPlugin([
+      {from: './assets/**/*', force: true},
+    ]),
   ]
 });
