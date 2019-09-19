@@ -7,7 +7,7 @@
     "build": "webpack --mode production",
     "start": "npm run build && forever start server.js",
     "stop": "forever stop server.js",
-    "client": "webpack-dev-server --mode development --hot",
+    "client": "webpack-dev-server --mode development --hot --host 0.0.0.0",
     "server": "nodemon server.js",
     "list": "forever list",
     "git": "npm stop; git fetch && git merge origin/master && npm start",
