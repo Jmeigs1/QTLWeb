@@ -19,7 +19,10 @@ export const StyledTableCell = styled.td`
     padding: 10px;
 `
 
-export const StyledTableCellHeader = styled.td`
+export const StyledTableCellHeader = styled.th`
+    position: sticky;
+    top: 0;
+
     font-size: 12px !important;
     color: white !important;
     background-color: ${colors[0][2]};
@@ -59,7 +62,4 @@ export const StyledTableRow = styled.tr`
 `
 
 export const StyledTableRowHead = styled.tr`
-    position: sticky;
-    top: 0px;
-    z-index: 10;
 `

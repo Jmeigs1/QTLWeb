@@ -34,7 +34,7 @@ let NotableGenesTable = (props) => {
                             )}
                         </StyledTableRowHead>
                     </StyledTableHead>
-                    <StyledTableBody style={{height:'300px',width:'100%'}}>
+                    <StyledTableBody>
                         {
                             props.geneData.map(
                                 (gene, i) => (
@@ -43,7 +43,7 @@ let NotableGenesTable = (props) => {
                                             (key, j) => {
                                                 if(key == 'GeneSymbol'){
                                                     return(
-                                                        <StyledTableCell>
+                                                        <StyledTableCell key={j}>
                                                             <Link to={`/gene/${gene.GeneSymbol}/dataset/${props.dataset}`}>
                                                                 {gene.GeneSymbol}
                                                             </Link>
@@ -52,7 +52,7 @@ let NotableGenesTable = (props) => {
                                                 }
                                                 else{
                                                     return(
-                                                        <StyledTableCell>
+                                                        <StyledTableCell key={j}>
                                                             {gene[key]}
                                                         </StyledTableCell>
                                                     )
