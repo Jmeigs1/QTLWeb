@@ -100,7 +100,7 @@ class GenePageTableDownloadButton extends Component {
 
         let header = Object.keys(props.filteredData[0].NonIndexedData)
 
-        let filterHeaders = ["EnsemblGeneID","UniprotID","GeneSymbol","pvalue","Bonferronipvalue","FDR"]
+        let filterHeaders = ["EnsemblGeneID","UniprotID","GeneSymbol","pvalue","Bonferronipvalue","FDR","log10pvalue","SNPAbsoluteGenomicPosition"]
 
         header = header.filter( o => (filterHeaders.indexOf(o) == -1))
 
