@@ -1,6 +1,7 @@
 {
     "plugins": [
-      "react"
+      "react",
+      "jest"
     ],
     "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parser": "babel-eslint",
@@ -9,6 +10,7 @@
         "semi":["error","never"]
     },
     "env":{
-        "browser": true
+        "browser": true,
+        "jest/globals": true
     }
   }
