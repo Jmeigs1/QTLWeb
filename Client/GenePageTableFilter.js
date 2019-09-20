@@ -7,6 +7,20 @@ const TableFilter = styled.input`
     text-align: center;
 `
 
+const columnData = (displayName, dbName) => {
+    return {displayName, dbName}
+}
+
+const cols = [
+    columnData('Genomic Coordinates', (x) => x.Coordinate),
+    columnData('Dataset', (x) => DatasetDisplayName[x.Dataset].downloadLabel),
+    columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
+    columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
+    columnData('P-Value', (x) => x.NonIndexedData.pvalue),
+    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
+    columnData('FDR', (x) => x.NonIndexedData.FDR),
+]
+
 class GenePageTableFilter extends Component {
 
     constructor(props){
@@ -82,14 +96,17 @@ class GenePageTableDownloadButton extends Component {
             .toString()
             .padStart(2, '0')}`
 
-        let data = props.filteredData
         let csv = ""
 
         let header = Object.keys(props.filteredData[0].NonIndexedData)
 
-        header = header.filter( o => (o != "EnsemblGeneID" && o != "UniprotID"))
+        let filterHeaders = ["EnsemblGeneID","UniprotID","GeneSymbol","pvalue","Bonferronipvalue","FDR"]
 
-        csv += `Dataset,`
+        header = header.filter( o => (filterHeaders.indexOf(o) == -1))
+
+        for(let i = 0; i < cols.length; i++){
+            csv += `${cols[i].displayName},`
+        }
 
         for(let i = 0; i < header.length; i++){
             csv += `${header[i]},`
@@ -98,7 +115,10 @@ class GenePageTableDownloadButton extends Component {
         csv += `\n`
 
         for(let i = 0; i < props.filteredData.length; i++){
-            csv += `${DatasetDisplayName[props.filteredData[i].Dataset].downloadLabel},`
+            
+            for(let j = 0; j < cols.length; j++){
+                csv += `${cols[j].dbName(props.filteredData[i])},`
+            }
 
             for(let j = 0; j < header.length; j++){
                 csv += `${props.filteredData[i].NonIndexedData[header[j]]},`
