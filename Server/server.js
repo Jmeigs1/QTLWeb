@@ -112,4 +112,14 @@ app.get('*', (request, response) => {
     response.sendFile(path.join(publicDir, 'index.html'))
 })
 
-app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))
+let server = app
+
+if(process.env.NODE_ENV && process.env.SSL_PASS){
+    server = https.createServer({
+                key: fs.readFileSync('../ssl/server.key'),
+                cert: fs.readFileSync('../ssl/server.crt'),
+                passphrase: process.env.SSL_PASS,
+            }, app)
+}
+
+server.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))
