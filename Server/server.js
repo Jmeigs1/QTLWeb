@@ -9,17 +9,7 @@ const compression = require('compression')
 
 const axios = require('axios')
 
-const app = express()
-
-const esSanitize = (query) => {
-    return query
-        .replace(/[\*\+\-=~><\"\?^\${}\(\)\:\!\/[\]\\\s]/g, '\\$&') // replace single character special characters
-        .replace(/\|\|/g, '\\||') // replace ||
-        .replace(/\&\&/g, '\\&&') // replace &&
-        .replace(/AND/g, '\\A\\N\\D') // replace AND
-        .replace(/OR/g, '\\O\\R') // replace OR
-        .replace(/NOT/g, '\\N\\O\\T'); // replace NOT
-}
+const queries = require('./queries')
 
 const connectionPool = mysql.createPool({
     connectionLimit: 10,
@@ -29,282 +19,7 @@ const connectionPool = mysql.createPool({
     database: 'hg19'
 })
 
-const esServerIP = 'http://localhost:9200'
-
-class Database {
-    constructor(pool) {
-        this.pool = pool
-    }
-    query(sql, args) {
-        return new Promise((resolve, reject) => {
-            this.pool.query(sql, args, (err, rows, fields) => {
-                if (err)
-                    return reject(err)
-                resolve(rows)
-            })
-        })
-    }
-}
-
-const esQuery = (searchTerm) => {
-
-    var reqBody = {
-        "size": 10,
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "query_string": {
-                            "analyze_wildcard": true,
-                            "query": esSanitize(searchTerm) + "*",
-                            "analyzer": "lowercasespaceanalyzer",
-                            "fields": ["GeneSymbol", "UniprotID", "EnsID", "ProteinName", "Coordinate", "RsNum"]
-                        }
-                    },
-                    {
-                        "bool": {
-                            "should": [
-                                {
-                                    "term": {
-                                        "Dataset": "pqtl"
-                                    }
-                                },
-                                {
-                                    "term": {
-                                        "Dataset": "pqtloverlap"
-                                    }
-                                },
-                                {
-                                    "bool": {
-                                        "must_not": {
-                                            "exists": {
-                                                "field": "Dataset"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
-        "highlight": {
-            "fields": {
-                "*": {}
-            },
-            "number_of_fragments": 1,
-            "type": "plain"
-        }
-    }
-
-    return axios.post(esServerIP + '/searchresults/_search', reqBody)
-}
-
-const esVarientQuery = (geneSymbol, site, chr, dataset) => {
-
-    if (!geneSymbol || !site || !chr || !dataset) {
-        let resp = {
-            error: "esVarientQuery() failed.  Missing argument"
-        }
-        return resp
-    }
-
-    var reqBody = {
-        "size": 100,
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "term": {
-                            "Chr": esSanitize(chr.toLowerCase())
-                        }
-                    },
-                    {
-                        "term": {
-                            "Dataset": esSanitize(dataset.toLowerCase())
-                        }
-                    },
-                    {
-                        "term": {
-                            "Site": esSanitize(site.toLowerCase())
-                        }
-                    }
-                ]
-            }
-        }
-    }
-
-    return axios.post(esServerIP + '/searchresults/_search', reqBody)
-}
-
-const esQueryRange = (rangeData) => {
-
-    let datasetTerms = []
-
-    for (let i = 0; i < rangeData.dataset.length; i++) {
-        datasetTerms.push({
-            "term": {
-                "Dataset": {
-                    "value": rangeData.dataset[i]
-                }
-            }
-        })
-    }
-
-    let reqObj = {
-        "size": 10000,
-        "query": {
-            "bool": {
-                "must": [
-                    {
-                        "term": {
-                            "Chr": rangeData.chr
-                        }
-                    },
-                    {
-                        "range": {
-                            "Site": {
-                                "gte": rangeData.start,
-                                "lt": rangeData.end
-                            }
-                        }
-                    },
-                    {
-                        "bool": {
-                            "should": datasetTerms
-                        }
-                    }
-                ]
-            }
-        },
-        "_source": [
-            "Coordinate",
-            "Site",
-            "Chr",
-            "Dataset",
-            "NonIndexedData.*",
-            "BystroData.gnomad.genomes.id"
-        ]
-    }
-
-    return axios.post(
-        esServerIP + '/searchresults/_search',
-        reqObj)
-}
-
-const getSiteRange = (gene, pool) => {
-
-    db = new Database(pool)
-
-    var result = db
-        .query(`
-SELECT
-  kg.name "knownGene.GeneName",
-  kg.chrom "knownGene.chrom",
-  kg.txStart "knownGene.txStart",
-  kg.txEnd "knownGene.txEnd",
-  kte.value "knownToEnsembl.EnsGeneID",
-  kxr.mRNA "knownXref.mRNAID",
-  kxr.spID "knownXref.UniProtProteinAccessionNumber",
-  kxr.spDisplayID "knownXref.UniProtDisplayID",
-  kxr.genesymbol "knownXref.GeneSymbol",
-  kxr.refseq "knownXref.RefSeqID",
-  kxr.protAcc "knownXref.NCBIProteinAccessionNumber",
-  kxr.description "knownXref.Description",
-  kxr.rfamAcc "knownXref.RfamAccessionNumber",
-  kxr.tRnaName "knownXref.NameOfThetRNATrack",
-  kc.transcript "knownCanonical.Transcript"
-FROM hg19.knownGene AS kg
-LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name
-LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name
-LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name
-WHERE
-  kxr.genesymbol = ${mysql.escape(gene)}
-  and kg.chrom not like '%#_%' ESCAPE '#'
-`)
-
-    return result
-
-}
-
-const mySqlQueryTest = (genes, pool) => {
-
-    db = new Database(pool)
-
-    let geneList = ""
-
-    for (gene of genes) {
-        geneList += `${mysql.escape(gene)},`
-    }
-
-    geneList = geneList.substr(0, geneList.length - 1)
-
-    let query =
-        `SELECT \
-kg.name "knownGene.GeneName", \
-kg.chrom "knownGene.chrom", \
-kg.txStart "knownGene.txStart", \
-kg.txEnd "knownGene.txEnd", \
-kte.value "knownToEnsembl.EnsGeneID", \
-kxr.mRNA "knownXref.mRNAID", \
-kxr.spID "knownXref.UniProtProteinAccessionNumber", \
-kxr.spDisplayID "knownXref.UniProtDisplayID", \
-kxr.genesymbol "knownXref.GeneSymbol", \
-kxr.refseq "knownXref.RefSeqID", \
-kxr.protAcc "knownXref.NCBIProteinAccessionNumber", \
-kxr.description "knownXref.Description", \
-kxr.rfamAcc "knownXref.RfamAccessionNumber", \
-kxr.tRnaName "knownXref.NameOfThetRNATrack", \
-kc.transcript "knownCanonical.Transcript" \
-FROM hg19.knownGene AS kg \
-LEFT JOIN hg19.knownToEnsembl AS kte ON kte.name = kg.name \
-LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
-LEFT JOIN hg19.knownCanonical as kc on kc.transcript = kg.name \
-WHERE
-kxr.genesymbol = "HLA-B" and kg.chrom not like '%#_%' ESCAPE '#'`
-
-
-    var result = db
-        .query(query)
-
-    return result
-}
-
-const mySqlQuery = (ensGenes, knownGenes, pool) => {
-
-    db = new Database(pool)
-
-    let knownGeneList = ""
-
-    if (knownGenes.length == 0) {
-        knownGeneList = `''`
-    } else {
-        for (gene of knownGenes) {
-            knownGeneList += `${mysql.escape(gene)},`
-        }
-
-        knownGeneList = knownGeneList.substr(0, knownGeneList.length - 1)
-    }
-
-    let query = `
-  SELECT \
-    kxr.GeneSymbol "name", \
-    min(kg.txStart) "start", \
-    max(kg.txEnd) "end", \
-    "KnownGene" as "track" \
-  FROM hg19.knownGene AS kg \
-  LEFT JOIN hg19.kgXref AS kxr ON kxr.kgID = kg.name \
-  where kxr.GeneSymbol in (${knownGeneList}) \
-  and kg.chrom not like '%#_%' ESCAPE '#' \
-  GROUP BY kxr.GeneSymbol \
-`
-
-    var result = db
-        .query(query)
-
-    return result
-}
+const app = express()
 
 app.get('*.js', function (req, res, next) {
     req.url = req.url + '.gz'
@@ -323,7 +38,7 @@ app.options('localhost:3000', cors());
 app.use(bodyParser.json())
 
 app.get('/api/es/:searchTerm', (req, res) => {
-    esQuery(req.params.searchTerm).then(results => {
+    queries.esQuery(req.params.searchTerm).then(results => {
         res.send(
             results.data
         )
@@ -334,7 +49,7 @@ app.get('/api/es/varient/:geneSymbol/site/:site/chr/:chr/dataset/:dataset', (req
 
     console.log(req.params.geneSymbol, req.params.site, req.params.chr, req.params.dataset)
 
-    esVarientQuery(
+    queries.esVarientQuery(
         req.params.geneSymbol,
         req.params.site,
         req.params.chr,
@@ -351,7 +66,7 @@ app.get('/api/es/varient/:geneSymbol/site/:site/chr/:chr/dataset/:dataset', (req
 })
 
 app.post('/api/es/range', compression(), (req, res) => {
-    esQueryRange(req.body.rangeData).then(results => {
+    queries.esQueryRange(req.body.rangeData).then(results => {
         res.send(
             results.data
         )
@@ -359,7 +74,7 @@ app.post('/api/es/range', compression(), (req, res) => {
 })
 
 app.get('/api/gene/:geneID', (req, res) => {
-    getSiteRange(req.params.geneID, connectionPool).then(rows => {
+    queries.getSiteRange(req.params.geneID, connectionPool).then(rows => {
         res.send(
             {
                 genes: rows
@@ -370,7 +85,7 @@ app.get('/api/gene/:geneID', (req, res) => {
 
 app.post('/api/gene/search', (req, res) => {
 
-    mySqlQuery(req.body.ensGenes, req.body.knownGenes, connectionPool).then(rows => {
+    queries.mySqlQuery(req.body.knownGenes, connectionPool).then(rows => {
         res.send(
             {
                 genes: rows
@@ -381,7 +96,7 @@ app.post('/api/gene/search', (req, res) => {
 
 app.post('/api/gene/test', (req, res) => {
 
-    mySqlQueryTest(req.body.genes, connectionPool).then(rows => {
+    queries.mySqlQueryTest(req.body.genes, connectionPool).then(rows => {
 
         console.log(rows.length)
 
