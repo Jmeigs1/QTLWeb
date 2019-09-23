@@ -5,10 +5,9 @@
   "main": "server.js",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "npm run build && forever start server.js",
-    "stop": "forever stop server.js",
+    "start": "npm run build && NODE_ENV=production forever start Server/server.js",
+    "stop": "forever stop Server/server.js",
     "client": "webpack-dev-server --mode development --hot --host 0.0.0.0",
-    "server": "nodemon server.js",
     "list": "forever list",
     "git": "npm stop; git fetch && git merge origin/master && npm start",
     "git-reset": "npm stop; git fetch && git reset origin/master --hard && npm start",

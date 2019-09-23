@@ -313,7 +313,7 @@ app.get('*.js', function (req, res, next) {
     next()
 })
 
-const publicDir = path.resolve(__dirname, 'dist')
+const publicDir = path.resolve(__dirname, '../dist')
 app.use(express.static(publicDir))
 
 //
