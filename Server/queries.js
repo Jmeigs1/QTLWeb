@@ -169,9 +169,35 @@ const esQueryRange = (rangeData) => {
         ]
     }
 
-    return axios.post(
-        esServerIP + '/searchresults/_search',
-        reqObj)
+    return axios.post(esServerIP + '/searchresults/_search?scroll=1m',reqObj)
+    .then(
+        async (resp) => {
+
+            results = resp.data.hits.hits
+
+            var newResp = resp
+            var scrollID = newResp.data._scroll_id
+            var count = newResp.data.hits.hits.length
+            var i = 0
+
+            while(count == 10000){
+                i++
+                console.log(i)
+                newResp = await axios.post(esServerIP + '/_search/scroll',{
+                    "scroll": "1m",
+                    "scroll_id": scrollID,
+                })
+
+                scrollID = newResp.data._scroll_id
+                count = newResp.data.hits.hits.length
+
+                results = [...results,...newResp.data.hits.hits]
+            }
+
+            return results
+        } 
+    )
+    .catch(err => console.log(err))
 }
 
 const getSiteRange = (gene, pool) => {

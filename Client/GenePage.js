@@ -112,7 +112,7 @@ class GenePage extends Component {
         .then(response => response.json())
         .then(data => {
 
-            var lines = data.hits.hits
+            var lines = data
 
             var fullData = lines.map(x => x._source)
             var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
