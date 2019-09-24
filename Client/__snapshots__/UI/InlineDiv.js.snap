@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI/InlineDiv Renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    style="background: red; width: 100%;"
+  >
+    <div
+      style="display: inline-block; width: 50%; margin: 0px; padding: 20px; box-sizing: border-box; vertical-align: top;"
+    >
+      <p>
+        Test 1
+      </p>
+    </div>
+    <div
+      style="display: inline-block; width: 50%; margin: 0px; padding: 20px; box-sizing: border-box; vertical-align: top;"
+    >
+      <p>
+        Test 2
+      </p>
+    </div>
+  </div>
+</DocumentFragment>
+`;

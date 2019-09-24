@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI/Table Renders StyledTable correctly 1`] = `
+<DocumentFragment>
+  <table
+    class="sc-bdVaJa ipolXj"
+  />
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableBody correctly 1`] = `
+<DocumentFragment>
+  <table>
+    <tbody
+      class="sc-bwzfXH gCPXBb"
+    />
+  </table>
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableCell correctly 1`] = `
+<DocumentFragment>
+  <table>
+    <tbody>
+      <tr>
+        <td
+          class="sc-htpNat hhUJUF"
+        />
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableCellHeader correctly 1`] = `
+<DocumentFragment>
+  <table>
+    <tbody>
+      <tr>
+        <th
+          class="sc-bxivhb bXgsgp"
+        />
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableHead correctly 1`] = `
+<DocumentFragment>
+  <table>
+    <thead
+      class="sc-ifAKCX bmKgXx"
+    />
+  </table>
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableRoot correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-EHOje dGWujV"
+  />
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableRootInline correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="sc-bZQynM bokrDh"
+  />
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableRow correctly 1`] = `
+<DocumentFragment>
+  <table>
+    <tbody>
+      <tr
+        class="sc-gzVnrw cKiwtZ"
+      />
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
+
+exports[`UI/Table Renders StyledTableRowHead correctly 1`] = `
+<DocumentFragment>
+  <table>
+    <tbody>
+      <tr
+        class="sc-htoDjs keqScR"
+      />
+    </tbody>
+  </table>
+</DocumentFragment>
+`;

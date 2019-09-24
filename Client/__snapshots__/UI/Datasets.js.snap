@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI/Datasets Contains correct DatasetDisplayName 1`] = `
+Object {
+  "eqtlOverlap": Object {
+    "displayName": "pQTL vs eQTL",
+    "downloadLabel": "eQTL",
+    "value": "overlap",
+  },
+  "pqtl": Object {
+    "displayName": "pQTL",
+    "downloadLabel": "pQTL",
+    "value": "pqtl",
+  },
+  "pqtlOverlap": Object {
+    "displayName": "pQTL vs pQTL",
+    "downloadLabel": "pQTL",
+    "value": "overlap",
+  },
+}
+`;
+
+exports[`UI/Datasets Contains correct Datasets obj 1`] = `
+Object {
+  "overlap": Object {
+    "datasetLabels": Array [
+      "pQTL",
+      "eQTL",
+    ],
+    "datasets": Array [
+      "pqtloverlap",
+      "eqtloverlap",
+    ],
+    "displayName": "pQTL vs eQTL",
+  },
+  "pqtl": Object {
+    "datasetLabels": Array [
+      "pQTL",
+    ],
+    "datasets": Array [
+      "pqtl",
+    ],
+    "displayName": "pQTL",
+  },
+}
+`;
