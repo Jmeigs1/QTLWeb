@@ -122,7 +122,7 @@ class TranscriptPlot extends Component {
         let rect = event.target
         rect.setAttribute('fill',fillcolor)
         this.setState({
-            toolTipText:''
+            toolTipText:'',
         })
     }
 
@@ -133,8 +133,7 @@ class TranscriptPlot extends Component {
         }
         
         const margin = this.props.d3Data.margin,
-            width = this.props.d3Data.width,
-            padding = 5
+            width = this.props.d3Data.width
 
         let sortedGeneData = this.props.geneData.sort( (a,b) => (a.start - b.start) )
         let layeredGeneData = buildTranscriptLayers(sortedGeneData)

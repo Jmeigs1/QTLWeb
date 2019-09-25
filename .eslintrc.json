@@ -6,9 +6,12 @@
     "parser": "babel-eslint",
     "rules": {
         "comma-dangle":["error","always-multiline"],
-        "semi":["error","never"]
+        "semi":["error","never"],
+        "react/prop-types":0
     },
     "env":{
-        "browser": true
+        "browser": true,
+        "es6": true,
+        "node": true
     }
   }

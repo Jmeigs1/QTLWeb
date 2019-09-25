@@ -1,17 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import Colors from './UI/Colors'
 import { Page, Link, ExternalLink } from './UI/BasicElements'
 import InlineDiv from './UI/InlineDiv'
 import Citations from './UI/Citations'
 import { pQTL, overlap } from './Data/NotableGenes'
-
-
-import Radio from '@material-ui/core/Radio'
-import RadioGroup from '@material-ui/core/RadioGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import FormControl from '@material-ui/core/FormControl'
 
 import SearchBar from './SearchBar'
 import NotableGenesTable from './NotableGenesTable'
@@ -23,7 +16,7 @@ const InfoPage = styled(Page)`
     }
 `
 
-const HomePage = styled(InfoPage)`
+const HomePageDiv = styled(InfoPage)`
     display: flex;
     flex-direction: column;
     margin-top: 0px;
@@ -43,14 +36,12 @@ const GraphicDiv = styled.img`
     box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
 `
 
-export default (props) => 
+const HomePage = (props) => 
     {
-        const dataset = props.dataset ? props.dataset : 'pqtl'
-
         document.title = 'BrainQTL'
 
         return (
-            <HomePage>
+            <HomePageDiv>
                 <HeadingContainer>
                     <h1>BrainQTL</h1>
                     <h3>
@@ -174,6 +165,8 @@ export default (props) =>
                     </div>
                 </InlineDiv>
                 <Citations/>
-            </HomePage>
+            </HomePageDiv>
         )
     }
+
+export default HomePage

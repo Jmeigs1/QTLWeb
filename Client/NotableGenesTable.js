@@ -77,7 +77,7 @@ NotableGenesTable.propTypes = {
             "GeneSymbol": PropTypes.string.isRequired,
             "UniprotID": PropTypes.string.isRequired,
         })
-    ).isRequired
+    ).isRequired,
 }
 
 export default NotableGenesTable

@@ -1,4 +1,4 @@
-import React,{useState, memo} from 'react'
+import React,{memo} from 'react'
 import styled from 'styled-components'
 
 const FlexDiv = styled.div`
@@ -7,18 +7,6 @@ const FlexDiv = styled.div`
 
     > dt {width:200px; font-weight:bold};
     > dd {width:250px;margin: 0 10px};
-`
-
-const CardBox = styled.div`
-    margin: 10px;
-    padding: 0 10px;
-    float: left;
-`
-const TranscriptWrapper = styled.div`
-    width:1000px;
-    height:300px;
-    margin: auto 10px;
-    background-color:black
 `
 
 let GeneCard = (props) => {
