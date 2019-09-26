@@ -4,7 +4,6 @@ import '@testing-library/jest-dom/extend-expect'
 
 import InlineDiv from './InlineDiv'
 
-
 describe('UI/InlineDiv', () => {
 
   it('Renders correctly', () => {

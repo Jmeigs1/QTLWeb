@@ -9,8 +9,6 @@ import {
   Page
 } from './BasicElements'
 
-
-
 describe('UI/BasicElements', () => {
 
   it('Renders Link correctly', () => {

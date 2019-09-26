@@ -14,7 +14,6 @@ import {
   StyledTableRowHead
 } from './Table'
 
-
 describe('UI/Table', () => {
 
   it('Renders StyledTable correctly', () => {

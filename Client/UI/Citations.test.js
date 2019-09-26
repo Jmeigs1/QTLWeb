@@ -4,8 +4,6 @@ import '@testing-library/jest-dom/extend-expect'
 
 import Citations from './Citations'
 
-
-
 describe('UI/Citations', () => {
 
   it('Renders Citations correctly', () => {
