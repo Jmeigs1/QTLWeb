@@ -68,7 +68,7 @@ class GenePage extends Component {
 
         this.getSiteRange()
         .then( 
-            (range) => this.loadDataResults(this.props.geneSymbol,range)
+            (rangeQueryData) => this.loadDataResults(this.props.geneSymbol,rangeQueryData)
             .then(
                 (resultsQueryResults) => {
                     this.loadDataGene(resultsQueryResults.genes)
