@@ -46,9 +46,6 @@ app.get('/api/es/:searchTerm', (req, res) => {
 })
 
 app.get('/api/es/varient/:geneSymbol/site/:site/chr/:chr/dataset/:dataset', (req, res) => {
-
-    console.log(req.params.geneSymbol, req.params.site, req.params.chr, req.params.dataset)
-
     queries.esVarientQuery(
         req.params.geneSymbol,
         req.params.site,
