@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import * as tableStyle from './UI/Table'
 import GeneCard from './GeneCard'
+import {DatasetDisplayName} from './UI/Datasets'
 
 const Page = styled.div`
     box-sizing: border-box;
@@ -81,8 +82,7 @@ class SitePage extends Component {
     }
 
     componentDidMount() {
-        document.title = 
-`QTL's - ${this.props.geneSymbol} \
+        document.title = `QTL's - ${this.props.geneSymbol} \
 - ${this.props.site} \
 - ${this.props.dataset}`
 
@@ -120,7 +120,6 @@ class SitePage extends Component {
             `/api/es/varient/${this.props.geneSymbol}` +
             `/site/${this.props.site}/chr/${this.props.chr}/dataset/${this.props.dataset}`
         ).then(resp => {
-            // console.log(resp)
             return resp.json()
         })
     }
@@ -143,8 +142,36 @@ class SitePage extends Component {
                     <GeneCard
                         mainGeneTranscripts={this.state.siteRangeData}
                     />
+                    <div style={{float:"left",marginRight:"20px"}}>
+                        <h3> 
+                            Site
+                        </h3>
+                        <p>
+                            {this.props.site}
+                        </p>
+                    </div>
+
+                    <div style={{float:"left",marginRight:"20px"}}>
+                        <h3> 
+                            Chr
+                        </h3>
+                        <p>
+                            {this.props.chr}
+                        </p>
+                    </div>
+
+                    <div style={{float:"left",marginRight:"20px"}}>
+                        <h3> 
+                            Dataset
+                        </h3>
+                        <p>
+                            {DatasetDisplayName[this.props.dataset].displayName}
+                        </p>
+                    </div>
                 </CardBox>
+
                 <br style={{clear:"both"}}/>
+
                 <TableFunc
                     label="Site Annotation Data"
                     headers={[
