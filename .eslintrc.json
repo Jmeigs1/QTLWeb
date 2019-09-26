@@ -7,10 +7,13 @@
     "parser": "babel-eslint",
     "rules": {
         "comma-dangle":["error","always-multiline"],
-        "semi":["error","never"]
+        "semi":["error","never"],
+        "react/prop-types":0
     },
     "env":{
         "browser": true,
-        "jest/globals": true
+        "jest/globals": true,
+        "es6": true,
+        "node": true
     }
   }

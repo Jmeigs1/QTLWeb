@@ -6,7 +6,7 @@ import axios from 'axios'
 import { debounce } from 'throttle-debounce'
 
 import Colors from './UI/Colors'
-import {DatasetDisplayName,Datasets} from './UI/Datasets'
+import {DatasetDisplayName} from './UI/Datasets'
 
 const Searchbox = styled.input`
     box-sizing: border-box;
@@ -33,14 +33,6 @@ const SearchboxItem = styled.div`
   cursor: pointer;
   font-size: 14px;
 `
-
-const defaultGenes = [
-    {label: 'ENSG00000171163', value: 'ZNF692', link: '/gene/ZNF692'},
-    {label: 'ENSG00000094975', value: 'SUCO', link: '/gene/SUCO'},
-    {label: 'ENSG00000135845', value: 'PIGC', link: '/gene/PIGC'},
-    {label: 'ZNF692', value: 'ZNF692', link: '/gene/ZNF692'},
-    {label: 'PCSK9', value: 'PCSK9', link: '/gene/PCSK9'},
-]
 
 class SearchBar extends Component {
 
@@ -134,7 +126,7 @@ class SearchBar extends Component {
                 <Autocomplete
                     //The following line is important to make autoHighlighting work but breaks the
                     //value argument to most functions related to items as it sets it to the input text
-                    getItemValue={(item) => this.state.value}
+                    getItemValue={() => this.state.value}
                     items={this.state.suggestions}
                     inputProps={{
                         placeholder: "Search by gene",

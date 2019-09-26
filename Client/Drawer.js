@@ -53,10 +53,10 @@ let Drawer = (props) => {
         }
     }
 
-    const sideList = side => (
+    const sideList = () => (
         <div>
             <List>
-                {links.map((link, index) => (
+                {links.map((link) => (
                     <ListItem button key={link.label} onClick={() => goToLink(link.url,link.isExternal)}>
                         <StyledListItemText disableTypography primary={link.label}/>
                     </ListItem>
@@ -80,7 +80,7 @@ let Drawer = (props) => {
                     style={{cursor:'pointer',backgroundColor:"grey",height:"300px", width:"300px"}}
                 >
                 </div>
-                {sideList('left')}
+                {sideList()}
             </SwipeableDrawer>
         </div>
     )

@@ -29,7 +29,7 @@ const LegendLabel = styled.span`
     margin: 0 10px;
 `
 
-const Legend = (props) => {
+const Legend = () => {
     
     return (
         <div>

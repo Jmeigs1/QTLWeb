@@ -31,7 +31,7 @@ class GenePageTableFilter extends Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps){
         if(prevProps.filterValue != this.props.filterValue){
             this.setState({
                 filterValue: this.props.filterValue,
@@ -46,7 +46,7 @@ class GenePageTableFilter extends Component {
                     onChange={(e) => {
                         this.setState({
                             filterValue: e.target.value,
-                        },(prevState, props) => {
+                        },() => {
                             this.props.filterResultsFunc(this.state.filterValue)
                         })
                     }}
