@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI/Colors Holds the right colors 1`] = `
+Array [
+  "#2B4970",
+  "#748BA7",
+  "#4C688B",
+  "#143054",
+  "#051B38",
+]
+`;
+
+exports[`UI/Colors Holds the right colors 2`] = `
+Array [
+  "#3A3276",
+  "#847EB1",
+  "#5B5393",
+  "#201858",
+  "#0E083B",
+]
+`;
+
+exports[`UI/Colors Holds the right colors 3`] = `
+Array [
+  "#AA9239",
+  "#FFEDAA",
+  "#D4BE6A",
+  "#806915",
+  "#554300",
+]
+`;
+
+exports[`UI/Colors Holds the right colors 4`] = `
+Array [
+  "#AA7F39",
+  "#FFDFAA",
+  "#D4AC6A",
+  "#805715",
+  "#553500",
+]
+`;

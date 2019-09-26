@@ -1,6 +1,7 @@
 {
     "plugins": [
-      "react"
+      "react",
+      "jest"
     ],
     "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parser": "babel-eslint",
@@ -11,6 +12,7 @@
     },
     "env":{
         "browser": true,
+        "jest/globals": true,
         "es6": true,
         "node": true
     }

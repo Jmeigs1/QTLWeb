@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UI/Button Renders BaseButton correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="sc-bdVaJa ivhnJG"
+    type="button"
+  />
+</DocumentFragment>
+`;
+
+exports[`UI/Button Renders Button correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="sc-bdVaJa sc-bwzfXH CFQsb"
+    type="button"
+  />
+</DocumentFragment>
+`;
+
+exports[`UI/Button Renders PrimaryButton correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="sc-bdVaJa sc-htpNat fOoOns"
+    type="button"
+  />
+</DocumentFragment>
+`;
+
+exports[`UI/Button Renders TextButton correctly 1`] = `
+<DocumentFragment>
+  <button
+    class="sc-bxivhb gEpZLx"
+    type="button"
+  />
+</DocumentFragment>
+`;
