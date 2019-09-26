@@ -33,6 +33,7 @@ const popColumns = [
 ]
 
 const siteAnnoColumns = [
+    "dbSNP.name",
     "refSeq.siteType",
     "refSeq.exonicAlleleFunction",
     "refSeq.refCodon",
