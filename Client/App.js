@@ -6,7 +6,7 @@ import GenePage from './GenePage'
 import HomePage from './HomePage'
 import SearchBar from './SearchBar'
 import SideDrawer from './Drawer'
-import SitePage from './SitePage'
+import VarientPage from './VarientPage'
 
 import './Overrides.css'
 
@@ -62,7 +62,7 @@ class App extends Component {
                             render={
                                 ({ match }) => {
                                     return (
-                                        <SitePage 
+                                        <VarientPage 
                                             geneSymbol={match.params.geneSymbol}
                                             site={match.params.site}
                                             chr={match.params.chr}

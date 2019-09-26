@@ -69,7 +69,7 @@ const TableFunc = (props) => {
     )
 }
 
-class SitePage extends Component {
+class VarientPage extends Component {
 
     constructor(props) {
         super(props)
@@ -238,4 +238,4 @@ class SitePage extends Component {
 }
 
 
-export default SitePage
+export default VarientPage
