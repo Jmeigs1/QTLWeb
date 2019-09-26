@@ -16,14 +16,12 @@ let GeneCard = (props) => {
     const ensIndex = props.mainGeneTranscripts.map(v => v["ensGene.GeneID"] !== null).indexOf(true)
 
     const geneInfo  = props.mainGeneTranscripts[xRefIndex > -1 ? xRefIndex : 0]
-    const ensInfo   = ensIndex > -1 ? props.mainGeneTranscripts[ensIndex]["ensGene.GeneID"] : ""
 
     return (
         <div>
             <h2>{geneInfo["knownXref.GeneSymbol"]}</h2>
             <h3>{Buffer.from( geneInfo["knownXref.Description"],'utf-8' ).toString().split(',')[0]}</h3>
             <dl>
-                <FlexDiv><dt>Ensembl gene ID: </dt> <dd>{ensInfo}</dd></FlexDiv>
                 <FlexDiv>
                     <dt>Uniprot: </dt>
                     <dd>
