@@ -4,5 +4,6 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less|sass|scss)$': './__mocks__/styleMock.js'
   },
-  snapshotResolver: './__snapshots__/snapshotResolver.js'
+  snapshotResolver: './__snapshots__/snapshotResolver.js',
+  setupFilesAfterEnv: ['./jest.setup.js'],
 }

@@ -2,16 +2,62 @@
 
 exports[`UI/BasicElements Renders ExternalLink correctly 1`] = `
 <DocumentFragment>
-  <a
-    class="sc-bdVaJa hjhZXn"
+  .c0 {
+  color: #AA9239;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.c0:visited {
+  color: #AA9239;
+}
+
+.c0:active,
+.c0:hover {
+  color: #5B5393;
+  cursor: pointer;
+  text-shadow: 0px 0px 1px black;
+}
+
+.c0:focus {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+<a
+    class="c0"
   />
 </DocumentFragment>
 `;
 
 exports[`UI/BasicElements Renders Link correctly 1`] = `
 <DocumentFragment>
-  <a
-    class="sc-bwzfXH ctQsLz"
+  .c0 {
+  color: #AA9239;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.c0:visited {
+  color: #AA9239;
+}
+
+.c0:active,
+.c0:hover {
+  color: #5B5393;
+  cursor: pointer;
+  text-shadow: 0px 0px 1px black;
+}
+
+.c0:focus {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+<a
+    class="c0"
     href="/"
   />
 </DocumentFragment>
@@ -19,8 +65,17 @@ exports[`UI/BasicElements Renders Link correctly 1`] = `
 
 exports[`UI/BasicElements Renders Page correctly 1`] = `
 <DocumentFragment>
-  <div
-    class="sc-htpNat iGLGbS"
+  .c0 {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 30px;
+  margin: 0 auto;
+  font-size: 16px;
+}
+
+<div
+    class="c0"
   />
 </DocumentFragment>
 `;
