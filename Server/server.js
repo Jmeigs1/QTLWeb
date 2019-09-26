@@ -67,7 +67,6 @@ app.get('/api/es/varient/:geneSymbol/site/:site/chr/:chr/dataset/:dataset', (req
 
 app.post('/api/es/range', compression(), (req, res) => {
     queries.esQueryRange(req.body.rangeData).then(results => {
-        console.log(results)
         res.send(
             results
         )

@@ -178,11 +178,8 @@ const esQueryRange = (rangeData) => {
             var newResp = resp
             var scrollID = newResp.data._scroll_id
             var count = newResp.data.hits.hits.length
-            var i = 0
 
             while(count == 10000){
-                i++
-                console.log(i)
                 newResp = await axios.post(esServerIP + '/_search/scroll',{
                     "scroll": "1m",
                     "scroll_id": scrollID,
