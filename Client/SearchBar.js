@@ -28,14 +28,24 @@ const Searchbox = styled.input`
 
 const SearchboxItem = styled.div`
     padding: 0.375em 0.75em;
-    background: ${props => (props.isHighlighted ? Colors[3][1] : 'none')};
+    background: 'none';
     cursor: pointer;
     font-size: 14px;
 `
 
 const SearchBoxItemContainer = styled.div`
-    position: absolute;
-    background: white;
+    position: relative;
+    width: 100%;
+    .react-autosuggest__suggestions-list {
+        position: absolute;
+        width: 100%
+        background: white;
+        list-style-type: none;
+        padding: 0;
+    }
+    .react-autosuggest__suggestion--highlighted {
+        background: ${Colors[3][1]};
+    }
 `
 
 class SearchBar extends Component {
@@ -128,7 +138,6 @@ class SearchBar extends Component {
     }
 
     renderSuggestion = suggestion => {
-        console.log('Rendering suggestion:', suggestion)
         return (
             <SearchboxItem>
                 {suggestion.highlight || suggestion.label || 'NULL'}
@@ -157,11 +166,6 @@ class SearchBar extends Component {
         this.setState({
             value: suggestionValue,
         })
-    }
-
-    onSuggestionHighlighted = ({ suggestion }) => {
-        if (!suggestion) return
-        console.log('Highlighting suggestion:', suggestion)
     }
 
     render() {
