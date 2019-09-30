@@ -1,12 +1,11 @@
-import React,{Component} from 'react'
+import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import styled from 'styled-components'
-import Autocomplete from 'react-autocomplete'
+import Autosuggest from 'react-autosuggest' // https://github.com/moroshko/react-autosuggest
 import axios from 'axios'
-import { debounce } from 'throttle-debounce'
 
 import Colors from './UI/Colors'
-import {DatasetDisplayName} from './UI/Datasets'
+import { DatasetDisplayName } from './UI/Datasets'
 
 const Searchbox = styled.input`
     box-sizing: border-box;
@@ -28,50 +27,51 @@ const Searchbox = styled.input`
 `
 
 const SearchboxItem = styled.div`
-  padding: 0.375em 0.75em;
-  background: ${props => (props.isHighlighted ? Colors[3][1] : 'none')};
-  cursor: pointer;
-  font-size: 14px;
+    padding: 0.375em 0.75em;
+    background: ${props => (props.isHighlighted ? Colors[3][1] : 'none')};
+    cursor: pointer;
+    font-size: 14px;
+`
+
+const SearchBoxItemContainer = styled.div`
+    position: absolute;
+    background: white;
 `
 
 class SearchBar extends Component {
 
-    constructor (props) {
+    constructor(props) {
         super(props)
         this.state = {
+            value: '',
             suggestions: [],
         }
-
-        this.getSuggestionsDebounce = debounce(
-            250,
-            this.getSuggestions
-        )
     }
 
-    getSuggestions = value => {
+    /**
+     * As input is typed in, save it to state
+     */
+    onValueChange = (event, { newValue }) => {
+        this.setState({
+            value: newValue,
+        })
+    }
 
-        if(value == ''){
-            
-            let ret = [{
-                label:      "No results found",
-            }]
-            this.setState({ suggestions: ret })
+    getSuggestions = async value => {
+        if (value == '') return [{
+            label: "No results found",
+        }]
 
-            return
-        }
-
-        axios({
+        return axios({
             method: "get",
-            url: window.location.origin + "/api/es/" + value,
+            url: window.location.origin + '/api/es/' + value,
         }).then(res => {
-
-            if(res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0){
-                const results = res.data.hits.hits.map(h => {
-
+            if (res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0) {
+                const hits = res.data.hits.hits.map(h => {
                     let field
 
-                    for(var prop in h.highlight){
-                        if(prop != "Dataset"){
+                    for (var prop in h.highlight) {
+                        if (prop != "Dataset") {
                             field = prop
                             break
                         }
@@ -79,10 +79,10 @@ class SearchBar extends Component {
 
                     let geneSymbol = h._source.NonIndexedData.GeneSymbol
 
-                    let geneSymbolLabel = 
-                        h._source[field] == geneSymbol 
-                        ? `${geneSymbol}` 
-                        : `${h._source[field]} (${geneSymbol})`
+                    let geneSymbolLabel =
+                        h._source[field] == geneSymbol
+                            ? `${geneSymbol}`
+                            : `${h._source[field]} (${geneSymbol})`
 
                     let datasetLabel = h._source.Dataset ? `(${DatasetDisplayName[h._source.Dataset].displayName})` : ``
 
@@ -90,73 +90,99 @@ class SearchBar extends Component {
 
                     let linkDataset = h._source.Dataset ? DatasetDisplayName[h._source.Dataset].value : this.props.dataset
 
-                    let ret = {
-                        label:      label,
-                        value:      geneSymbol,
-                        link:       `/gene/${geneSymbol}/dataset/${linkDataset}`,
-                        dataset:    h._source.Dataset,
-                        highlight:  h._source[field],
+                    return {
+                        label: label,
+                        value: geneSymbol,
+                        link: `/gene/${geneSymbol}/dataset/${linkDataset}`,
+                        dataset: h._source.Dataset,
+                        highlight: h._source[field],
                     }
-                    return ret
                 })
-                this.setState({ suggestions: results })
+                return hits
             }
-            else {
-                let ret = [{
-                    label:      "No results found",
-                }]
-                this.setState({ suggestions: ret })
-            }
+            else return [{
+                label: "No results found",
+            }]
+        })
+
+    }
+
+
+    getSuggestionValue = suggestion => {
+        return (suggestion.highlight || suggestion.label || 'NULL')
+    }
+
+    renderInputComponent = inputProps => {
+        return (
+            <Searchbox {...inputProps} />
+        )
+    }
+
+    renderSuggestionsContainer = ({ containerProps, children }) => {
+        if (!children) return
+        return (
+            <SearchBoxItemContainer {...containerProps}>
+                {children}
+            </ SearchBoxItemContainer>
+        )
+    }
+
+    renderSuggestion = suggestion => {
+        console.log('Rendering suggestion:', suggestion)
+        return (
+            <SearchboxItem>
+                {suggestion.highlight || suggestion.label || 'NULL'}
+            </SearchboxItem>
+        )
+    }
+
+    onSuggestionsFetchRequested = async ({ value }) => {
+        const suggestions = await this.getSuggestions(value)
+        this.setState({
+            suggestions: suggestions,
         })
     }
 
-    renderInput = props => {
-        const { id } = this.props
-        const { ref, ...rest } = props
-        return <Searchbox {...rest} id={id} ref={ref} />
+    onSuggestionsClearRequested = () => {
+        this.setState({
+            suggestions: [],
+        })
     }
 
-    componentDidUpdate() {
+    onSuggestionSelected = (event, { suggestion, suggestionValue }) => {
+        if (!suggestion) return
+        this.props.history.push({
+            pathname: suggestion.link,
+        })
+        this.setState({
+            value: suggestionValue,
+        })
+    }
 
+    onSuggestionHighlighted = ({ suggestion }) => {
+        if (!suggestion) return
+        console.log('Highlighting suggestion:', suggestion)
     }
 
     render() {
         return (
-            <div style={this.props.style ? this.props.style : {display: 'inline-block',width: '250px', paddingTop: '20px'}}>
-                <Autocomplete
-                    //The following line is important to make autoHighlighting work but breaks the
-                    //value argument to most functions related to items as it sets it to the input text
-                    getItemValue={() => this.state.value}
-                    items={this.state.suggestions}
+            <div style={this.props.style ? this.props.style : { display: 'inline-block', width: '250px', paddingTop: '20px' }}>
+                <Autosuggest
+                    suggestions={this.state.suggestions}
+                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                    getSuggestionValue={this.getSuggestionValue}
+                    renderSuggestion={this.renderSuggestion}
                     inputProps={{
-                        placeholder: "Search by gene",
+                        placeholder: 'Search for genome',
+                        value: this.state.value,
+                        onChange: this.onValueChange,
                     }}
-                    renderInput={this.renderInput}
-                    renderItem={(item, isHighlighted) =>
-                        <SearchboxItem key={item.label} isHighlighted={isHighlighted}>
-                            {item.label}
-                        </SearchboxItem>
-                    }
-                    wrapperStyle={{ position: 'relative',width:"100%" }}
-                    menuStyle={{ position: 'absolute', top: '36px', left: 0,backgroundColor:"white" }}
-                    value={this.state.value}
-                    onChange={e => {
-                        let trimVal = e.target.value.trim()
-                        this.setState({ value: trimVal })
-                        this.getSuggestionsDebounce(trimVal)
-                    }}
-                    onSelect={(unusedVar_Value,item) => {
-                        if(item.link){
-
-                            this.props.history.push({
-                                pathname: item.link,
-                            })
-
-                            this.setState({
-                                value: item.highlight,
-                            })
-                        }
-                    }}
+                    renderInputComponent={this.renderInputComponent}
+                    renderSuggestionsContainer={this.renderSuggestionsContainer}
+                    onSuggestionSelected={this.onSuggestionSelected}
+                    highlightFirstSuggestion={true}
+                    onSuggestionHighlighted={this.onSuggestionHighlighted}
                 />
             </div>
         )
