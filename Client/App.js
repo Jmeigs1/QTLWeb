@@ -6,7 +6,7 @@ import GenePage from './GenePage'
 import HomePage from './HomePage'
 import SearchBar from './SearchBar'
 import SideDrawer from './Drawer'
-import VarientPage from './VarientPage'
+import VariantPage from './VariantPage'
 
 import './Overrides.css'
 
