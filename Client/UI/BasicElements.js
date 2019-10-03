@@ -30,19 +30,25 @@ export const Page = styled.div`
     box-sizing: border-box;
     width: 100%;
     max-width: 1200px;
-    padding: 0 30px;
+    padding: 10px 30px;
     margin: 0 auto;
     font-size: 16px;
+    line-height: 160%;
+`
+
+export const Divider = styled.hr`
+    border-color: ${Colors[0][0]};
+    margin: 40px 0;
 `
 
 let ScrollToTop = ({ children, location: { pathname } }) => {
     useEffect(() => {
-      window.scrollTo(0, 0);
-    }, [pathname]);
-  
-    return children || null;
-  }
+        window.scrollTo(0, 0)
+    }, [pathname])
+
+    return children || null
+}
 
 ScrollToTop = withRouter(ScrollToTop)
-  
+
 export { ScrollToTop }

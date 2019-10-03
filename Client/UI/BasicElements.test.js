@@ -5,7 +5,8 @@ import { render } from '@testing-library/react'
 import {
   Link,
   ExternalLink,
-  Page
+  Page,
+  Divider,
 } from './BasicElements'
 
 describe('UI/BasicElements', () => {
@@ -22,6 +23,11 @@ describe('UI/BasicElements', () => {
 
   it('Renders Page correctly', () => {
     const { asFragment } = render(<Page />)
+    expect(asFragment()).toMatchSnapshot()
+  })
+
+  it('Renders Divider correctly', () => {
+    const { asFragment } = render(<Divider />)
     expect(asFragment()).toMatchSnapshot()
   })
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import {Page, ExternalLink} from './UI/BasicElements'
+import { Page, ExternalLink, Divider } from './UI/BasicElements'
 
 import Citations from './UI/Citations'
 
@@ -12,13 +12,13 @@ class DatasetPage extends Component {
                 <h1>
                     What is a Quantitative Trait Locus?
                 </h1>
-                <p>	
+                <p>
                     <ExternalLink href="https://en.wikipedia.org/wiki/Quantitative_trait_locus">
                         {'Quantitative trait loci (QTL) '}
                     </ExternalLink>
                     are genome sites that are associated with variation
                     of some measurable trait, in other words, a quantitative trait. There are many
-                    traits that have been mapped to different genetic sites in humans, 
+                    traits that have been mapped to different genetic sites in humans,
                     <ExternalLink href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2063446">
                         {' see this review'}
                     </ExternalLink>
@@ -72,24 +72,9 @@ class DatasetPage extends Component {
                     protein and mRNA, respectively, from 5,739 genes.
                 </p>
 
-                <Citations/>
-                
-                <h2>
-                    Acknowledgements
-                </h2>
-                <p>
-                    We are grateful for the generosity of the research volunteers who gave their
-                    time, and, ultimately, donated their brains to science. We thank our
-                    collaborators at the 
-                    <ExternalLink href="http://alzheimers.emory.edu">
-                        {' Emory Goizueta Alzheimer\'s Disease Research Center'}
-                    </ExternalLink>
-                    ,
-                    <ExternalLink href="http://www.radc.rush.edu">
-                        {' Rush Alzheimer\'s Disease Center'}
-                    </ExternalLink>
-                    , and Columbia University.
-                </p>
+
+                <Divider />
+
 
                 <h2>
                     Resource descriptions
@@ -103,7 +88,7 @@ class DatasetPage extends Component {
                     studies of Alzheimer’s disease and aging maintained by investigators at the
                     <ExternalLink href="http://www.radc.rush.edu">
                         {' Rush Alzheimer\'s Disease Center '}
-                    </ExternalLink> 
+                    </ExternalLink>
                     in Chicago, IL. Both studies recruit
                     participants without known dementia at baseline and follow them annually using
                     detailed clinical evaluation. ROS recruits individuals from catholic religious
@@ -115,11 +100,12 @@ class DatasetPage extends Component {
                     Anatomic Gift Act, and repository consent to allow their data and biospecimens
                     to be repurposed. The studies were approved by an Institutional Review Board of
                     Rush University Medical Center. Information and data from ROS/MAP studies may be
-                    requested 
+                    requested
                     <ExternalLink href="http://www.radc.rush.edu">
                         {' here'}
                     </ExternalLink>.
                 </p>
+
 
                 <h3>
                     Brain Protein Data
@@ -135,32 +121,33 @@ class DatasetPage extends Component {
                     sequenced in batches of 8 and run with two global internal standards for quality
                     control purposes. Samples were randomly assigned to batches such that no
                     clinical characteristic was correlated with any particular batch. All proteomic
-                    sequencing was performed by the 
+                    sequencing was performed by the
                     <ExternalLink href="https://www.cores.emory.edu/eipc/about/index.html">
                         {' Emory Proteomics Core '}
                     </ExternalLink>
-                    and the 
+                    and the
                     <ExternalLink href="http://www.biochem.emory.edu/seyfried/index.html">
                         {' Seyfried laboratory'}
                     </ExternalLink>.
                 </p>
-                
+
+
                 <h3>
                     Genetic Data
                 </h3>
                 <p>
                     The genomic data were derived using whole-genome sequencing from either
                     dosolateral prefrontal cortex or DNA extracted from blood. Further details of
-                    the sequencing are described 
+                    the sequencing are described
                     <ExternalLink href="https://www.ncbi.nlm.nih.gov/pubmed/30084846">
                         {' here '}
                     </ExternalLink>
-                    and data may be requested 
+                    and data may be requested
                     <ExternalLink href="https://www.synapse.org/#!Synapse:syn10901595">
                         {' here'}
                     </ExternalLink>.
                 </p>
-                
+
 
                 <h3>
                     RNA Expression Data
@@ -168,15 +155,40 @@ class DatasetPage extends Component {
                 <p>
                     Gene expression was measured from RNA extracted from of the dorsolateral
                     prefrontal cortex. The data for the brain mRNA sequencing, which was used to
-                    estimate the amount of mRNA expression, is described 
+                    estimate the amount of mRNA expression, is described
                     <ExternalLink href="https://www.ncbi.nlm.nih.gov/pubmed/30084846">
                         {' here '}
                     </ExternalLink>
-                    and data may be requested 
+                    and data may be requested
                     <ExternalLink href="https://www.synapse.org/#!Synapse:syn10901595">
                         {' here'}
                     </ExternalLink>.
                 </p>
+
+
+                <Divider />
+
+
+                <h2>
+                    Acknowledgements
+                </h2>
+                <p>
+                    We are grateful for the generosity of the research volunteers who gave their
+                    time, and, ultimately, donated their brains to science. We thank our
+                    collaborators at the
+                    <ExternalLink href="http://alzheimers.emory.edu">
+                        {' Emory Goizueta Alzheimer\'s Disease Research Center'}
+                    </ExternalLink>
+                    ,
+                    <ExternalLink href="http://www.radc.rush.edu">
+                        {' Rush Alzheimer\'s Disease Center'}
+                    </ExternalLink>
+                    , and Columbia University.
+                </p>
+
+
+                <Citations />
+
             </Page>
         )
     }
