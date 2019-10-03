@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchBar Renders correctly 1`] = `
+<DocumentFragment>
+  .c0 {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.375em 1.5em 0.375em 0.75em;
+  border-color: rgb(108,117,125);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 0.25em;
+  background-position: right center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  font-size: 1em;
+  outline: currentcolor none medium;
+  background-image: none;
+  text-align: center;
+  height: 36px;
+}
+
+<div
+    style="display: inline-block; width: 250px; padding-top: 20px;"
+  >
+    <div
+      aria-expanded="false"
+      aria-haspopup="listbox"
+      aria-owns="react-autowhatever-1"
+      class="react-autosuggest__container"
+      role="combobox"
+    >
+      <input
+        aria-autocomplete="list"
+        aria-controls="react-autowhatever-1"
+        aria-label="searchbar__input"
+        autocomplete="off"
+        class="react-autosuggest__input c0"
+        placeholder="Search for genome"
+        type="text"
+        value=""
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

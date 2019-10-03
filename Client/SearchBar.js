@@ -67,7 +67,7 @@ class SearchBar extends Component {
         })
     }
 
-    getSuggestions = async value => {
+    getSuggestions = value => {
         if (value == '') return [{
             label: "No results found",
         }]
@@ -124,14 +124,14 @@ class SearchBar extends Component {
 
     renderInputComponent = inputProps => {
         return (
-            <Searchbox {...inputProps} />
+            <Searchbox {...inputProps} aria-label="searchbar__input" />
         )
     }
 
     renderSuggestionsContainer = ({ containerProps, children }) => {
         if (!children) return
         return (
-            <SearchBoxItemContainer {...containerProps}>
+            <SearchBoxItemContainer {...containerProps} aria-label="searchbar__suggestions">
                 {children}
             </ SearchBoxItemContainer>
         )
@@ -145,11 +145,13 @@ class SearchBar extends Component {
         )
     }
 
-    onSuggestionsFetchRequested = async ({ value }) => {
-        const suggestions = await this.getSuggestions(value)
-        this.setState({
-            suggestions: suggestions,
-        })
+    onSuggestionsFetchRequested = ({ value }) => {
+        this.getSuggestions(value)
+            .then((suggestions) => {
+                this.setState({
+                    suggestions: suggestions,
+                })
+            })
     }
 
     onSuggestionsClearRequested = () => {
