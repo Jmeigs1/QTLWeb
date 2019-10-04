@@ -6,6 +6,8 @@ const mysql = require('mysql')
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const compression = require('compression')
+const fs = require('fs')
+const https = require('https')
 
 const axios = require('axios')
 
@@ -112,11 +114,26 @@ app.get('*', (request, response) => {
 let server = app
 
 if(process.env.NODE_ENV && process.env.SSL_PASS){
+
+    var chainLines = fs.readFileSync('../cert/brainqtl_emory_edu_interm.cer', 'utf8').split("\n")
+
+    var cert = [];
+    var ca = [];
+    chainLines.forEach(function(line) {
+        cert.push(line);
+        if (line.match(/-END CERTIFICATE-/)) {
+            ca.push(cert.join("\n"))
+            cert = []
+        }
+    })
+
     server = https.createServer({
-                key: fs.readFileSync('../ssl/server.key'),
-                cert: fs.readFileSync('../ssl/server.crt'),
-                passphrase: process.env.SSL_PASS,
+                key: fs.readFileSync('../cert/brainqtl.emory.edu.key'),
+                cert: fs.readFileSync('../cert/brainqtl_emory_edu_cert.cer'),
+                ca: ca,
             }, app)
+
+    server.listen(process.env.PORT || 8081, () => console.log(`Listening on port ${process.env.PORT || 8081}!`))
 }
 
-server.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))
+app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))
