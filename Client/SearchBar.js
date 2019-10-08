@@ -57,7 +57,7 @@ class SearchBar extends Component {
             value: '',
             suggestions: [],
         }
-        this.host = 'http://brainqtl.org:8080' || props.host || window.location.origin
+        this.host = props.host || window.location.origin
         this.onSuggestionsFetchRequestedDebounce = debounce(
             250,
             this.onSuggestionsFetchRequested
