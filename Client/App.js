@@ -62,7 +62,7 @@ class App extends Component {
                             render={
                                 ({ match }) => {
                                     return (
-                                        <VarientPage 
+                                        <VariantPage 
                                             geneSymbol={match.params.geneSymbol}
                                             site={match.params.site}
                                             chr={match.params.chr}
