@@ -52,15 +52,30 @@ class App extends Component {
                     <Switch>
                         <Route exact path="/" 
                             render={
-                                () => 
-                                    (<HomePage
-                                        dataset={this.state.dataset}
-                                        setDatasetFunc={this.setDatasetFunc}
-                                    />)
+                                () => {
+                                    if(this.state.loading){
+                                        this.setState({
+                                            loading: false,
+                                        })
+                                    }
+                                    return (
+                                        <HomePage
+                                            dataset={this.state.dataset}
+                                            setDatasetFunc={this.setDatasetFunc}
+                                        />
+                                    )
+                                }
                             } />
                         <Route exact path="/gene/:geneSymbol/site/:site/chr/:chr/dataset/:dataset" 
                             render={
                                 ({ match }) => {
+
+                                    if(this.state.loading){
+                                        this.setState({
+                                            loading: false,
+                                        })
+                                    }
+                                    
                                     return (
                                         <VariantPage 
                                             geneSymbol={match.params.geneSymbol}
