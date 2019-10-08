@@ -13,7 +13,7 @@
     "git-reset": "npm stop; git fetch && git reset origin/master --hard && npm start",
     "lint": "eslint ./Client/*.js",
     "lint-fix": "eslint ./Client/*.js --fix",
-    "test": "jest",
+    "test": "jest --watch",
     "test-update": "jest --updateSnapshot"
   },
   "author": "Jacob Meigs",
@@ -52,6 +52,7 @@
   "devDependencies": {
     "@babel/core": "^7.6.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.6.2",
     "@babel/preset-env": "^7.6.0",
     "@babel/preset-react": "^7.0.0",
     "@testing-library/jest-dom": "^4.1.0",
