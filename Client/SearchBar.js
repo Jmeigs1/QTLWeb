@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import styled from 'styled-components'
-import Autosuggest from 'react-autosuggest' // https://github.com/moroshko/react-autosuggest
+import Autosuggest from 'react-autosuggest'
 import axios from 'axios'
+import { debounce } from 'throttle-debounce'
 
 import Colors from './UI/Colors'
 import { DatasetDisplayName } from './UI/Datasets'
@@ -56,6 +57,11 @@ class SearchBar extends Component {
             value: '',
             suggestions: [],
         }
+        this.host = 'http://brainqtl.org:8080' || props.host || window.location.origin
+        this.onSuggestionsFetchRequestedDebounce = debounce(
+            250,
+            this.onSuggestionsFetchRequested
+        )
     }
 
     /**
@@ -67,53 +73,51 @@ class SearchBar extends Component {
         })
     }
 
-    getSuggestions = value => {
+    onSuggestionsFetchRequested = async ({ value }) => {
         if (value == '') return [{
             label: "No results found",
         }]
 
-        return axios({
-            method: "get",
-            url: window.location.origin + '/api/es/' + value,
-        }).then(res => {
-            if (res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0) {
-                const hits = res.data.hits.hits.map(h => {
-                    let field
-
-                    for (var prop in h.highlight) {
-                        if (prop != "Dataset") {
-                            field = prop
-                            break
+        return axios.get(this.host + '/api/es/' + value)
+            .then(res => {
+                if (res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0) {
+                    return res.data.hits.hits.map(h => {
+                        let field
+                        for (var prop in h.highlight) {
+                            if (prop != "Dataset") {
+                                field = prop
+                                break
+                            }
                         }
-                    }
 
-                    let geneSymbol = h._source.NonIndexedData.GeneSymbol
+                        let geneSymbol = h._source.NonIndexedData.GeneSymbol
 
-                    let geneSymbolLabel =
-                        h._source[field] == geneSymbol
-                            ? `${geneSymbol}`
-                            : `${h._source[field]} (${geneSymbol})`
+                        let geneSymbolLabel =
+                            h._source[field] == geneSymbol
+                                ? `${geneSymbol}`
+                                : `${h._source[field]} (${geneSymbol})`
 
-                    let datasetLabel = h._source.Dataset ? `(${DatasetDisplayName[h._source.Dataset].displayName})` : ``
 
-                    let label = `${geneSymbolLabel} ${datasetLabel}`
+                        let datasetLabel = h._source.Dataset ? `(${DatasetDisplayName[h._source.Dataset].displayName})` : ``
 
-                    let linkDataset = h._source.Dataset ? DatasetDisplayName[h._source.Dataset].value : this.props.dataset
+                        let label = `${geneSymbolLabel} ${datasetLabel}`
 
-                    return {
-                        label: label,
-                        value: geneSymbol,
-                        link: `/gene/${geneSymbol}/dataset/${linkDataset}`,
-                        dataset: h._source.Dataset,
-                        highlight: h._source[field],
-                    }
-                })
-                return hits
-            }
-            else return [{
-                label: "No results found",
-            }]
-        })
+                        let linkDataset = h._source.Dataset ? DatasetDisplayName[h._source.Dataset].value : this.props.dataset
+
+                        return {
+                            label: label,
+                            value: geneSymbol,
+                            link: `/gene/${geneSymbol}/dataset/${linkDataset}`,
+                            dataset: h._source.Dataset,
+                            highlight: h._source[field],
+                        }
+                    })
+                }
+                else return [{
+                    label: "No results found",
+                }]
+            })
+            .then(suggestions => this.setState({ suggestions }))
 
     }
 
@@ -124,14 +128,14 @@ class SearchBar extends Component {
 
     renderInputComponent = inputProps => {
         return (
-            <Searchbox {...inputProps} aria-label="searchbar__input" />
+            <Searchbox {...inputProps} data-testid="searchInput" />
         )
     }
 
     renderSuggestionsContainer = ({ containerProps, children }) => {
         if (!children) return
         return (
-            <SearchBoxItemContainer {...containerProps} aria-label="searchbar__suggestions">
+            <SearchBoxItemContainer {...containerProps} data-testid="searchSuggestions" >
                 {children}
             </ SearchBoxItemContainer>
         )
@@ -140,18 +144,9 @@ class SearchBar extends Component {
     renderSuggestion = suggestion => {
         return (
             <SearchboxItem>
-                {suggestion.highlight || suggestion.label || 'NULL'}
+                {suggestion.label}
             </SearchboxItem>
         )
-    }
-
-    onSuggestionsFetchRequested = ({ value }) => {
-        this.getSuggestions(value)
-            .then((suggestions) => {
-                this.setState({
-                    suggestions: suggestions,
-                })
-            })
     }
 
     onSuggestionsClearRequested = () => {
@@ -175,12 +170,12 @@ class SearchBar extends Component {
             <div style={this.props.style ? this.props.style : { display: 'inline-block', width: '250px', paddingTop: '20px' }}>
                 <Autosuggest
                     suggestions={this.state.suggestions}
-                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequestedDebounce}
                     onSuggestionsClearRequested={this.onSuggestionsClearRequested}
                     getSuggestionValue={this.getSuggestionValue}
                     renderSuggestion={this.renderSuggestion}
                     inputProps={{
-                        placeholder: 'Search for genome',
+                        placeholder: 'Search by gene',
                         value: this.state.value,
                         onChange: this.onValueChange,
                     }}
