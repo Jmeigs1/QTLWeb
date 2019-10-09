@@ -216,7 +216,7 @@ const Plot = (props) => {
                             padding:"6px 10px",
                             position:"absolute",
                             left:`${state.toolTipData.coordX + margin.left}px`,
-                            top:`${getToolTipDirection(state.toolTipData.coordY,122) + margin.top}px`
+                            top:`${getToolTipDirection(state.toolTipData.coordY,144) + margin.top}px`
                         }}>
                             <div href="#" onClick={() => {setState({toolTipData: null,selected: null})}} className="boxclose">x</div>
                             <div>
