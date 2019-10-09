@@ -34,15 +34,3 @@ export const Page = styled.div`
     margin: 0 auto;
     font-size: 16px;
 `
-
-let ScrollToTop = ({ children, location: { pathname } }) => {
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, [pathname]);
-  
-    return children || null;
-  }
-
-ScrollToTop = withRouter(ScrollToTop)
-  
-export { ScrollToTop }
