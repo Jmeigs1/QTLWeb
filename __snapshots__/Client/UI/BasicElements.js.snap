@@ -1,5 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`UI/BasicElements Renders Divider correctly 1`] = `
+<DocumentFragment>
+  .c0 {
+  border-color: #2B4970;
+  margin: 40px 0;
+}
+
+<hr
+    class="c0"
+  />
+</DocumentFragment>
+`;
+
 exports[`UI/BasicElements Renders ExternalLink correctly 1`] = `
 <DocumentFragment>
   .c0 {
@@ -69,9 +82,10 @@ exports[`UI/BasicElements Renders Page correctly 1`] = `
   box-sizing: border-box;
   width: 100%;
   max-width: 1200px;
-  padding: 0 30px;
+  padding: 10px 30px;
   margin: 0 auto;
   font-size: 16px;
+  line-height: 160%;
 }
 
 <div
