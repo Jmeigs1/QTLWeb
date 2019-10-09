@@ -7,12 +7,9 @@ import SearchBar from './SearchBar'
 
 afterEach(cleanup)
 
-
-
 describe('SearchBar', () => {
 
   const props = {
-    host: 'http://brainqtl.org:8080',
     history: [],
     dataset: 'pqtl',
   }

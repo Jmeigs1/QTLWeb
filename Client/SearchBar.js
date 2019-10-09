@@ -58,10 +58,6 @@ class SearchBar extends Component {
             suggestions: [],
         }
         this.host = props.host || window.location.origin
-        this.onSuggestionsFetchRequestedDebounce = debounce(
-            250,
-            this.onSuggestionsFetchRequested
-        )
     }
 
     /**
@@ -120,6 +116,11 @@ class SearchBar extends Component {
             .then(suggestions => this.setState({ suggestions }))
 
     }
+
+    onSuggestionsFetchRequestedDebounce = debounce(
+        250,
+        this.onSuggestionsFetchRequested
+    )
 
 
     getSuggestionValue = suggestion => {
