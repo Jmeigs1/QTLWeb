@@ -1,0 +1,19 @@
+.boxclose{
+  cursor:pointer;
+  color: #fff;
+  border: 1px solid #AEAEAE;
+  background-color: #4C688B;
+  font-size: 23px;
+  font-weight: bold;
+  line-height: 0px;
+  padding: 9px 3px 12px;
+  opacity: .8;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.boxclose:hover{
+  opacity: 1;
+  color: white;
+}

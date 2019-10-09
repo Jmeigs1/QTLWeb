@@ -7,8 +7,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors')
 const compression = require('compression')
 
-const axios = require('axios')
-
 const queries = require('./queries')
 
 const connectionPool = mysql.createPool({
@@ -31,7 +29,6 @@ app.get('*.js', function (req, res, next) {
 const publicDir = path.resolve(__dirname, '../dist')
 app.use(express.static(publicDir))
 
-//
 app.use(cors());
 app.options('localhost:3000', cors());
 
@@ -109,14 +106,4 @@ app.get('*', (request, response) => {
     response.sendFile(path.join(publicDir, 'index.html'))
 })
 
-let server = app
-
-if(process.env.NODE_ENV && process.env.SSL_PASS){
-    server = https.createServer({
-                key: fs.readFileSync('../ssl/server.key'),
-                cert: fs.readFileSync('../ssl/server.crt'),
-                passphrase: process.env.SSL_PASS,
-            }, app)
-}
-
-server.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))
+app.listen(process.env.PORT || 8080, () => console.log(`Listening on port ${process.env.PORT || 8080}!`))

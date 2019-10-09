@@ -32,7 +32,6 @@ const HeadingContainer = styled.div`
 const GraphicDiv = styled.img`
     box-sizing: border-box;
     width: 100%;
-    height: 300px;
     box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12);
 `
 
@@ -90,12 +89,19 @@ const HomePage = (props) =>
                         </p>
                         <p>
                             {'Download Dataset: '}
-                            <ExternalLink 
+                            {/* <ExternalLink 
                                 href="https://brainqtl-downloads.s3.amazonaws.com/pQTLresults_for_brainqtl_Aug21.csv"
                                 download
                                 type="application/octet-stream"
                                 >
                                 pQTL
+                            </ExternalLink> */}
+                            <ExternalLink 
+                                href="javascript:void(null)"
+                                download
+                                type="application/octet-stream"
+                                >
+                                pQTL (Coming Soon)
                             </ExternalLink>
                         </p>
                     </div>
@@ -119,20 +125,34 @@ const HomePage = (props) =>
                         </p>
                         <p>
                             {'Download Dataset: '}
-                            <ExternalLink 
+                            {/* <ExternalLink 
                                 href="https://brainqtl-downloads.s3.amazonaws.com/pQTLoverlapeQTL_for_brainqtl_Aug21.csv"
                                 download
                                 type="data:text/csv;charset=utf-8"
                                 >
                                 pQTL
+                            </ExternalLink> */}
+                            <ExternalLink 
+                                href="javascript:void(null)"
+                                download
+                                type="data:text/csv;charset=utf-8"
+                                >
+                                pQTL (Coming Soon)
                             </ExternalLink>
                             {' '}
-                            <ExternalLink 
+                            {/* <ExternalLink 
                                 href="https://brainqtl-downloads.s3.amazonaws.com/eQTLoverlappQTL_for_brainqtl_Aug21.csv"
                                 download        
                                 type="data:text/csv;charset=utf-8"
                                 >
                                 eQTL
+                            </ExternalLink> */}
+                            <ExternalLink 
+                                href="javascript:void(null)"
+                                download        
+                                type="data:text/csv;charset=utf-8"
+                                >
+                                eQTL (Coming Soon)
                             </ExternalLink>
                         </p>
                     </div>
