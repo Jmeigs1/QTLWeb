@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 import Colors from './Colors'
 
-const StyleLink = styled.a`
+const StyledLink = `
     color: ${Colors[2][0]};
     text-decoration: none;
     font-weight: bold;
@@ -22,9 +22,11 @@ const StyleLink = styled.a`
     }
 `
 
-export const Link = StyleLink.withComponent(RouteLink)
+export const ExternalLink = styled.a`${StyledLink}`
 
-export const ExternalLink = StyleLink
+export const LinkDiv = styled.div`${StyledLink}`
+
+export const Link = ExternalLink.withComponent(RouteLink)
 
 export const Page = styled.div`
     box-sizing: border-box;
