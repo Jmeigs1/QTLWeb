@@ -37,7 +37,7 @@ class DatasetPage extends Component {
                     (see Research Volunteers section below) who also underwent whole genome
                     sequencing.
                 </p>
-                <p>
+                <div>
                     We had two basic analyses:
 
                     <ol>
@@ -48,7 +48,7 @@ class DatasetPage extends Component {
                             Ask how do pQTLs compare with eQTLs in the ROS/MAP dataset
                         </li>
                     </ol>
-                </p>
+                </div>
 
                 <h3>
                     pQTLs
