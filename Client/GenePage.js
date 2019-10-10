@@ -290,7 +290,7 @@ class GenePage extends Component {
                             d3Data={this.state.resultsData.d3Data}
                             range={this.state.resultsData.range}
                             geneSymbol={this.props.geneSymbol}
-                            dataLoaded={this.state.geneDataLoaded}
+                            filterResultsFunc={this.filterResultsFunc}
                             filteredData={this.state.filteredData.filter(
                                 (o) => (o.Dataset.toLowerCase() == dataset)
                             )} />

@@ -45,7 +45,7 @@ class ScatterPlot extends Component{
                     d3Data={this.props.d3Data}
                     range={this.props.range}
                     geneSymbol={this.props.geneSymbol}
-                    dataLoaded={this.props.geneDataLoaded}
+                    filterResultsFunc={this.props.filterResultsFunc}                    
                     filteredData={this.props.filteredData} />
             </div>
         )
@@ -220,7 +220,10 @@ const Plot = (props) => {
                         }}>
                             <div href="#" onClick={() => {setState({toolTipData: null,selected: null})}} className="boxclose">x</div>
                             <div>
-                                {state.toolTipData.NonIndexedData.GeneSymbol} - <LinkDiv style={{display:"inline"}}> Filter </LinkDiv>
+                                {state.toolTipData.NonIndexedData.GeneSymbol} -
+                                <LinkDiv onClick={() => {console.log(props);props.filterResultsFunc(state.toolTipData.NonIndexedData.GeneSymbol)}} style={{display:"inline"}}>
+                                    {' Filter'}
+                                </LinkDiv>
                             </div>
                             <div>
                                 {state.toolTipData.Coordinate}
