@@ -55,7 +55,7 @@ class GenePageTable extends Component {
                         rows ?
                         rows.map((row, i) => (
                         <StyledTableRow 
-                            key={i}>
+                            key={row.index}>
                             <StyledTableCell key={i + '_Link'}> 
                                     <Link to={
                                         `/gene/${row.NonIndexedData.GeneSymbol}`+
