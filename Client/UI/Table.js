@@ -9,6 +9,7 @@ export const StyledTable = styled.table`
 
 export const StyledTableBody = styled.tbody`
     overflow: scroll;
+    position: relative;
 `
 
 export const StyledTableCell = styled.td`
@@ -28,6 +29,7 @@ export const StyledTableCellHeader = styled.th`
     background-color: ${colors[0][2]};
 
     padding: 10px;
+    z-index: 1;
 `
 
 export const StyledTableHead = styled.thead`
@@ -52,6 +54,8 @@ export const StyledTableRootInline = styled.div`
 `
 
 export const StyledTableRow = styled.tr`
+    position: relative;
+
     &:hover {
         background: ${colors[2][1]};
     }

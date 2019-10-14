@@ -1,5 +1,6 @@
 import React, { Component, useState } from 'react'
 import styled from 'styled-components'
+import animateScrollTo from 'animated-scroll-to';
 
 import {Axis,axisPropsFromTickScale, LEFT, BOTTOM} from 'react-d3-axis'
 
@@ -45,6 +46,7 @@ class ScatterPlot extends Component{
                     d3Data={this.props.d3Data}
                     range={this.props.range}
                     geneSymbol={this.props.geneSymbol}
+                    setScroll={this.props.setScroll}
                     filterResultsFunc={this.props.filterResultsFunc}                    
                     filteredData={this.props.filteredData} />
             </div>
@@ -59,8 +61,22 @@ const Plot = (props) => {
         selected: null,
     })
 
-    const scrollToTable = () => {
-        console.log("test")
+    const scrollToTable = (index) => {
+
+        console.log(index)
+
+        const body = document.getElementById('table-root')
+        const row = document.getElementById(`row_${index}`)
+        
+        animateScrollTo(body.offsetTop,{
+            minDuration: 1000,
+        })
+        
+        row.parentNode.parentNode.parentNode.scrollTop = row.offsetTop - 45
+        row.classList.remove('greenFade')
+        //DOM trick to retrigger animation
+        row.offsetWidth
+        row.classList.add('greenFade')
     }
 
     const handleMouseClick = (event, itemData, coordX, coordY) => {
@@ -225,7 +241,7 @@ const Plot = (props) => {
                             <div href="#" onClick={() => {setState({toolTipData: null,selected: null})}} className="boxclose">x</div>
                             <div>
                                 {state.toolTipData.NonIndexedData.GeneSymbol} -
-                                <LinkDiv onClick={() => {console.log(props);props.filterResultsFunc(state.toolTipData.NonIndexedData.GeneSymbol)}} style={{display:"inline"}}>
+                                <LinkDiv onClick={() => {props.filterResultsFunc(state.toolTipData.NonIndexedData.GeneSymbol)}} style={{display:"inline"}}>
                                     {' Filter'}
                                 </LinkDiv>
                             </div>
@@ -239,7 +255,7 @@ const Plot = (props) => {
                             <div>
                                 {`Value: ${state.toolTipData.NonIndexedData.log10pvalue}`}
                             </div>
-                            <LinkDiv onClick={() => {scrollToTable()}}>
+                            <LinkDiv onClick={() => {scrollToTable(state.toolTipData.index)}}>
                                 Show in table
                             </LinkDiv>
                         </div>

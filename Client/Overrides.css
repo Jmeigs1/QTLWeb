@@ -64,3 +64,12 @@ list {
         -webkit-transform: rotate(-360deg);
     }
 }
+
+.greenFade {
+    animation: fade 1s linear 2
+}
+
+@keyframes fade {
+    0%,100% { background: white; }
+    33%,66% { background: lightgreen; }
+  }
