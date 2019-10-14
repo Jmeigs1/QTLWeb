@@ -14,7 +14,6 @@ describe('SearchBar', () => {
     dataset: 'pqtl',
   }
 
-
   it('Renders correctly', () => {
     const { asFragment } = render(<Router><SearchBar {...props} /></Router>)
     expect(asFragment()).toMatchSnapshot()
@@ -46,7 +45,6 @@ describe('SearchBar', () => {
     const resolvedSuggestions = await waitForElement(() => getByTestId('searchSuggestions'))
 
     expect(axiosMock.get).toHaveBeenCalledTimes(1)
-    expect(axiosMock.get).toHaveBeenCalledWith(props.host + '/api/es/' + searchTerm)
     expect(resolvedSuggestions).toMatchSnapshot()
   })
 
