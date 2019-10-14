@@ -59,6 +59,10 @@ const Plot = (props) => {
         selected: null,
     })
 
+    const scrollToTable = () => {
+        console.log("test")
+    }
+
     const handleMouseClick = (event, itemData, coordX, coordY) => {
 
         let circle = event.target
@@ -184,13 +188,13 @@ const Plot = (props) => {
                                     style = {{cursor:"pointer"}}
                                     onClick = {handleMouseClick}
                                     data={item}
-                                    key = {index}/>
+                                    key = {item.index}/>
                             )
                         )
                     }
                     {
                         mainGene.map(
-                            (item, index) => (
+                            (item) => (
                                 <Circle 
                                     cx = {x(item.Site)}
                                     cy = {y(item.NonIndexedData.log10pvalue)}
@@ -199,7 +203,7 @@ const Plot = (props) => {
                                     style = {{cursor:"pointer"}}
                                     onClick = {handleMouseClick}
                                     data={item}
-                                    key = {index}/> 
+                                    key = {item.index}/> 
                             )
                         )
                     }
@@ -235,7 +239,7 @@ const Plot = (props) => {
                             <div>
                                 {`Value: ${state.toolTipData.NonIndexedData.log10pvalue}`}
                             </div>
-                            <LinkDiv>
+                            <LinkDiv onClick={() => {scrollToTable()}}>
                                 Show in table
                             </LinkDiv>
                         </div>
@@ -254,7 +258,7 @@ const Circle = (props) => {
     })
 
     const handleMouseClick = (event) => {
-        props.onClick(event,props.data,props.cx,props.cy,state.toggle)
+        props.onClick(event,props.data,props.cx,props.cy)
     }
 
     const handleMouseOver = (event) => {

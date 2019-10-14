@@ -114,7 +114,11 @@ class GenePage extends Component {
 
             var lines = data
 
-            var fullData = lines.map(x => x._source)
+            var fullData = lines.map((x,i) => {
+                let ret = x._source
+                ret.index = i
+                return ret
+            })
             var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
             var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
 
