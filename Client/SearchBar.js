@@ -3,7 +3,8 @@ import { withRouter } from 'react-router-dom'
 import styled from 'styled-components'
 import Autosuggest from 'react-autosuggest'
 import axios from 'axios'
-import { debounce } from 'throttle-debounce'
+// import { debounce } from 'throttle-debounce'
+import AwesomeDebouncePromise from 'awesome-debounce-promise'
 
 import Colors from './UI/Colors'
 import { DatasetDisplayName } from './UI/Datasets'
@@ -69,13 +70,16 @@ class SearchBar extends Component {
         })
     }
 
-    onSuggestionsFetchRequested = async ({ value }) => {
+    fetchSuggestions = async value => {
         if (value == '') return [{
             label: "No results found",
         }]
 
+        console.log(`Getting suggestions for: '${value}'`)
+
         return axios.get(this.host + '/api/es/' + value)
             .then(res => {
+                console.log(`Resolved suggestions for: '${value}'`)
                 if (res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0) {
                     return res.data.hits.hits.map(h => {
                         let field
@@ -113,15 +117,16 @@ class SearchBar extends Component {
                     label: "No results found",
                 }]
             })
-            .then(suggestions => this.setState({ suggestions }))
-
     }
-
-    onSuggestionsFetchRequestedDebounce = debounce(
+    fetchSuggestionsDebounce = AwesomeDebouncePromise(
+        this.fetchSuggestions,
         250,
-        this.onSuggestionsFetchRequested
     )
 
+    onSuggestionsFetchRequested = async ({ value }) => {
+        const suggestions = await this.fetchSuggestionsDebounce(value)
+        this.setState({ suggestions })
+    }
 
     getSuggestionValue = suggestion => {
         return (suggestion.highlight || suggestion.label || 'NULL')
@@ -171,7 +176,7 @@ class SearchBar extends Component {
             <div style={this.props.style ? this.props.style : { display: 'inline-block', width: '250px', paddingTop: '20px' }}>
                 <Autosuggest
                     suggestions={this.state.suggestions}
-                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequestedDebounce}
+                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
                     onSuggestionsClearRequested={this.onSuggestionsClearRequested}
                     getSuggestionValue={this.getSuggestionValue}
                     renderSuggestion={this.renderSuggestion}
