@@ -75,11 +75,8 @@ class SearchBar extends Component {
             label: "No results found",
         }]
 
-        console.log(`Getting suggestions for: '${value}'`)
-
         return axios.get(this.host + '/api/es/' + value)
             .then(res => {
-                console.log(`Resolved suggestions for: '${value}'`)
                 if (res.data && res.data.hits && res.data.hits.hits && res.data.hits.hits.length > 0) {
                     return res.data.hits.hits.map(h => {
                         let field
@@ -190,6 +187,7 @@ class SearchBar extends Component {
                     onSuggestionSelected={this.onSuggestionSelected}
                     highlightFirstSuggestion={true}
                     onSuggestionHighlighted={this.onSuggestionHighlighted}
+                    shouldRenderSuggestions={() => true}
                 />
             </div>
         )
