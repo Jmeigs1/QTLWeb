@@ -40,8 +40,6 @@ class GenePageTable extends Component {
     render() {
         let rows = this.props.filteredData
 
-        console.log("this.props Genepagetable",this.props)
-
         return (
             <StyledTableRoot id="table-root" style={{height:"500px"}}>
                 <StyledTable>

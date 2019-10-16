@@ -127,7 +127,6 @@ class VariantPage extends Component {
 
     render() {
 
-        console.log(this.state)
         if (!this.state.dataLoaded) {
             return (
                 <Page>

@@ -264,9 +264,6 @@ class GenePage extends Component {
 
     render() {
 
-        console.log("this.state:",this.state)
-        console.log("this.props:",this.props)
-
         if (!this.state.geneDataLoaded){
             return (
                 <Page>

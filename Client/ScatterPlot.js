@@ -63,8 +63,6 @@ const Plot = (props) => {
 
     const scrollToTable = (index) => {
 
-        console.log(index)
-
         const body = document.getElementById('table-root')
         const row = document.getElementById(`row_${index}`)
         
