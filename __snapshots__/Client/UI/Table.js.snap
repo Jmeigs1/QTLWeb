@@ -18,6 +18,7 @@ exports[`UI/Table Renders StyledTableBody correctly 1`] = `
 <DocumentFragment>
   .c0 {
   overflow: scroll;
+  position: relative;
 }
 
 <table>
@@ -59,6 +60,7 @@ exports[`UI/Table Renders StyledTableCellHeader correctly 1`] = `
   color: white !important;
   background-color: #4C688B;
   padding: 10px;
+  z-index: 1;
 }
 
 <table>
@@ -117,7 +119,11 @@ exports[`UI/Table Renders StyledTableRootInline correctly 1`] = `
 
 exports[`UI/Table Renders StyledTableRow correctly 1`] = `
 <DocumentFragment>
-  .c0:hover {
+  .c0 {
+  position: relative;
+}
+
+.c0:hover {
   background: #FFEDAA;
 }
 
