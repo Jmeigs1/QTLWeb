@@ -6,6 +6,10 @@ const mysql = require('mysql')
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const compression = require('compression')
+const rfs = require('rotating-file-stream')
+const morgan = require('morgan')
+const uuid = require('node-uuid')
+const cookieSession = require('cookie-session')
 
 const queries = require('./queries')
 
@@ -17,7 +21,36 @@ const connectionPool = mysql.createPool({
     database: 'hg19'
 })
 
+morgan.token('id', function getId (req) {
+    return req.session.id
+})
+
 const app = express()
+
+app.use(cookieSession({
+    name: 'session',
+    keys: ['key1', 'key2']
+}))
+
+const assignId = (req, res, next) => {
+    if(!req.session.id){
+        req.session.id = uuid.v4()
+    }
+    next()
+}
+
+app.use(assignId)
+
+// create a rotating write stream
+const accessLogStream = rfs('access.log', {
+    interval: '1d', // rotate daily
+    path: path.join(__dirname, 'log')
+})
+
+const format = ':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
+
+// setup the logger
+app.use(morgan(format, { stream: accessLogStream }))
 
 app.get('*.js', function (req, res, next) {
     req.url = req.url + '.gz'
