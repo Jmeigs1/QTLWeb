@@ -50,7 +50,13 @@ const accessLogStream = rfs('access.log', {
 const format = ':id :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
 
 // setup the logger
-app.use(morgan(format, { stream: accessLogStream }))
+app.use(morgan(format, { 
+    stream: accessLogStream,
+    skip: (req,res) => {
+        return (req.header('Referer') && req.header('Referer').indexOf('localhost') > -1) 
+                || req.header('user-agent') && req.header('user-agent').indexOf('ELB-HealthChecker') > -1
+    }
+}))
 
 app.get('*.js', function (req, res, next) {
     req.url = req.url + '.gz'
