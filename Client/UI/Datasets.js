@@ -28,7 +28,7 @@ export const DatasetDisplayName = {
         downloadLabel: "pQTL",
     },
     "pqtlOverlap":{
-        displayName: "pQTL vs pQTL",
+        displayName: "eQTL vs pQTL",
         value: 'overlap',
         downloadLabel: "pQTL",
     },

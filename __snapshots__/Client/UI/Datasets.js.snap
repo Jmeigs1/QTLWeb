@@ -13,7 +13,7 @@ Object {
     "value": "pqtl",
   },
   "pqtlOverlap": Object {
-    "displayName": "pQTL vs pQTL",
+    "displayName": "eQTL vs pQTL",
     "downloadLabel": "pQTL",
     "value": "overlap",
   },
