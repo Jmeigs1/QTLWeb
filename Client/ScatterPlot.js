@@ -31,9 +31,9 @@ class ScatterPlot extends Component{
 
     }
 
-    shouldComponentUpdate(prevProps){
-        return(prevProps.filteredData != this.props.filteredData)
-    }
+    // shouldComponentUpdate(prevProps){
+    //     return(prevProps.filteredData != this.props.filteredData)
+    // }
 
     render() {
         return (
@@ -46,6 +46,7 @@ class ScatterPlot extends Component{
                     d3Data={this.props.d3Data}
                     range={this.props.range}
                     geneSymbol={this.props.geneSymbol}
+                    genePageTableRef={this.props.genePageTableRef}
                     setScroll={this.props.setScroll}
                     filterResultsFunc={this.props.filterResultsFunc}                    
                     filteredData={this.props.filteredData} />
@@ -63,18 +64,17 @@ const Plot = (props) => {
 
     const scrollToTable = (index) => {
 
+        window.test = props.genePageTableRef.current
+
+        props.genePageTableRef.current.setState({"highlightIndex": index})
+
+        props.genePageTableRef.current._table.current.scrollToRow(index)
+
         const body = document.getElementById('table-root')
-        const row = document.getElementById(`row_${index}`)
         
         animateScrollTo(body.offsetTop,{
             minDuration: 1000,
         })
-        
-        row.parentNode.parentNode.parentNode.scrollTop = row.offsetTop - 45
-        row.classList.remove('greenFade')
-        //DOM trick to retrigger animation
-        row.offsetWidth
-        row.classList.add('greenFade')
     }
 
     const handleMouseClick = (event, itemData, coordX, coordY) => {
@@ -253,7 +253,7 @@ const Plot = (props) => {
                             <div>
                                 {`Value: ${state.toolTipData.NonIndexedData.log10pvalue}`}
                             </div>
-                            <LinkDiv onClick={() => {scrollToTable(state.toolTipData.index)}}>
+                            <LinkDiv onClick={() => {scrollToTable(state.toolTipData.filterdIndex)}}>
                                 Show in table
                             </LinkDiv>
                         </div>

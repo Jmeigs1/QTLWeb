@@ -38,3 +38,17 @@ export const DatasetDisplayName = {
         downloadLabel: "eQTL",
     },
 }
+
+const columnData = (displayName, dbName) => {
+    return {displayName, dbName}
+}
+
+export const tableCols = [
+    columnData('Genomic Coordinates', (x) => x.Coordinate),
+    columnData('Dataset', (x) => DatasetDisplayName[x.Dataset].downloadLabel),
+    columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
+    columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
+    columnData('P-Value', (x) => x.NonIndexedData.pvalue),
+    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
+    columnData('FDR', (x) => x.NonIndexedData.FDR),
+]

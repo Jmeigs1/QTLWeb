@@ -8,7 +8,7 @@ import SearchBar from './SearchBar'
 import SideDrawer from './Drawer'
 import VariantPage from './VariantPage'
 
-import './Overrides.css'
+import './css/Overrides.css'
 
 class App extends Component {
 

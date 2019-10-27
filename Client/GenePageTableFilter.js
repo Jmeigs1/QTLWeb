@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 
-import {DatasetDisplayName} from './UI/Datasets'
+import {tableCols} from './UI/Datasets'
 
 const TableFilter = styled.input`
     text-align: center;
@@ -10,16 +10,6 @@ const TableFilter = styled.input`
 const columnData = (displayName, dbName) => {
     return {displayName, dbName}
 }
-
-const cols = [
-    columnData('Genomic Coordinates', (x) => x.Coordinate),
-    columnData('Dataset', (x) => DatasetDisplayName[x.Dataset].downloadLabel),
-    columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
-    columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
-    columnData('P-Value', (x) => x.NonIndexedData.pvalue),
-    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
-    columnData('FDR', (x) => x.NonIndexedData.FDR),
-]
 
 class GenePageTableFilter extends Component {
 
@@ -107,8 +97,8 @@ class GenePageTableDownloadButton extends Component {
 
         header = header.filter( o => (filterHeaders.indexOf(o) == -1))
 
-        for(let i = 0; i < cols.length; i++){
-            csv += `${cols[i].displayName},`
+        for(let i = 0; i < tableCols.length; i++){
+            csv += `${tableCols[i].displayName},`
         }
 
         for(let i = 0; i < header.length; i++){
@@ -119,8 +109,8 @@ class GenePageTableDownloadButton extends Component {
 
         for(let i = 0; i < props.filteredData.length; i++){
             
-            for(let j = 0; j < cols.length; j++){
-                csv += `${cols[j].dbName(props.filteredData[i])},`
+            for(let j = 0; j < tableCols.length; j++){
+                csv += `${tableCols[j].dbName(props.filteredData[i])},`
             }
 
             for(let j = 0; j < header.length; j++){

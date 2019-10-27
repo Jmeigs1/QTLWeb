@@ -1,4 +1,11 @@
 import React, { Component } from 'react'
+import Highlighter from 'react-highlight-words'
+
+import { Column, Table, defaultTableRowRenderer as DefaultTableRowRenderer } from 'react-virtualized'
+import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer'
+
+import 'react-virtualized/styles.css'
+import './css/Table.example.css'
 
 import { Link } from './UI/BasicElements'
 import {
@@ -12,74 +19,167 @@ import {
     StyledTableRowHead,
 }
 from './UI/Table'
-import {DatasetDisplayName} from './UI/Datasets'
+import {tableCols} from './UI/Datasets'
 
-const columnData = (displayName, dbName) => {
-    return {displayName, dbName}
-}
+// class GenePageTable extends Component {
 
-const cols = [
-    columnData('Dataset', (x) => DatasetDisplayName[x.Dataset].downloadLabel),
-    columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
-    columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
-    columnData('P-Value', (x) => x.NonIndexedData.pvalue),
-    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
-    columnData('FDR', (x) => x.NonIndexedData.FDR),
-]
+//     shouldComponentUpdate(nextProps){
+//         //Hack for now.  Server side render later.
+//         return true
+//     }
+
+//     render() {
+//         let rows = this.props.filteredData
+
+//         return (
+//             <StyledTableRoot id="table-root" style={{height:"500px"}}>
+//                 <StyledTable>
+//                     <StyledTableHead>
+//                     <StyledTableRowHead>
+//                         <StyledTableCellHeader key={'_index'} >Genomic Coordinates</StyledTableCellHeader>
+//                     {tableCols.map((col, i) => (
+//                         <StyledTableCellHeader key={i} >{col.displayName}</StyledTableCellHeader>
+//                     ))}
+//                     </StyledTableRowHead>
+//                     </StyledTableHead>
+//                         <StyledTableBody>
+//                             {
+//                                 rows ?
+//                                 rows.map((row, i) => (
+//                                 <StyledTableRow
+//                                     id={`row_${row.index}`}
+//                                     key={row.index}>
+//                                     <StyledTableCell key={i + '_Link'}> 
+//                                             <Link to={
+//                                                 `/gene/${row.NonIndexedData.GeneSymbol}`+
+//                                                 `/site/${row.Site}`+
+//                                                 `/chr/${row.Chr}`+
+//                                                 `/dataset/${row.Dataset}`}>
+//                                                 {row.Coordinate}
+//                                             </Link>
+//                                     </StyledTableCell>
+//                                     {tableCols.map((col, j) =>
+//                                         (
+//                                             <StyledTableCell key={i + '_' + j}>
+//                                                 {col.dbName(row)}
+//                                             </StyledTableCell>
+//                                         )
+//                                     )}
+//                                     </StyledTableRow>
+//                                 )) :
+//                                 (<StyledTableRow/>)
+//                             }
+//                         </StyledTableBody>
+//                 </StyledTable>
+//             </StyledTableRoot>
+//         )
+//     }
+// }
 
 class GenePageTable extends Component {
 
-    shouldComponentUpdate(nextProps){
-        //Hack for now.  Server side render later.
-        return( 
-            nextProps.filteredData[0] != this.props.filteredData[0] 
-            || nextProps.filteredData.length != this.props.filteredData.length
-            || (nextProps.scrollPos != this.props.scrollPos && nextProps.scrollPos))
+    constructor(props, context) {
+        super(props, context)
+
+        this._rowClassName = this._rowClassName.bind(this)
+
+        this._table = React.createRef();
+
+        this.state = {
+            scrollTop:0,
+            highlightIndex: -1,
+        }
+    }
+    componentDidMount(){
+
+    }
+
+    _rowClassName({index}) {
+        let classList = ""
+
+        if(this.state.highlightIndex){
+            console.log(this.state)
+            if(index == this.state.highlightIndex){
+                classList += "greenFade "
+            }
+        }
+
+        if (index < 0) {
+            return "headerRow"
+        } else {
+            return classList + (index % 2 === 0 ? "evenRow" : "oddRow")
+        }
     }
 
     render() {
+
         let rows = this.props.filteredData
 
         return (
-            <StyledTableRoot id="table-root" style={{height:"500px"}}>
-                <StyledTable>
-                    <StyledTableHead>
-                    <StyledTableRowHead>
-                        <StyledTableCellHeader key={'_index'} >Genomic Coordinates</StyledTableCellHeader>
-                    {cols.map((col, i) => (
-                        <StyledTableCellHeader key={i} >{col.displayName}</StyledTableCellHeader>
-                    ))}
-                    </StyledTableRowHead>
-                    </StyledTableHead>
-                        <StyledTableBody>
-                            {
-                                rows ?
-                                rows.map((row, i) => (
-                                <StyledTableRow
-                                    id={`row_${row.index}`}
-                                    key={row.index}>
-                                    <StyledTableCell key={i + '_Link'}> 
-                                            <Link to={
-                                                `/gene/${row.NonIndexedData.GeneSymbol}`+
-                                                `/site/${row.Site}`+
-                                                `/chr/${row.Chr}`+
-                                                `/dataset/${row.Dataset}`}>
-                                                {row.Coordinate}
-                                            </Link>
-                                    </StyledTableCell>
-                                    {cols.map((col, j) =>
-                                        (
-                                            <StyledTableCell key={i + '_' + j}>
-                                                {col.dbName(row)}
-                                            </StyledTableCell>
-                                        )
-                                    )}
-                                    </StyledTableRow>
-                                )) :
-                                (<StyledTableRow/>)
+            <StyledTableRoot id="table-root" style={{backgroundColor:"white",fontSize:"12px"}}>
+                <AutoSizer disableHeight>
+                {({width}) => (
+                    <Table
+                        ref={this._table}
+                        width={width}
+                        height={500}
+                        headerClassName="headerColumn"
+                        headerHeight={45}
+                        rowHeight={45}
+                        rowClassName={this._rowClassName}
+                        rowCount={rows.length}
+                        rowGetter={({ index }) => rows[index]}
+                        onScroll={
+                            ({ clientHeight, scrollHeight, scrollTop }) => 
+                                {
+                                    console.log(clientHeight,scrollHeight,scrollTop)
+                                    this.setState({scrollTop})
+                                }
                             }
-                        </StyledTableBody>
-                </StyledTable>
+                        scrollTop={this.state.scrollTop}
+                        // rowRenderer={(props) => (<div id={`row_${props.rowData.filterdIndex}`}><DefaultTableRowRenderer {...props} /></div>)}
+                    >
+                    {tableCols.map(
+                        (col, i) => (
+                            <Column
+                                key={i}
+                                width={200}
+                                label={col.displayName}
+                                dataKey={i}
+                                cellRenderer={
+                                    ({rowData}) => {
+                                        return (
+                                            i > 0 ?
+                                            (
+                                                <Highlighter
+                                                    searchWords={[this.props.filterValue]}
+                                                    autoEscape={true}
+                                                    textToHighlight={col.dbName(rowData)}
+                                                />
+                                            ) :
+                                            (
+                                                <Link to={
+                                                    `/gene/${rowData.NonIndexedData.GeneSymbol}`+
+                                                    `/site/${rowData.Site}`+
+                                                    `/chr/${rowData.Chr}`+
+                                                    `/dataset/${rowData.Dataset}`}>
+                                                    <Highlighter
+                                                        searchWords={[this.props.filterValue]}
+                                                        autoEscape={true}
+                                                        textToHighlight={col.dbName(rowData)}
+                                                    />
+                                                </Link>
+                                            )
+                                        )
+                                        }
+                                }
+                                />
+                        )
+                    )}
+                
+                    </Table>
+                )}
+                </AutoSizer>
             </StyledTableRoot>
         )
     }

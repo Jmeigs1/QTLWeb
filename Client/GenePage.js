@@ -11,7 +11,7 @@ import ScatterPlot from './ScatterPlot'
 import TranscriptPlot from './TranscriptPlot'
 
 import {Page} from './UI/BasicElements'
-import {Datasets} from './UI/Datasets'
+import {Datasets, tableCols} from './UI/Datasets'
 
 import {min,max} from 'd3-array'
 import {scaleLinear} from 'd3-scale'
@@ -38,6 +38,8 @@ class GenePage extends Component {
             250,
             this.filterResultsFunc
         )
+
+        this._genePageTable = React.createRef()
     }
 
     shouldComponentUpdate(prevProps){
@@ -117,6 +119,7 @@ class GenePage extends Component {
             var fullData = lines.map((x,i) => {
                 let ret = x._source
                 ret.index = i
+                ret.filterdIndex = i
                 return ret
             })
             var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
@@ -235,30 +238,43 @@ class GenePage extends Component {
 
     filterResultsFunc = (filterText,cb) => {
 
-        let filteredData = this.state.resultsData.fullData.filter(
-            (dataPoint) => 
-            {
-                if(!filterText){
-                    return true
-                }
+        this.setState({
+            filterValue: filterText,
+        })
 
-                let filterbool = false
-                for(let dataField of this.filterDataFields){
+        this._genePageTable.current.setState({"highlightIndex": -1})
 
-                    let value = dataField.getData(dataPoint)
-                    if(value && value.toLowerCase().indexOf(filterText.toLowerCase()) > -1){
-                        filterbool = true
-                        break
+        let filteredData = this.state.resultsData.fullData
+
+        if(filterText){
+            filteredData = this.state.resultsData.fullData.filter(
+                (dataPoint) => 
+                {
+                    if(!filterText){
+                        return true
                     }
- 
+
+                    let filterbool = false
+                    for(let dataField of tableCols){
+
+                        let value = dataField.dbName(dataPoint)
+                        if(value && value.toLowerCase().indexOf(filterText.toLowerCase()) > -1){
+                            filterbool = true
+                            break
+                        }
+    
+                    }
+                    return filterbool
                 }
-                return filterbool
+            )
+
+            for(let i = 0; i < filteredData.length; i++){
+                filteredData[i].filterdIndex = i
             }
-        )
+        }
 
         this.setState({
             filteredData: filteredData,
-            filterValue: filterText,
         },cb)
     }
 
@@ -291,6 +307,7 @@ class GenePage extends Component {
                             d3Data={this.state.resultsData.d3Data}
                             range={this.state.resultsData.range}
                             geneSymbol={this.props.geneSymbol}
+                            genePageTableRef={this._genePageTable}
                             filterResultsFunc={this.filterResultsFunc}
                             filteredData={this.state.filteredData.filter(
                                 (o) => (o.Dataset.toLowerCase() == dataset)
@@ -316,6 +333,8 @@ class GenePage extends Component {
                     filterValue={this.state.filterValue}
                     />
                 <GenePageTable size={[1000,500]} 
+                    ref={this._genePageTable}
+                    filterValue={this.state.filterValue}
                     filteredData={this.state.filteredData}
                     dataset={this.props.dataset}
                     />
