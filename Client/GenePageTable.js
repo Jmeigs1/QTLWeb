@@ -98,7 +98,6 @@ class GenePageTable extends Component {
         let classList = ""
 
         if(this.state.highlightIndex){
-            console.log(this.state)
             if(index == this.state.highlightIndex){
                 classList += "greenFade "
             }
@@ -132,7 +131,6 @@ class GenePageTable extends Component {
                         onScroll={
                             ({ clientHeight, scrollHeight, scrollTop }) => 
                                 {
-                                    console.log(clientHeight,scrollHeight,scrollTop)
                                     this.setState({scrollTop})
                                 }
                             }

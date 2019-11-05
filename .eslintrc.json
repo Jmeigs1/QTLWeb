@@ -8,7 +8,8 @@
     "rules": {
         "comma-dangle":["error","always-multiline"],
         "semi":["error","never"],
-        "react/prop-types":0
+        "react/prop-types":0,
+        "no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": true }]
     },
     "env":{
         "browser": true,
