@@ -75,7 +75,7 @@ class GenePage extends Component {
 
     getSiteRange() {
         return fetch(
-            window.location.origin + '/api/gene/' + this.props.geneSymbol
+            'http://brainqtl.org:8080' + '/api/gene/' + this.props.geneSymbol
         ).then(response => response.json())
     }
 
@@ -83,7 +83,7 @@ class GenePage extends Component {
         const txStart = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
         const txEnd = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
 
-        return fetch(window.location.origin + '/api/es/range', {
+        return fetch('http://brainqtl.org:8080' + '/api/es/range', {
             method: "POST",
             body: JSON.stringify({
                 rangeData: {
@@ -130,7 +130,7 @@ class GenePage extends Component {
 
     loadDataGene(genes) {
 
-        return fetch(window.location.origin + '/api/gene/search', {
+        return fetch('http://brainqtl.org:8080' + '/api/gene/search', {
             method: "POST",
             body: JSON.stringify({ knownGenes: genes }),
             headers: {
