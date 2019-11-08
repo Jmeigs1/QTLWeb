@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { debounce } from 'throttle-debounce'
+// import { debounce } from 'throttle-debounce'
 
 import DatasetFilter from './DatasetFilter'
-// import GeneCard from './GeneCard'
+import GeneCard from './GeneCard'
 // import GenePageTable from './GenePageTable'
 // import GenePageTableFilter from './GenePageTableFilter'
-import Legend from './Legend'
+// import Legend from './Legend'
 import ScatterPlot from './ScatterPlot'
 // import TranscriptPlot from './TranscriptPlot'
 
@@ -28,27 +28,22 @@ class GenePage extends Component {
         super(props)
 
         this.state = {
-            geneData: [],
-            resultsData: {},
-            filteredData: {},
-            filterValue: "",
+            genes: [],
+            data: [],
+            d3WindowData: {},
+            mainGeneTranscripts: [],
         }
 
-        this.filterResultsFuncDB = debounce(
-            250,
-            this.filterResultsFunc
-        )
+        // this.filterResultsFuncDB = debounce(
+        //     250,
+        //     this.filterResultsFunc
+        // )
 
-        this._genePageTable = React.createRef()
     }
 
-    shouldComponentUpdate(prevProps) {
-        //this change will always happen by itself
-        return prevProps.loading == this.props.loading
-    }
 
     componentDidMount() {
-        document.title = "QTL's - " + this.props.geneSymbol
+        // document.title = "QTL's - " + this.props.geneSymbol
         this.loadAllData()
     }
 
@@ -58,100 +53,20 @@ class GenePage extends Component {
         }
     }
 
+    shouldComponentUpdate(prevProps) {
+        //this change will always happen by itself
+        return prevProps.loading == this.props.loading
+    }
+
     async loadAllData() {
-        console.time('loadAllData')
         if (!this.props.loading)
-            this.props.setLoadingFunc(true, () => {
-                this.props.setDatasetFunc(this.props.dataset)
-            })
+            this.props.setLoadingFunc(true)
 
-        const resultsQueryResults = await this.getSiteRange()
-            .then(rangeQueryData => this.loadDataResults(this.props.geneSymbol, rangeQueryData))
-        const stateDI = await this.loadDataGene(resultsQueryResults.genes)
-        await this.loadD3Data(resultsQueryResults, stateDI)
-        this.props.setLoadingFunc(false)
-        console.timeEnd('loadAllData')
-    }
+        const resultsQueryData = await this.getSiteRange(this.props.geneSymbol)
+            .then(res => this.loadDataResults(this.props.geneSymbol, res))
+        const genes = await this.loadGeneData(resultsQueryData.genes)
 
-    getSiteRange() {
-        return fetch(
-            'http://brainqtl.org:8080' + '/api/gene/' + this.props.geneSymbol
-        ).then(response => response.json())
-    }
-
-    loadDataResults(geneSymbol, rangeQueryData) {
-        const txStart = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
-        const txEnd = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
-
-        return fetch('http://brainqtl.org:8080' + '/api/es/range', {
-            method: "POST",
-            body: JSON.stringify({
-                rangeData: {
-                    chr: rangeQueryData.genes[0]["knownGene.chrom"],
-                    start: txStart - 100000,
-                    end: txEnd + 100000,
-                    dataset: Datasets[this.props.dataset].datasets,
-                },
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => {
-                var lines = data
-
-                var fullData = lines.map((x, i) => {
-                    let ret = x._source
-                    ret.index = i
-                    ret.filterdIndex = i
-                    return ret
-                })
-                var pvals = lines.map(x => +x._source.NonIndexedData.log10pvalue)
-                var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
-
-                genes.push(geneSymbol)
-
-                return {
-                    geneName: geneSymbol,
-                    fullData: fullData,
-                    pvals: pvals,
-                    mainGeneTranscripts: rangeQueryData.genes,
-                    genes: [...new Set(genes)],
-                    range: {
-                        'start': txStart,
-                        'end': txEnd,
-                        'padding': 100000,
-                    },
-                }
-
-            })
-    }
-
-    loadDataGene(genes) {
-
-        return fetch('http://brainqtl.org:8080' + '/api/gene/search', {
-            method: "POST",
-            body: JSON.stringify({ knownGenes: genes }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(data => ({
-                geneData: data.genes,
-                geneDataLoaded: true,
-            }))
-    }
-
-    loadD3Data(resultsQueryResults, stateDI) {
-        if (!resultsQueryResults) return
-
-        let padding = { left: 20, top: 30, right: 20, bottom: 30 }
-        let width = 1070
-        let height = 550
-
-        let points = resultsQueryResults.fullData.map(p => ({
+        const points = resultsQueryData.fullData.map(p => ({
             position: +p.NonIndexedData.SNPGenomicPosition,
             pvalue: +p.NonIndexedData.log10pvalue,
             gene: p.NonIndexedData.GeneSymbol,
@@ -159,27 +74,86 @@ class GenePage extends Component {
             bystroId: p.BystroData['gnomad.genomes.id'],
             dataset: p.Dataset,
         }))
-        let window = {
-            width, height, padding,
-            gene: resultsQueryResults.geneName,
+        const d3WindowData = await this.loadD3Data(this.props.geneSymbol, points)
+
+        this.setState({
+            mainGeneTranscripts: resultsQueryData.mainGeneTranscripts,
+            genes,
+            data: points,
+            d3WindowData,
+        })
+        this.props.setLoadingFunc(false)
+
+    }
+
+
+    getSiteRange(symbol) {
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/${symbol}`)
+            .then(res => res.json())
+    }
+
+    loadDataResults(geneName, rangeQueryData) {
+        const start = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
+        const end = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
+
+        return fetch(`${'http://brainqtl.org:8080'}/api/es/range`, {
+            method: 'POST',
+            body: JSON.stringify({
+                rangeData: {
+                    chr: rangeQueryData.genes[0]['knownGene.chrom'],
+                    start: start - 100000,
+                    end: end + 100000,
+                    dataset: Datasets[this.props.dataset].datasets,
+                },
+            }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then(res => res.json())
+            .then(lines => {
+                let fullData = lines.map((x, index) => ({ ...x._source, index }))
+
+                let genes = fullData.map(x => x.NonIndexedData.GeneSymbol)
+                genes.push(geneName)
+
+                return {
+                    fullData,
+                    geneName,
+                    genes: [...new Set(genes)],
+                    mainGeneTranscripts: rangeQueryData.genes, // intial gene information
+                }
+            })
+    }
+
+    loadGeneData(genes) {
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/search`, {
+            method: 'POST',
+            body: JSON.stringify({ knownGenes: genes }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then(res => res.json())
+            .then(data => data.genes)
+    }
+
+
+    loadD3Data(gene, points) {
+
+        let padding = { left: 35, top: 30, right: 20, bottom: 30 }
+        let width = 1000
+        let height = 550
+
+        return {
+            padding,
+            width,
+            height,
+            gene,
             xScale: scaleLinear()
                 .domain(extent(points, d => d.position))
                 .range([padding.left, width - padding.right]),
             yScale: scaleLinear()
                 .domain(extent(points, d => d.pvalue))
                 .range([height - padding.top, padding.bottom]),
+            // header: `QTL's - ${this.props.geneSymbol}`,
         }
-
-        this.setState({
-            geneDataLoaded: true,
-            resultsData: {
-                d3Data: {
-                    points,
-                    window,
-                    genes: stateDI,
-                },
-            },
-        })
     }
 
     // filterDataFields = [
@@ -233,32 +207,35 @@ class GenePage extends Component {
     // }
 
     render() {
+        // console.log(this.props, this.state)
 
-
-        if (!this.state.geneDataLoaded) return (<Page />)
+        // FIXME: 'loading' is actually apparently 'isLoaded', except not really because we were setting it to 
+        // true for loading stuff (see this.loadAllData). Please make naming convention consistent
+        if (!this.props.loading) return (<Page />)
 
         return (
             <Page>
                 <CardBox>
-                    {/* <GeneCard
-                        mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts} /> */}
+                    <GeneCard
+                        mainGeneTranscripts={this.state.mainGeneTranscripts} />
                     <DatasetFilter
                         geneSymbol={this.props.geneSymbol}
                         dataset={this.props.dataset}
                         setDatasetFunc={this.props.setDatasetFunc} />
                 </CardBox>
-                {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 <ScatterPlot
                     header={Datasets[this.props.dataset].displayName}
-                    d3Data={this.state.resultsData.d3Data}
+                    window={this.state.d3WindowData}
+                    points={this.state.data}
+                    genes={this.state.genes}
                 // genePageTableRef={this._genePageTable}
                 // filterResultsFunc={this.filterResultsFunc}
                 />
-                <Legend />
-                <h3>
+                {/* <Legend /> */}
+                {/* <h3>
                     Filters
                 </h3>
-                {/* <GenePageTableFilter
+                <GenePageTableFilter
                     geneSymbol={this.props.geneSymbol}
                     filterResultsFunc={this.filterResultsFuncDB}
                     filteredData={this.state.filteredData}

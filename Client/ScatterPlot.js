@@ -1,10 +1,10 @@
-import React, { Component, useState } from 'react'
+import React, { Component/*, useState*/ } from 'react'
 import styled from 'styled-components'
 // import animateScrollTo from 'animated-scroll-to'
 
 import { Axis, axisPropsFromTickScale, LEFT, TOP } from 'react-d3-axis'
 
-import Colors from './UI/Colors'
+// import Colors from './UI/Colors'
 // import { LinkDiv } from './UI/BasicElements'
 
 import './UI/closeButton.css'
@@ -19,13 +19,32 @@ class ScatterPlot extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            hoveredGene: null,
-            ...this.props.d3Data, // window, points, genes
+            hoveredGene: props.window.gene,
         }
+
+
+        this.comparePoints = this.comparePoints.bind(this)
+    }
+
+    comparePoints(a, b) {
+        // full sort evaluates at ~6ms
+        const currentGene = this.state.hoveredGene || this.props.window.gene
+
+        if (currentGene === a.gene) {
+            if (currentGene !== b.gene) return 1
+        }
+        else if (currentGene === b.gene) return -1
+
+        if (a.dataset === 'pqtlOverlap') {
+            if (b.dataset !== 'pqtlOverlap') return 1
+        }
+        else if (b.dataset !== 'pqtlOverlap') return -1
+
+        return 0
     }
 
     getPointFill(d) {
-        if (this.state.window.gene === d.gene) {
+        if (this.props.window.gene === d.gene) {
             if (d.dataset === 'pqtlOverlap') return '#3c78d8ff'
             return '#1c4587ff'
         }
@@ -33,16 +52,17 @@ class ScatterPlot extends Component {
         return '#780000ff'
     }
 
-
     render() {
-        console.log(this.state)
-        const { window, points, genes } = this.state
+        const { header, window, points, genes } = this.props
+
+        let sortedPoints = points.sort(this.comparePoints)
+
         return (
             <div style={{ clear: "both" }}>
                 <h2>
-                    {this.props.header}
+                    {header}
                 </h2>
-                <div style={{ position: "relative", width: `${window.width + window.padding.left + window.padding.right}px`, margin: "30px auto" }}>
+                <div style={{ position: "relative", width: `${window.width}px`, margin: "30px auto" }}>
                     <Svg
                         id="MainGraphArea"
                         width={window.width}
@@ -69,7 +89,7 @@ class ScatterPlot extends Component {
 
                             {/* Points */}
                             <g className="ScatterPlot__points">
-                                {points.map((item, index) => (
+                                {sortedPoints.map((item, index) => (
                                     <circle
                                         cx={window.xScale(item.position)}
                                         cy={window.yScale(item.pvalue)}
@@ -85,14 +105,14 @@ class ScatterPlot extends Component {
                             </g>
 
                             {/*Axis*/}
-                            <g transform={`translate(0, ${window.padding.top})`} >
+                            <g transform={`translate(0, 20)`} >
                                 <Axis {...axisPropsFromTickScale(window.xScale)}
                                     style={{
                                         orient: TOP,
                                     }}
                                 />
                             </g>
-                            <g transform={`translate(${window.padding.left}, 0)`}>
+                            <g transform={`translate(22, 0)`}>
                                 <Axis {...axisPropsFromTickScale(window.yScale)}
                                     style={{
                                         orient: LEFT,
@@ -135,7 +155,7 @@ class ScatterPlot extends Component {
                         </div>
                     ) : ""*/}
                 </div>
-            </div>
+            </div >
         )
     }
 }
