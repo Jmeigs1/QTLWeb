@@ -42,7 +42,6 @@ const HomePage = (props) =>
         return (
             <HomePageDiv>
                 <HeadingContainer>
-                    <h1>BrainQTL</h1>
                     <h3>
                         A resource for genetic investigations of the human brain
                     </h3>
@@ -58,6 +57,9 @@ const HomePage = (props) =>
                 <p>
                     Search for genetic variants associated with quantitative molecular traits by gene name,
                     UniProt protein ID, Ensembl gene ID, reference SNP ID, or SNP location
+                </p>
+                <p>
+                    Please note that the scope of the analysis and search does not include genes from mitochondrial or sex chromosomes
                 </p>
                 <SearchBar 
                     dataset={props.dataset}

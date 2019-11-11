@@ -35,7 +35,6 @@ export const Page = styled.div`
     padding: 10px 30px;
     margin: 0 auto;
     font-size: 16px;
-    line-height: 160%;
 `
 
 export const Divider = styled.hr`
