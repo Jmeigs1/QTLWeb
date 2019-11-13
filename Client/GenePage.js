@@ -88,7 +88,7 @@ class GenePage extends Component {
 
 
     getSiteRange(symbol) {
-        return fetch(`${'http://brainqtl.org:8080'}/api/gene/${symbol}`)
+        return fetch(`${window.location.origin}/api/gene/${symbol}`)
             .then(res => res.json())
     }
 
@@ -96,7 +96,7 @@ class GenePage extends Component {
         const start = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
         const end = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
 
-        return fetch(`${'http://brainqtl.org:8080'}/api/es/range`, {
+        return fetch(`${window.location.origin}/api/es/range`, {
             method: 'POST',
             body: JSON.stringify({
                 rangeData: {
@@ -125,7 +125,7 @@ class GenePage extends Component {
     }
 
     loadGeneData(genes) {
-        return fetch(`${'http://brainqtl.org:8080'}/api/gene/search`, {
+        return fetch(`${window.location.origin}/api/gene/search`, {
             method: 'POST',
             body: JSON.stringify({ knownGenes: genes }),
             headers: { 'Content-Type': 'application/json' },
@@ -137,21 +137,23 @@ class GenePage extends Component {
 
     loadD3Data(gene, points) {
 
-        let padding = { left: 35, top: 30, right: 20, bottom: 30 }
-        let width = 1000
-        let height = 550
+        let axisPadding = { left: 22, top: 20 } // give space for axis numbers/labels
+        let padding = { left: 20, top: 20, right: 20, bottom: 60 } // make data stay away from axes
+        let width = 1100
+        let height = 600
 
         return {
+            axisPadding,
             padding,
             width,
             height,
             gene,
             xScale: scaleLinear()
                 .domain(extent(points, d => d.position))
-                .range([padding.left, width - padding.right]),
+                .range([padding.left + axisPadding.left, width - padding.right]),
             yScale: scaleLinear()
                 .domain(extent(points, d => d.pvalue))
-                .range([height - padding.top, padding.bottom]),
+                .range([height - padding.bottom, padding.top + axisPadding.top]),
             // header: `QTL's - ${this.props.geneSymbol}`,
         }
     }
