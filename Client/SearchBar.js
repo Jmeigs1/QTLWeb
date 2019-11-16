@@ -16,7 +16,7 @@ const Searchbox = styled.input`
     padding: 0.375em 1.5em 0.375em 0.75em;
     border-color: rgb(108, 117, 125);
     border-style: solid;
-    border-width: 1px;
+    border-width: 2px;
     border-radius: 0.25em;
     background-position: right center;
     background-repeat: no-repeat;
@@ -170,7 +170,7 @@ class SearchBar extends Component {
 
     render() {
         return (
-            <div style={this.props.style ? this.props.style : { display: 'inline-block', width: '250px', paddingTop: '20px' }}>
+            <div style={this.props.style ? this.props.style : { display: 'inline-block', width: '250px'}}>
                 <Autosuggest
                     suggestions={this.state.suggestions}
                     onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}

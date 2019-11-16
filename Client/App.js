@@ -4,8 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import DatasetPage from './DatasetPage'
 import GenePage from './GenePage'
 import HomePage from './HomePage'
-import SearchBar from './SearchBar'
-import SideDrawer from './Drawer'
+import Navbar from './Navbar'
 import VariantPage from './VariantPage'
 
 import './css/Overrides.css'
@@ -45,10 +44,9 @@ class App extends Component {
                         paddingBottom: '40px',
                         minWidth: "1200px",
                     }}>
-                    <SideDrawer/>
-                    <SearchBar
+                    <Navbar
                         dataset={this.state.dataset}
-                        />
+                    />
                     <Switch>
                         <Route exact path="/" 
                             render={

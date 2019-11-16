@@ -42,7 +42,6 @@ const HomePage = (props) =>
         return (
             <HomePageDiv>
                 <HeadingContainer>
-                    <h1>BrainQTL</h1>
                     <h3>
                         A resource for genetic investigations of the human brain
                     </h3>
@@ -58,6 +57,9 @@ const HomePage = (props) =>
                 <p>
                     Search for genetic variants associated with quantitative molecular traits by gene name,
                     UniProt protein ID, Ensembl gene ID, reference SNP ID, or SNP location
+                </p>
+                <p>
+                    Please note that the scope of the analysis and search does not include genes from mitochondrial or sex chromosomes
                 </p>
                 <SearchBar 
                     dataset={props.dataset}
@@ -89,19 +91,12 @@ const HomePage = (props) =>
                         </p>
                         <p>
                             {'Download Dataset: '}
-                            {/* <ExternalLink 
-                                href="https://brainqtl-downloads.s3.amazonaws.com/pQTLresults_for_brainqtl_Aug21.csv"
+                            <ExternalLink 
+                                href="https://www.synapse.org/#!Synapse:syn21213340"
                                 download
                                 type="application/octet-stream"
                                 >
                                 pQTL
-                            </ExternalLink> */}
-                            <ExternalLink 
-                                href="javascript:void(null)"
-                                download
-                                type="application/octet-stream"
-                                >
-                                pQTL (Coming Soon)
                             </ExternalLink>
                         </p>
                     </div>
@@ -125,34 +120,20 @@ const HomePage = (props) =>
                         </p>
                         <p>
                             {'Download Dataset: '}
-                            {/* <ExternalLink 
-                                href="https://brainqtl-downloads.s3.amazonaws.com/pQTLoverlapeQTL_for_brainqtl_Aug21.csv"
+                            <ExternalLink 
+                                href="https://www.synapse.org/#!Synapse:syn21213391"
                                 download
                                 type="data:text/csv;charset=utf-8"
                                 >
                                 pQTL
-                            </ExternalLink> */}
-                            <ExternalLink 
-                                href="javascript:void(null)"
-                                download
-                                type="data:text/csv;charset=utf-8"
-                                >
-                                pQTL (Coming Soon)
                             </ExternalLink>
                             {' '}
-                            {/* <ExternalLink 
-                                href="https://brainqtl-downloads.s3.amazonaws.com/eQTLoverlappQTL_for_brainqtl_Aug21.csv"
+                            <ExternalLink 
+                                href="https://www.synapse.org/#!Synapse:syn21213297"
                                 download        
                                 type="data:text/csv;charset=utf-8"
                                 >
                                 eQTL
-                            </ExternalLink> */}
-                            <ExternalLink 
-                                href="javascript:void(null)"
-                                download        
-                                type="data:text/csv;charset=utf-8"
-                                >
-                                eQTL (Coming Soon)
                             </ExternalLink>
                         </p>
                     </div>
