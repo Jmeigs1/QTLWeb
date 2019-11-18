@@ -20,9 +20,11 @@ class ScatterPlot extends Component {
         super(props)
         this.state = {
             hoveredGene: null,
+            focusedGene: null,
         }
         this.sortedPoints = [] // not in state, don't update when changed!
 
+        this.focusGene = this.focusGene.bind(this)
         this.hoverGene = this.hoverGene.bind(this)
         this.unhoverGene = this.unhoverGene.bind(this)
         this.comparePoints = this.comparePoints.bind(this)
@@ -51,6 +53,15 @@ class ScatterPlot extends Component {
     //     return expSize < actSize
     // }
 
+    focusGene(e) {
+        let gene = e.target.getAttribute('genename')
+        if (this.state.focusedGene === gene) gene = null
+        this.setState({
+            focusedGene: gene,
+        })
+        this.props.filterResults(gene)
+    }
+
     getPointFill(d) {
         let isDominantDataset = (d.dataset === 'pqtlOverlap' || d.dataset === 'pqtl')
         if (this.props.window.gene === d.gene) {
@@ -63,13 +74,11 @@ class ScatterPlot extends Component {
 
     hoverGene(e) {
         const gene = e.target.getAttribute('genename')
-        this.setState({
-            hoveredGene: gene,
-        })
+        this.setState({ hoveredGene: gene })
     }
     unhoverGene() {
         this.setState({
-            hoveredGene: null,
+            hoveredGene: this.state.focusedGene,
         })
     }
 
@@ -85,15 +94,16 @@ class ScatterPlot extends Component {
                     {header}
                 </h2>
                 <div style={{ background: 'translucent', position: "relative", width: `${window.width}px`, margin: "30px auto" }}>
-                    <Svg
+                    <svg
                         id="MainGraphArea"
                         width={window.width}
                         height={window.height}>
                         <g>
 
                             {/*Label*/}
-                            {/* <text
-                                    transform={"translate(" + (width / 2) + " ," + (height + margin.top + 30) + ")"}
+                            <g className="ScatterPlot__labels">
+                                <text
+                                    transform={`translate(${window.width / 2}, 12)`}
                                     style={{ textAnchor: "middle" }}
                                 >
                                     Genomic Position
@@ -102,11 +112,11 @@ class ScatterPlot extends Component {
                                     transform="rotate(-90)"
                                     style={{ textAnchor: "middle" }}
                                     dy="1em"
-                                    y={0 - margin.left}
-                                    x={0 - (height / 2)}
+                                    x={0 - (window.height / 2)}
                                 >
-                                    -Log 10 P-Value
-                                </text> */}
+                                    Log 10 P-Value
+                                </text>
+                            </g>
 
                             {/*Shaded Regions*/}
                             <g className="ScatterPlot__regions">
@@ -119,7 +129,7 @@ class ScatterPlot extends Component {
                                                 width={window.xScale(gene.end) - start}
                                                 y={window.axisPadding.top}
                                                 height={window.height - window.axisPadding.top} // ded9d0
-                                                fill={window.gene === gene.name ? '#d4e4ff' : '#f3c6c6'}
+                                                fill={window.gene === gene.name ? '#d4e4ff' : '#f0f0f0'}
                                             // style={{ opacity: (!this.state.hoveredGene || this.state.hoveredGene === gene.name ? 1 : .6) }}
                                             />
                                             <rect
@@ -132,7 +142,17 @@ class ScatterPlot extends Component {
                                                 genename={gene.name}
                                                 onMouseEnter={this.hoverGene}
                                                 onMouseLeave={this.unhoverGene}
+                                                onClick={this.focusGene}
+                                                title={`Filter by ${gene.name}`}
                                             />
+                                            <text
+                                                x={start + (window.xScale(gene.end) - start) / 2}
+                                                y={window.height - 15}
+                                                style={{ textAnchor: "middle", pointerEvents: "none", fontWeight: ((gene.name === this.state.focusedGene) ? "bold" : "normal") }}
+                                                fill="white"
+                                            >
+                                                {gene.name}
+                                            </text>
                                         </g>
                                     )
                                 })}
@@ -152,10 +172,10 @@ class ScatterPlot extends Component {
                                         key={index}
                                         className={`ScatterPlot__points__${item.gene} ScatterPlot__points__${item.dataset}`}
                                         cx={window.xScale(item.position)}
-                                        cy={window.yScale(item.pvalue)}
+                                        cy={window.yScale(item.log10pvalue)}
                                         r={(!this.state.hoveredGene || this.state.hoveredGene === item.gene) ? 5 : 3}
                                         fill={this.getPointFill(item)}
-                                        style={{ cursor: "pointer", opacity: (!this.state.hoveredGene || this.state.hoveredGene === item.gene ? 1 : .2) }}
+                                        style={{ cursor: "pointer", opacity: (!this.state.hoveredGene || this.state.hoveredGene === item.gene ? 1 : .15) }}
                                         // onClick={handleMouseClick}
                                         genename={item.gene}
                                         onMouseEnter={this.hoverGene}
@@ -181,7 +201,7 @@ class ScatterPlot extends Component {
                             </g>
 
                         </g>
-                    </Svg>
+                    </svg>
                     {/*state.toolTipData ? (
                         <div style={{
                             backgroundColor: "white",

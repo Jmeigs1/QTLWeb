@@ -18,8 +18,8 @@ import {
     StyledTableRow,
     StyledTableRowHead,
 }
-from './UI/Table'
-import {tableCols} from './UI/Datasets'
+    from './UI/Table'
+import { tableCols } from './UI/Datasets'
 
 // class GenePageTable extends Component {
 
@@ -83,22 +83,19 @@ class GenePageTable extends Component {
 
         this._rowClassName = this._rowClassName.bind(this)
 
-        this._table = React.createRef();
+        this._table = React.createRef()
 
         this.state = {
-            scrollTop:0,
+            scrollTop: 0,
             highlightIndex: -1,
         }
     }
-    componentDidMount(){
 
-    }
-
-    _rowClassName({index}) {
+    _rowClassName({ index }) {
         let classList = ""
 
-        if(this.state.highlightIndex){
-            if(index == this.state.highlightIndex){
+        if (this.state.highlightIndex) {
+            if (index == this.state.highlightIndex) {
                 classList += "greenFade "
             }
         }
@@ -112,55 +109,50 @@ class GenePageTable extends Component {
 
     render() {
 
-        let rows = this.props.filteredData
+        // let rows = this.props.dataPoints.sort((a, b) => (a.pvalue > b.pvalue) ? 1 : -1)
+        let rows = this.props.dataPoints
 
         return (
-            <StyledTableRoot id="table-root" style={{backgroundColor:"white",fontSize:"12px"}}>
+            <StyledTableRoot id="table-root" style={{ backgroundColor: "white", fontSize: "12px" }}>
                 <AutoSizer disableHeight>
-                {({width}) => (
-                    <Table
-                        ref={this._table}
-                        width={width}
-                        height={500}
-                        headerClassName="headerColumn"
-                        headerHeight={45}
-                        rowHeight={45}
-                        rowClassName={this._rowClassName}
-                        rowCount={rows.length}
-                        rowGetter={({ index }) => rows[index]}
-                        onScroll={
-                            ({ clientHeight, scrollHeight, scrollTop }) => 
-                                {
-                                    this.setState({scrollTop})
-                                }
-                            }
-                        scrollTop={this.state.scrollTop}
+                    {({ width }) => (
+                        <Table
+                            ref={this._table}
+                            width={width}
+                            height={500}
+                            headerClassName="headerColumn"
+                            headerHeight={45}
+                            rowHeight={45}
+                            rowClassName={this._rowClassName}
+                            rowCount={rows.length}
+                            rowGetter={({ index }) => rows[index]}
+                            onScroll={({ clientHeight, scrollHeight, scrollTop }) => {
+                                this.setState({ scrollTop })
+                            }}
+                            scrollTop={this.state.scrollTop}
                         // rowRenderer={(props) => (<div id={`row_${props.rowData.filterdIndex}`}><DefaultTableRowRenderer {...props} /></div>)}
-                    >
-                    {tableCols.map(
-                        (col, i) => (
-                            <Column
-                                key={i}
-                                width={200}
-                                label={col.displayName}
-                                dataKey={i}
-                                cellRenderer={
-                                    ({rowData}) => {
-                                        return (
-                                            i > 0 ?
-                                            (
+                        >
+                            {tableCols.map(
+                                (col, i) => (
+                                    <Column
+                                        key={i}
+                                        width={200}
+                                        label={col.displayName}
+                                        dataKey={i}
+                                        cellRenderer={({ rowData }) => i > 0
+                                            ? (
                                                 <Highlighter
                                                     searchWords={[this.props.filterValue]}
                                                     autoEscape={true}
                                                     textToHighlight={col.dbName(rowData)}
                                                 />
-                                            ) :
-                                            (
+                                            )
+                                            : (
                                                 <Link to={
-                                                    `/gene/${rowData.NonIndexedData.GeneSymbol}`+
-                                                    `/site/${rowData.Site}`+
-                                                    `/chr/${rowData.Chr}`+
-                                                    `/dataset/${rowData.Dataset}`}>
+                                                    `/gene/${rowData.gene}` +
+                                                    `/site/${rowData.position}` +
+                                                    `/chr/${rowData.chromosome}` +
+                                                    `/dataset/${rowData.dataset}`}>
                                                     <Highlighter
                                                         searchWords={[this.props.filterValue]}
                                                         autoEscape={true}
@@ -168,15 +160,13 @@ class GenePageTable extends Component {
                                                     />
                                                 </Link>
                                             )
-                                        )
                                         }
-                                }
-                                />
-                        )
+                                    />
+                                )
+                            )}
+
+                        </Table>
                     )}
-                
-                    </Table>
-                )}
                 </AutoSizer>
             </StyledTableRoot>
         )

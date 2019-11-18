@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 import DatasetFilter from './DatasetFilter'
 import GeneCard from './GeneCard'
-// import GenePageTable from './GenePageTable'
+import GenePageTable from './GenePageTable'
 // import GenePageTableFilter from './GenePageTableFilter'
 // import Legend from './Legend'
 import ScatterPlot from './ScatterPlot'
@@ -32,6 +32,7 @@ class GenePage extends Component {
             data: [],
             d3WindowData: {},
             mainGeneTranscripts: [],
+            filterGene: null,
         }
 
         // this.filterResultsFuncDB = debounce(
@@ -39,11 +40,12 @@ class GenePage extends Component {
         //     this.filterResultsFunc
         // )
 
+        this.filterData = this.filterData.bind(this)
     }
 
 
     componentDidMount() {
-        // document.title = "QTL's - " + this.props.geneSymbol
+        document.title = "QTL's - " + this.props.geneSymbol
         this.loadAllData()
     }
 
@@ -66,13 +68,18 @@ class GenePage extends Component {
             .then(res => this.loadDataResults(this.props.geneSymbol, res))
         const genes = await this.loadGeneData(resultsQueryData.genes)
 
+        console.log(resultsQueryData.fullData)
+
         const points = resultsQueryData.fullData.map(p => ({
             position: +p.NonIndexedData.SNPGenomicPosition,
-            pvalue: +p.NonIndexedData.log10pvalue,
+            pvalue: +p.NonIndexedData.pvalue,
+            log10pvalue: +p.NonIndexedData.log10pvalue,
+            bonfpvalue: +p.NonIndexedData.Bonferronipvalue,
             gene: p.NonIndexedData.GeneSymbol,
             chromosome: p.NonIndexedData.Chromosome,
             bystroId: p.BystroData['gnomad.genomes.id'],
             dataset: p.Dataset,
+            fdr: +p.NonIndexedData.FDR,
         }))
         const d3WindowData = await this.loadD3Data(this.props.geneSymbol, points)
 
@@ -88,7 +95,7 @@ class GenePage extends Component {
 
 
     getSiteRange(symbol) {
-        return fetch(`${window.location.origin}/api/gene/${symbol}`)
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/${symbol}`)
             .then(res => res.json())
     }
 
@@ -96,7 +103,7 @@ class GenePage extends Component {
         const start = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
         const end = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
 
-        return fetch(`${window.location.origin}/api/es/range`, {
+        return fetch(`${'http://brainqtl.org:8080'}/api/es/range`, {
             method: 'POST',
             body: JSON.stringify({
                 rangeData: {
@@ -125,7 +132,7 @@ class GenePage extends Component {
     }
 
     loadGeneData(genes) {
-        return fetch(`${window.location.origin}/api/gene/search`, {
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/search`, {
             method: 'POST',
             body: JSON.stringify({ knownGenes: genes }),
             headers: { 'Content-Type': 'application/json' },
@@ -137,7 +144,7 @@ class GenePage extends Component {
 
     loadD3Data(gene, points) {
 
-        let axisPadding = { left: 22, top: 20 } // give space for axis numbers/labels
+        let axisPadding = { left: 45, top: 40 } // give space for axis numbers/labels
         let padding = { left: 20, top: 20, right: 20, bottom: 60 } // make data stay away from axes
         let width = 1100
         let height = 600
@@ -152,7 +159,7 @@ class GenePage extends Component {
                 .domain(extent(points, d => d.position))
                 .range([padding.left + axisPadding.left, width - padding.right]),
             yScale: scaleLinear()
-                .domain(extent(points, d => d.pvalue))
+                .domain(extent(points, d => d.log10pvalue))
                 .range([height - padding.bottom, padding.top + axisPadding.top]),
             // header: `QTL's - ${this.props.geneSymbol}`,
         }
@@ -208,11 +215,20 @@ class GenePage extends Component {
     //     }, cb)
     // }
 
-    render() {
-        // console.log(this.props, this.state)
+    filterData(gene) {
+        console.log(gene)
+        // if (!this.props.loading)
+        //     this.props.setLoadingFunc(true)
 
-        // FIXME: 'loading' is actually apparently 'isLoaded', except not really because we were setting it to 
-        // true for loading stuff (see this.loadAllData). Please make naming convention consistent
+        // this.setState({
+        //     filterGene: gene,
+        // })
+
+        // this.props.setLoadingFunc(false)
+    }
+
+    render() {
+
         if (!this.props.loading) return (<Page />)
 
         return (
@@ -230,6 +246,7 @@ class GenePage extends Component {
                     window={this.state.d3WindowData}
                     points={this.state.data}
                     genes={this.state.genes}
+                    filterResults={this.filterData}
                 // genePageTableRef={this._genePageTable}
                 // filterResultsFunc={this.filterResultsFunc}
                 />
@@ -242,14 +259,14 @@ class GenePage extends Component {
                     filterResultsFunc={this.filterResultsFuncDB}
                     filteredData={this.state.filteredData}
                     filterValue={this.state.filterValue}
-                />
-                <GenePageTable
-                    size={[1000, 500]}
-                    ref={this._genePageTable}
-                    filterValue={this.state.filterValue}
-                    filteredData={this.state.filteredData}
-                    dataset={this.props.dataset}
                 /> */}
+                <GenePageTable
+                    size={[1100, 500]}
+                    ref={this._genePageTable}
+                    filterValue={this.state.filterGene}
+                    dataPoints={this.state.data}
+                // dataset={this.props.dataset}
+                />
             </Page>
         )
     }
