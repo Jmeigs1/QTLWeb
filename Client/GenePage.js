@@ -6,7 +6,7 @@ import DatasetFilter from './DatasetFilter'
 import GeneCard from './GeneCard'
 import GenePageTable from './GenePageTable'
 // import GenePageTableFilter from './GenePageTableFilter'
-// import Legend from './Legend'
+import Legend from './Legend'
 import ScatterPlot from './ScatterPlot'
 // import TranscriptPlot from './TranscriptPlot'
 
@@ -33,8 +33,11 @@ class GenePage extends Component {
             d3WindowData: {},
             mainGeneTranscripts: [],
             filterGene: null,
+            filteredData: [],
+            isDataLoaded: false,
         }
 
+        this._genePageTable = React.createRef()
         // this.filterResultsFuncDB = debounce(
         //     250,
         //     this.filterResultsFunc
@@ -55,22 +58,22 @@ class GenePage extends Component {
         }
     }
 
-    shouldComponentUpdate(prevProps) {
-        //this change will always happen by itself
-        return prevProps.loading == this.props.loading
-    }
+    // shouldComponentUpdate(prevProps) {
+    //     //this change will always happen by itself
+    //     return prevProps.loading == this.props.loading
+    // }
 
     async loadAllData() {
         if (!this.props.loading)
-            this.props.setLoadingFunc(true)
+            this.props.setLoadingFunc(true, () => {
+                this.props.setDatasetFunc(this.props.dataset)
+            })
 
         const resultsQueryData = await this.getSiteRange(this.props.geneSymbol)
             .then(res => this.loadDataResults(this.props.geneSymbol, res))
         const genes = await this.loadGeneData(resultsQueryData.genes)
 
-        console.log(resultsQueryData.fullData)
-
-        const points = resultsQueryData.fullData.map(p => ({
+        const points = resultsQueryData.fullData.map((p, i) => ({
             position: +p.NonIndexedData.SNPGenomicPosition,
             pvalue: +p.NonIndexedData.pvalue,
             log10pvalue: +p.NonIndexedData.log10pvalue,
@@ -80,6 +83,7 @@ class GenePage extends Component {
             bystroId: p.BystroData['gnomad.genomes.id'],
             dataset: p.Dataset,
             fdr: +p.NonIndexedData.FDR,
+            index: i,
         }))
         const d3WindowData = await this.loadD3Data(this.props.geneSymbol, points)
 
@@ -87,7 +91,9 @@ class GenePage extends Component {
             mainGeneTranscripts: resultsQueryData.mainGeneTranscripts,
             genes,
             data: points,
+            filteredData: points,
             d3WindowData,
+            isDataLoaded: true,
         })
         this.props.setLoadingFunc(false)
 
@@ -216,20 +222,19 @@ class GenePage extends Component {
     // }
 
     filterData(gene) {
-        console.log(gene)
-        // if (!this.props.loading)
-        //     this.props.setLoadingFunc(true)
+        this.props.setLoadingFunc(true)
 
-        // this.setState({
-        //     filterGene: gene,
-        // })
+        let filteredData = this.state.data.filter(d => d.gene === gene)
+        if (!gene) filteredData = this.state.data
 
-        // this.props.setLoadingFunc(false)
+        this.setState({
+            filterGene: gene,
+            filteredData,
+        }, () => this.props.setLoadingFunc(false))
     }
 
     render() {
-
-        if (!this.props.loading) return (<Page />)
+        if (!this.state.isDataLoaded) return (<Page />)
 
         return (
             <Page>
@@ -244,13 +249,13 @@ class GenePage extends Component {
                 <ScatterPlot
                     header={Datasets[this.props.dataset].displayName}
                     window={this.state.d3WindowData}
-                    points={this.state.data}
+                    points={this.state.filteredData}
                     genes={this.state.genes}
+                    filterGene={this.state.filterGene}
                     filterResults={this.filterData}
-                // genePageTableRef={this._genePageTable}
-                // filterResultsFunc={this.filterResultsFunc}
+                    genePageTableRef={this._genePageTable}
                 />
-                {/* <Legend /> */}
+                <Legend />
                 {/* <h3>
                     Filters
                 </h3>
@@ -261,10 +266,10 @@ class GenePage extends Component {
                     filterValue={this.state.filterValue}
                 /> */}
                 <GenePageTable
-                    size={[1100, 500]}
+                    // size={[1100, 500]}
                     ref={this._genePageTable}
                     filterValue={this.state.filterGene}
-                    dataPoints={this.state.data}
+                    data={this.state.filteredData}
                 // dataset={this.props.dataset}
                 />
             </Page>

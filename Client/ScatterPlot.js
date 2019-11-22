@@ -1,11 +1,11 @@
-import React, { Component/*, useState*/ } from 'react'
+import React, { Component } from 'react'
 import styled from 'styled-components'
-// import animateScrollTo from 'animated-scroll-to'
+import animateScrollTo from 'animated-scroll-to'
 
 import { Axis, axisPropsFromTickScale, LEFT, TOP } from 'react-d3-axis'
 
 // import Colors from './UI/Colors'
-// import { LinkDiv } from './UI/BasicElements'
+import { LinkDiv } from './UI/BasicElements'
 
 import './UI/closeButton.css'
 
@@ -19,15 +19,19 @@ class ScatterPlot extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            hoveredGene: null,
-            focusedGene: null,
+            hoveredGene: null, // covers other
+            // filteredGene: null,
+            toolTipData: null,
+            selected: -1,
         }
         this.sortedPoints = [] // not in state, don't update when changed!
 
-        this.focusGene = this.focusGene.bind(this)
+        this.filterGene = this.filterGene.bind(this)
         this.hoverGene = this.hoverGene.bind(this)
         this.unhoverGene = this.unhoverGene.bind(this)
         this.comparePoints = this.comparePoints.bind(this)
+        this.showToolTip = this.showToolTip.bind(this)
+        this.scrollTable = this.scrollTable.bind(this)
     }
 
     comparePoints(a, b) {
@@ -47,18 +51,13 @@ class ScatterPlot extends Component {
         return 0
     }
 
-    // isRangeOverlapping(startA, endA, startB, endB) {
-    //     let expSize = (startA - endA) + (startB - endB)
-    //     let actSize = Math.max(startA, endA, startB, endB) - Math.min(startA, endA, startB, endB)
-    //     return expSize < actSize
-    // }
+    filterGene(e) { // call with event or gene
+        let gene = e
+        if (e.target)
+            gene = e.target.getAttribute('genename')
+        if (this.props.filterGene === gene) gene = null
 
-    focusGene(e) {
-        let gene = e.target.getAttribute('genename')
-        if (this.state.focusedGene === gene) gene = null
-        this.setState({
-            focusedGene: gene,
-        })
+        // this.setState({ filteredGene: gene })
         this.props.filterResults(gene)
     }
 
@@ -72,13 +71,56 @@ class ScatterPlot extends Component {
         return '#780000'
     }
 
+    getToolTipDirection(coorY, boxHeight) {
+        if (coorY < this.props.window.height / 2)
+            return coorY + 20
+        return coorY - boxHeight - 20
+    }
+
     hoverGene(e) {
+        if (this.props.filterGene) return
         const gene = e.target.getAttribute('genename')
         this.setState({ hoveredGene: gene })
     }
     unhoverGene() {
         this.setState({
-            hoveredGene: this.state.focusedGene,
+            hoveredGene: null,
+        })
+    }
+
+    showToolTip(e) {
+        let circle = e.target
+        let circleIndex = circle.getAttribute('index')
+
+        if (this.state.selected == circleIndex)
+            return this.setState({
+                toolTipData: null,
+                selected: -1,
+            })
+
+        let toolTipData = {
+            ...this.sortedPoints[circleIndex],
+            coordX: circle.getAttribute('cx'),
+            coordY: circle.getAttribute('cy'),
+        }
+        this.setState({
+            toolTipData,
+            selected: circleIndex,
+        })
+    }
+
+    scrollTable(e) {
+        let point = this.sortedPoints[this.state.selected]
+
+        let index = point.index // index in unsorted list
+
+        this.props.genePageTableRef.current.setState({ "highlightIndex": index })
+        this.props.genePageTableRef.current._table.current.scrollToRow(index)
+
+        const body = document.getElementById('table-root')
+
+        animateScrollTo(body.offsetTop, {
+            minDuration: 1000,
         })
     }
 
@@ -94,13 +136,13 @@ class ScatterPlot extends Component {
                     {header}
                 </h2>
                 <div style={{ background: 'translucent', position: "relative", width: `${window.width}px`, margin: "30px auto" }}>
-                    <svg
+                    <Svg
                         id="MainGraphArea"
                         width={window.width}
                         height={window.height}>
                         <g>
 
-                            {/*Label*/}
+                            {/* Labels */}
                             <g className="ScatterPlot__labels">
                                 <text
                                     transform={`translate(${window.width / 2}, 12)`}
@@ -118,7 +160,7 @@ class ScatterPlot extends Component {
                                 </text>
                             </g>
 
-                            {/*Shaded Regions*/}
+                            {/* Shaded Regions */}
                             <g className="ScatterPlot__regions">
                                 {genes.map((gene, index) => {
                                     let start = Math.max(window.xScale(gene.start), window.axisPadding.left) // cut off overflow
@@ -142,13 +184,12 @@ class ScatterPlot extends Component {
                                                 genename={gene.name}
                                                 onMouseEnter={this.hoverGene}
                                                 onMouseLeave={this.unhoverGene}
-                                                onClick={this.focusGene}
-                                                title={`Filter by ${gene.name}`}
+                                                onClick={this.filterGene}
                                             />
                                             <text
                                                 x={start + (window.xScale(gene.end) - start) / 2}
                                                 y={window.height - 15}
-                                                style={{ textAnchor: "middle", pointerEvents: "none", fontWeight: ((gene.name === this.state.focusedGene) ? "bold" : "normal") }}
+                                                style={{ textAnchor: "middle", pointerEvents: "none", fontWeight: ((gene.name === this.props.filterGene) ? "bold" : "normal") }}
                                                 fill="white"
                                             >
                                                 {gene.name}
@@ -170,39 +211,44 @@ class ScatterPlot extends Component {
                                 {this.sortedPoints.map((item, index) => (
                                     <circle
                                         key={index}
+                                        index={index}
                                         className={`ScatterPlot__points__${item.gene} ScatterPlot__points__${item.dataset}`}
                                         cx={window.xScale(item.position)}
                                         cy={window.yScale(item.log10pvalue)}
                                         r={(!this.state.hoveredGene || this.state.hoveredGene === item.gene) ? 5 : 3}
                                         fill={this.getPointFill(item)}
                                         style={{ cursor: "pointer", opacity: (!this.state.hoveredGene || this.state.hoveredGene === item.gene ? 1 : .15) }}
-                                        // onClick={handleMouseClick}
+
                                         genename={item.gene}
                                         onMouseEnter={this.hoverGene}
                                         onMouseLeave={this.unhoverGene}
+                                        onClick={this.showToolTip}
                                     />
                                 ))}
                             </g>
 
                             {/* Axis */}
-                            <g transform={`translate(0, ${window.axisPadding.top})`} >
-                                <Axis {...axisPropsFromTickScale(window.xScale)}
-                                    style={{
-                                        orient: TOP,
-                                    }}
-                                />
-                            </g>
-                            <g transform={`translate(${window.axisPadding.left}, 0)`}>
-                                <Axis {...axisPropsFromTickScale(window.yScale)}
-                                    style={{
-                                        orient: LEFT,
-                                    }}
-                                />
+                            <g className="ScatterPlot__axis">
+                                <g transform={`translate(0, ${window.axisPadding.top})`} >
+                                    <Axis {...axisPropsFromTickScale(window.xScale)}
+                                        style={{
+                                            orient: TOP,
+                                        }}
+                                    />
+                                </g>
+                                <g transform={`translate(${window.axisPadding.left}, 0)`}>
+                                    <Axis {...axisPropsFromTickScale(window.yScale)}
+                                        style={{
+                                            orient: LEFT,
+                                        }}
+                                    />
+                                </g>
                             </g>
 
                         </g>
-                    </svg>
-                    {/*state.toolTipData ? (
+                    </Svg>
+                    {/* Tooltip */}
+                    {(this.state.toolTipData) ? (
                         <div style={{
                             backgroundColor: "white",
                             boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12)",
@@ -210,31 +256,33 @@ class ScatterPlot extends Component {
                             width: "250px",
                             padding: "6px 10px",
                             position: "absolute",
-                            left: `${state.toolTipData.coordX + margin.left}px`,
-                            top: `${getToolTipDirection(state.toolTipData.coordY, 144) + margin.top}px`,
+                            left: `${this.state.toolTipData.coordX + window.padding.left}px`,
+                            // top: `${this.state.toolTipData.coordY + window.padding.top - 134}px`,
+                            top: `${this.getToolTipDirection(this.state.toolTipData.coordY, 134) + window.padding.top}px`,
                         }}>
-                            <div href="#" onClick={() => { setState({ toolTipData: null, selected: null }) }} className="boxclose">x</div>
+                            <div href="#" onClick={() => { this.setState({ toolTipData: null, selected: null }) }} className="boxclose">x</div>
                             <div>
-                                {state.toolTipData.NonIndexedData.GeneSymbol} -
-                                <LinkDiv onClick={() => { props.filterResultsFunc(state.toolTipData.NonIndexedData.GeneSymbol) }} style={{ display: "inline" }}>
-                                    {' Filter'}
-                                </LinkDiv>
+                                {this.state.toolTipData.gene} -
+                                <LinkDiv
+                                    onClick={e => this.filterGene(this.state.toolTipData.gene)}
+                                    style={{ display: "inline" }}
+                                >Toggle Filter</LinkDiv>
                             </div>
                             <div>
-                                {state.toolTipData.Coordinate}
+                                {`${this.state.toolTipData.chromosome}:${this.state.toolTipData.position}`}
                             </div>
                             <div>
-                                {state.toolTipData.BystroData["gnomad.genomes.id"]}
+                                {this.state.toolTipData.bystroId}
                             </div>
                             <hr style={{ marginTop: "3px", marginBottom: "3px", borderTopColor: "#4C688B" }} />
                             <div>
-                                {`Value: ${state.toolTipData.NonIndexedData.log10pvalue}`}
+                                {`Value: ${this.state.toolTipData.log10pvalue}`}
                             </div>
-                            <LinkDiv onClick={() => { scrollToTable(state.toolTipData.filterdIndex) }}>
+                            <LinkDiv onClick={this.scrollTable}>
                                 Show in table
                             </LinkDiv>
                         </div>
-                    ) : ""*/}
+                    ) : ""}
                 </div>
             </div >
         )

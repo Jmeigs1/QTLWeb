@@ -30,29 +30,37 @@ const LegendLabel = styled.span`
 `
 
 const Legend = () => {
-    
+
     return (
         <div>
             <h3>
                 Legend
             </h3>
             <LegendDiv>
-                    <LegendIconSquare style={{
-                        background: '#3A32769A',
-                    }}/> 
-                    <LegendLabel>Searched Gene Coding Region</LegendLabel>
-                    <LegendIconSquare style={{
-                        background: '#AA92391A',
-                    }}/> 
-                    <LegendLabel>Window Region</LegendLabel>
-                    <LegendIconCircle style={{
-                        background: 'brown',
-                    }}/>
-                    <LegendLabel>Searched Gene QTL</LegendLabel>
-                    <LegendIconCircle style={{
-                        background: '#2B4970',
-                    }}/>
-                    <LegendLabel>In Window QTL</LegendLabel>
+                {/* <LegendIconSquare style={{
+                    background: '#d4e4ff',
+                }} />
+                <LegendLabel>Searched Gene Coding Region</LegendLabel>
+                <LegendIconSquare style={{
+                    background: '#f0f0f0',
+                }} />
+                <LegendLabel>Window Region</LegendLabel> */}
+                <LegendIconCircle style={{
+                    background: '#5e94eb',
+                }} />
+                <LegendLabel>Searched Gene pQTL</LegendLabel>
+                <LegendIconCircle style={{
+                    background: '#1c4587',
+                }} />
+                <LegendLabel>Searched Gene eQTL</LegendLabel>
+                <LegendIconCircle style={{
+                    background: '#d52e2e',
+                }} />
+                <LegendLabel>In Window pQTL</LegendLabel>
+                <LegendIconCircle style={{
+                    background: '#780000',
+                }} />
+                <LegendLabel>In Window eQTL</LegendLabel>
             </LegendDiv>
             <p>
             </p>

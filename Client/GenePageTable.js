@@ -81,14 +81,16 @@ class GenePageTable extends Component {
     constructor(props, context) {
         super(props, context)
 
-        this._rowClassName = this._rowClassName.bind(this)
-
-        this._table = React.createRef()
 
         this.state = {
+            rows: [],
             scrollTop: 0,
             highlightIndex: -1,
         }
+        this._table = React.createRef()
+        this.rows = []
+
+        this._rowClassName = this._rowClassName.bind(this)
     }
 
     _rowClassName({ index }) {
@@ -109,8 +111,7 @@ class GenePageTable extends Component {
 
     render() {
 
-        // let rows = this.props.dataPoints.sort((a, b) => (a.pvalue > b.pvalue) ? 1 : -1)
-        let rows = this.props.dataPoints
+        let rows = this.props.data
 
         return (
             <StyledTableRoot id="table-root" style={{ backgroundColor: "white", fontSize: "12px" }}>
