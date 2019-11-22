@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-// import { debounce } from 'throttle-debounce'
+import { debounce } from 'throttle-debounce'
 
 import DatasetFilter from './DatasetFilter'
 import GeneCard from './GeneCard'
@@ -38,12 +38,12 @@ class GenePage extends Component {
         }
 
         this._genePageTable = React.createRef()
-        // this.filterResultsFuncDB = debounce(
-        //     250,
-        //     this.filterResultsFunc
-        // )
-
         this.filterData = this.filterData.bind(this)
+        this.filterDataDB = debounce(
+            250,
+            this.filterData
+        )
+
     }
 
 
@@ -58,10 +58,10 @@ class GenePage extends Component {
         }
     }
 
-    // shouldComponentUpdate(prevProps) {
-    //     //this change will always happen by itself
-    //     return prevProps.loading == this.props.loading
-    // }
+    shouldComponentUpdate(prevProps) {
+        //this change will always happen by itself
+        return prevProps.loading == this.props.loading
+    }
 
     async loadAllData() {
         if (!this.props.loading)
@@ -101,7 +101,7 @@ class GenePage extends Component {
 
 
     getSiteRange(symbol) {
-        return fetch(`${'http://brainqtl.org:8080'}/api/gene/${symbol}`)
+        return fetch(`${window.location.origin}/api/gene/${symbol}`)
             .then(res => res.json())
     }
 
@@ -109,7 +109,7 @@ class GenePage extends Component {
         const start = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
         const end = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
 
-        return fetch(`${'http://brainqtl.org:8080'}/api/es/range`, {
+        return fetch(`${window.location.origin}/api/es/range`, {
             method: 'POST',
             body: JSON.stringify({
                 rangeData: {
@@ -138,7 +138,7 @@ class GenePage extends Component {
     }
 
     loadGeneData(genes) {
-        return fetch(`${'http://brainqtl.org:8080'}/api/gene/search`, {
+        return fetch(`${window.location.origin}/api/gene/search`, {
             method: 'POST',
             body: JSON.stringify({ knownGenes: genes }),
             headers: { 'Content-Type': 'application/json' },
@@ -170,17 +170,6 @@ class GenePage extends Component {
             // header: `QTL's - ${this.props.geneSymbol}`,
         }
     }
-
-    // filterDataFields = [
-    //     {
-    //         fieldName: "GeneSymbol",
-    //         getData: (d) => d.NonIndexedData.GeneSymbol,
-    //     },
-    //     {
-    //         fieldName: "EnsID",
-    //         getData: (d) => d.NonIndexedData.EnsemblGeneID,
-    //     },
-    // ]
 
     // filterResultsFunc = (filterText, cb) => {
 
@@ -252,7 +241,7 @@ class GenePage extends Component {
                     points={this.state.filteredData}
                     genes={this.state.genes}
                     filterGene={this.state.filterGene}
-                    filterResults={this.filterData}
+                    filterResults={this.filterDataDB}
                     genePageTableRef={this._genePageTable}
                 />
                 <Legend />

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Highlighter from 'react-highlight-words'
 
-import { Column, Table, defaultTableRowRenderer as DefaultTableRowRenderer } from 'react-virtualized'
+import { Column, Table } from 'react-virtualized'
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer'
 
 import 'react-virtualized/styles.css'
@@ -9,14 +9,14 @@ import './css/Table.example.css'
 
 import { Link } from './UI/BasicElements'
 import {
-    StyledTable,
-    StyledTableBody,
-    StyledTableCell,
-    StyledTableCellHeader,
-    StyledTableHead,
+    // StyledTable,
+    // StyledTableBody,
+    // StyledTableCell,
+    // StyledTableCellHeader,
+    // StyledTableHead,
     StyledTableRoot,
-    StyledTableRow,
-    StyledTableRowHead,
+    // StyledTableRow,
+    // StyledTableRowHead,
 }
     from './UI/Table'
 import { tableCols } from './UI/Datasets'

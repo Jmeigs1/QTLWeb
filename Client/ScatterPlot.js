@@ -127,6 +127,9 @@ class ScatterPlot extends Component {
     render() {
         const { header, window, points, genes } = this.props
 
+        console.log(this.formGeneTracks(genes))
+
+
         if (this.sortedPoints.length !== points.length) // only re-sort when actual points change
             this.sortedPoints = points.sort(this.comparePoints)
 
