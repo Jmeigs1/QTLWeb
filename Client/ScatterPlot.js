@@ -8,11 +8,17 @@ import { Axis, axisPropsFromTickScale, LEFT, TOP } from 'react-d3-axis'
 import { LinkDiv } from './UI/BasicElements'
 
 import './UI/closeButton.css'
+import { fontWeight } from '@material-ui/system'
 
 const Svg = styled.svg`
     margin: 10px auto;
     display: block;
 `
+/*
+    TODO:
+    make filter work
+    make text on geneTrack readable when small
+*/
 
 class ScatterPlot extends Component {
 
@@ -33,6 +39,32 @@ class ScatterPlot extends Component {
         this.showToolTip = this.showToolTip.bind(this)
         this.scrollTable = this.scrollTable.bind(this)
     }
+
+    formGeneTracks(genes) {
+        let distributed = [[]]
+        genes.map(gene => {
+            // if we can place it in existing genes... gene
+            if (distributed.some(geneTrack => {
+                // if none are overlapping
+                if (geneTrack.some(this.areRegionsOverlapping.bind(this, gene)))
+                    return false
+                geneTrack.push(gene)
+                return true
+            })) return true
+            // if we can't place it...
+            distributed.push([gene])
+            return false
+        })
+        return distributed
+    }
+
+    areRegionsOverlapping(a, b) {
+        let actualDif = Math.max(a.end, b.end) - Math.min(a.start, b.start)
+        let minDif = (a.end - a.start) + (b.end - b.start)
+        // if (actualDif < minDif) console.log(`OVERLAP between: ${a.name} :: ${b.name}`)
+        return (actualDif < minDif)
+    }
+
 
     comparePoints(a, b) {
         // full sort evaluates at ~6ms
@@ -55,7 +87,7 @@ class ScatterPlot extends Component {
         let gene = e
         if (e.target)
             gene = e.target.getAttribute('genename')
-        if (this.props.filterGene === gene) gene = null
+        if (this.props.filterGene === gene) gene = ''
 
         // this.setState({ filteredGene: gene })
         this.props.filterResults(gene)
@@ -78,7 +110,7 @@ class ScatterPlot extends Component {
     }
 
     hoverGene(e) {
-        if (this.props.filterGene) return
+        // if (this.props.filterGene) return
         const gene = e.target.getAttribute('genename')
         this.setState({ hoveredGene: gene })
     }
@@ -127,8 +159,7 @@ class ScatterPlot extends Component {
     render() {
         const { header, window, points, genes } = this.props
 
-        console.log(this.formGeneTracks(genes))
-
+        const geneTracks = this.formGeneTracks(genes) // TODO: don't do on every update
 
         if (this.sortedPoints.length !== points.length) // only re-sort when actual points change
             this.sortedPoints = points.sort(this.comparePoints)
@@ -142,7 +173,7 @@ class ScatterPlot extends Component {
                     <Svg
                         id="MainGraphArea"
                         width={window.width}
-                        height={window.height}>
+                        height={window.height + 40 * geneTracks.length}>
                         <g>
 
                             {/* Labels */}
@@ -164,49 +195,55 @@ class ScatterPlot extends Component {
                             </g>
 
                             {/* Shaded Regions */}
-                            <g className="ScatterPlot__regions">
-                                {genes.map((gene, index) => {
-                                    let start = Math.max(window.xScale(gene.start), window.axisPadding.left) // cut off overflow
-                                    return (
-                                        <g key={index} className={`Scatter__region__${gene.name}`}>
-                                            <rect
-                                                x={start}
-                                                width={window.xScale(gene.end) - start}
-                                                y={window.axisPadding.top}
-                                                height={window.height - window.axisPadding.top} // ded9d0
-                                                fill={window.gene === gene.name ? '#d4e4ff' : '#f0f0f0'}
-                                            // style={{ opacity: (!this.state.hoveredGene || this.state.hoveredGene === gene.name ? 1 : .6) }}
-                                            />
-                                            <rect
-                                                x={start}
-                                                width={window.xScale(gene.end) - start}
-                                                y={window.height - 40}
-                                                height={40}
-                                                fill={'#333'}
-                                                style={{ cursor: "pointer" }}
-                                                genename={gene.name}
-                                                onMouseEnter={this.hoverGene}
-                                                onMouseLeave={this.unhoverGene}
-                                                onClick={this.filterGene}
-                                            />
-                                            <text
-                                                x={start + (window.xScale(gene.end) - start) / 2}
-                                                y={window.height - 15}
-                                                style={{ textAnchor: "middle", pointerEvents: "none", fontWeight: ((gene.name === this.props.filterGene) ? "bold" : "normal") }}
-                                                fill="white"
-                                            >
-                                                {gene.name}
-                                            </text>
-                                        </g>
-                                    )
-                                })}
+                            <g className="ScatterPlot__tracks">
                                 <rect
                                     x={window.axisPadding.left}
                                     width={window.width - window.axisPadding.left}
-                                    y={window.height - 40}
+                                    y={window.height}
                                     height={7}
-                                    fill={'#333'}
+                                    fill='#333'
                                 />
+                                {geneTracks.map((track, trackIndex) => (
+                                    <g
+                                        key={trackIndex}
+                                        className="ScatterPlot__tracks__track"
+                                    >
+                                        {track.map((gene, index) => {
+                                            let start = Math.max(window.xScale(gene.start), window.axisPadding.left) // cut off overflow
+                                            return (
+                                                <g key={index} className={`Scatter__region__${gene.name}`}>
+                                                    <rect
+                                                        x={start}
+                                                        width={window.xScale(gene.end) - start}
+                                                        y={window.axisPadding.top}
+                                                        height={window.height - window.axisPadding.top} // ded9d0
+                                                        fill={window.gene === gene.name ? '#d4e4ff' : '#f0f0f0'}
+                                                    />
+                                                    <rect
+                                                        x={start}
+                                                        width={window.xScale(gene.end) - start}
+                                                        y={window.height + 40 * trackIndex}
+                                                        height={38}
+                                                        fill='#333'
+                                                        style={{ cursor: 'pointer' }}
+                                                        genename={gene.name}
+                                                        onMouseEnter={this.hoverGene}
+                                                        onMouseLeave={this.unhoverGene}
+                                                        onClick={this.filterGene}
+                                                    />
+                                                    <text
+                                                        x={start + (window.xScale(gene.end) - start) / 2}
+                                                        y={window.height + 25 + 40 * trackIndex}
+                                                        style={{ textAnchor: 'middle', pointerEvents: 'none', fontWeight: ((gene.name === this.props.filterGene) ? 'bold' : 'normal') }}
+                                                        fill='white'
+                                                    >
+                                                        {gene.name}
+                                                    </text>
+                                                </g>
+                                            )
+                                        })}
+                                    </g>
+                                ))}
                             </g>
 
                             {/* Points */}

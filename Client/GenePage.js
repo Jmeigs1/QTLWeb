@@ -5,7 +5,7 @@ import { debounce } from 'throttle-debounce'
 import DatasetFilter from './DatasetFilter'
 import GeneCard from './GeneCard'
 import GenePageTable from './GenePageTable'
-// import GenePageTableFilter from './GenePageTableFilter'
+import GenePageTableFilter from './GenePageTableFilter'
 import Legend from './Legend'
 import ScatterPlot from './ScatterPlot'
 // import TranscriptPlot from './TranscriptPlot'
@@ -32,12 +32,14 @@ class GenePage extends Component {
             data: [],
             d3WindowData: {},
             mainGeneTranscripts: [],
-            filterGene: null,
+            filterValue: '',
             filteredData: [],
             isDataLoaded: false,
         }
 
         this._genePageTable = React.createRef()
+        this.filterable_keys = ['bystroId', 'chromosome', 'dataset', 'gene']
+
         this.filterData = this.filterData.bind(this)
         this.filterDataDB = debounce(
             250,
@@ -62,6 +64,7 @@ class GenePage extends Component {
         //this change will always happen by itself
         return prevProps.loading == this.props.loading
     }
+
 
     async loadAllData() {
         if (!this.props.loading)
@@ -98,18 +101,15 @@ class GenePage extends Component {
         this.props.setLoadingFunc(false)
 
     }
-
-
     getSiteRange(symbol) {
-        return fetch(`${window.location.origin}/api/gene/${symbol}`)
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/${symbol}`)
             .then(res => res.json())
     }
-
     loadDataResults(geneName, rangeQueryData) {
         const start = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
         const end = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
 
-        return fetch(`${window.location.origin}/api/es/range`, {
+        return fetch(`${'http://brainqtl.org:8080'}/api/es/range`, {
             method: 'POST',
             body: JSON.stringify({
                 rangeData: {
@@ -136,9 +136,8 @@ class GenePage extends Component {
                 }
             })
     }
-
     loadGeneData(genes) {
-        return fetch(`${window.location.origin}/api/gene/search`, {
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/search`, {
             method: 'POST',
             body: JSON.stringify({ knownGenes: genes }),
             headers: { 'Content-Type': 'application/json' },
@@ -146,12 +145,10 @@ class GenePage extends Component {
             .then(res => res.json())
             .then(data => data.genes)
     }
-
-
     loadD3Data(gene, points) {
 
         let axisPadding = { left: 45, top: 40 } // give space for axis numbers/labels
-        let padding = { left: 20, top: 20, right: 20, bottom: 60 } // make data stay away from axes
+        let padding = { left: 20, top: 20, right: 20, bottom: 20 } // make data stay away from axes
         let width = 1100
         let height = 600
 
@@ -171,56 +168,40 @@ class GenePage extends Component {
         }
     }
 
-    // filterResultsFunc = (filterText, cb) => {
 
-    //     this.setState({
-    //         filterValue: filterText,
-    //     })
+    filterData(filterText, cb) {
 
-    //     this._genePageTable.current.setState({ "highlightIndex": -1 })
+        this._genePageTable.current.setState({ "highlightIndex": -1 })
 
-    //     let filteredData = this.state.resultsData.fullData
+        let filteredData = this.state.data
+        if (filterText) {
+            filteredData = this.state.data.filter(dataPoint => {
 
-    //     if (filterText) {
-    //         filteredData = this.state.resultsData.fullData.filter(
-    //             (dataPoint) => {
-    //                 if (!filterText) return true
+                return this.filterable_keys.some(key => {
+                    let val = dataPoint[key]
+                    return (val && val.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
+                })
 
-    //                 let filterbool = false
-    //                 for (let dataField of tableCols) {
-
-    //                     let value = dataField.dbName(dataPoint)
-    //                     if (value && value.toLowerCase().indexOf(filterText.toLowerCase()) > -1) {
-    //                         filterbool = true
-    //                         break
-    //                     }
-
-    //                 }
-    //                 return filterbool
-    //             }
-    //         )
-
-    //         for (let i = 0; i < filteredData.length; i++) {
-    //             filteredData[i].filterdIndex = i
-    //         }
-    //     }
-
-    //     this.setState({
-    //         filteredData: filteredData,
-    //     }, cb)
-    // }
-
-    filterData(gene) {
-        this.props.setLoadingFunc(true)
-
-        let filteredData = this.state.data.filter(d => d.gene === gene)
-        if (!gene) filteredData = this.state.data
+            })
+        }
 
         this.setState({
-            filterGene: gene,
+            filterValue: filterText,
             filteredData,
-        }, () => this.props.setLoadingFunc(false))
+        }, cb)
     }
+
+    // filterData(gene) {
+    //     this.props.setLoadingFunc(true)
+
+    //     let filteredData = this.state.data.filter(d => d.gene === gene)
+    //     if (!gene) filteredData = this.state.data
+
+    //     this.setState({
+    //         filterValue: gene,
+    //         filteredData,
+    //     }, () => this.props.setLoadingFunc(false))
+    // }
 
     render() {
         if (!this.state.isDataLoaded) return (<Page />)
@@ -240,24 +221,24 @@ class GenePage extends Component {
                     window={this.state.d3WindowData}
                     points={this.state.filteredData}
                     genes={this.state.genes}
-                    filterGene={this.state.filterGene}
+                    filterGene={this.state.filterValue}
                     filterResults={this.filterDataDB}
                     genePageTableRef={this._genePageTable}
                 />
                 <Legend />
-                {/* <h3>
+                <h3>
                     Filters
                 </h3>
                 <GenePageTableFilter
                     geneSymbol={this.props.geneSymbol}
-                    filterResultsFunc={this.filterResultsFuncDB}
+                    filterResultsFunc={this.filterDataDB}
                     filteredData={this.state.filteredData}
                     filterValue={this.state.filterValue}
-                /> */}
+                />
                 <GenePageTable
                     // size={[1100, 500]}
                     ref={this._genePageTable}
-                    filterValue={this.state.filterGene}
+                    filterValue={this.state.filterValue}
                     data={this.state.filteredData}
                 // dataset={this.props.dataset}
                 />
