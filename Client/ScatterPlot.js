@@ -6,17 +6,54 @@ import { Axis, axisPropsFromTickScale, LEFT, TOP } from 'react-d3-axis'
 
 // import Colors from './UI/Colors'
 import { LinkDiv } from './UI/BasicElements'
+import TranscriptPlot from './TranscriptPlot'
 
 import './UI/closeButton.css'
-import { fontWeight } from '@material-ui/system'
+// import { fontWeight } from '@material-ui/system'
 
 const Svg = styled.svg`
     margin: 10px auto;
     display: block;
 `
+const ArrowBox = styled.div`
+    background-color: #4C688B;
+    border-radius: 3px;
+    color: white;
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    padding: 4px 0;
+    min-width: 100px;
+    border: 2px solid #000;
+    box-sizing: padding-box;
+    padding: 0px 5px;
+
+    &::after, &::before {
+        top: 100%;
+        left: 50%;
+        border: solid;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    &::after {
+        border-color: rgba(136, 183, 213, 0);
+        border-top-color: #4C688B;
+        border-width: 10px;
+        margin-left: -10px;
+    }
+
+    &::before {
+        border-color: rgba(136, 183, 213, 0);
+        border-top-color: #000;
+        border-width: 13px;
+        margin-left: -13px;
+    }`
 /*
     TODO:
-    make filter work
     make text on geneTrack readable when small
 */
 
@@ -26,7 +63,7 @@ class ScatterPlot extends Component {
         super(props)
         this.state = {
             hoveredGene: null, // covers other
-            // filteredGene: null,
+            hoveredGeneTrackOffset: [0, 0],
             toolTipData: null,
             selected: -1,
         }
@@ -42,7 +79,8 @@ class ScatterPlot extends Component {
 
     formGeneTracks(genes) {
         let distributed = [[]]
-        genes.map(gene => {
+        genes.map((gene, index) => {
+            gene.index = index
             // if we can place it in existing genes... gene
             if (distributed.some(geneTrack => {
                 // if none are overlapping
@@ -61,10 +99,8 @@ class ScatterPlot extends Component {
     areRegionsOverlapping(a, b) {
         let actualDif = Math.max(a.end, b.end) - Math.min(a.start, b.start)
         let minDif = (a.end - a.start) + (b.end - b.start)
-        // if (actualDif < minDif) console.log(`OVERLAP between: ${a.name} :: ${b.name}`)
         return (actualDif < minDif)
     }
-
 
     comparePoints(a, b) {
         // full sort evaluates at ~6ms
@@ -111,8 +147,9 @@ class ScatterPlot extends Component {
 
     hoverGene(e) {
         // if (this.props.filterGene) return
-        const gene = e.target.getAttribute('genename')
-        this.setState({ hoveredGene: gene })
+        this.setState({
+            hoveredGene: e.target.getAttribute('genename') || e,
+        })
     }
     unhoverGene() {
         this.setState({
@@ -200,7 +237,7 @@ class ScatterPlot extends Component {
                                     x={window.axisPadding.left}
                                     width={window.width - window.axisPadding.left}
                                     y={window.height}
-                                    height={7}
+                                    height={6}
                                     fill='#333'
                                 />
                                 {geneTracks.map((track, trackIndex) => (
@@ -223,22 +260,28 @@ class ScatterPlot extends Component {
                                                         x={start}
                                                         width={window.xScale(gene.end) - start}
                                                         y={window.height + 40 * trackIndex}
-                                                        height={38}
-                                                        fill='#333'
+                                                        height={12}
+                                                        fill={'#333'}
+                                                    />
+                                                    <text
+                                                        x={start + (window.xScale(gene.end) - start) / 2}
+                                                        y={window.height + 30 + 40 * trackIndex}
+                                                        style={{ textAnchor: 'middle', pointerEvents: 'none', fontSize: '13px', fontWeight: ((gene.name === this.props.filterGene) ? 'bold' : 'normal') }}
+                                                    // fill='white'
+                                                    >{gene.name}</text>
+                                                    {/* HoverArea */}
+                                                    <rect
+                                                        x={start}
+                                                        width={window.xScale(gene.end) - start}
+                                                        y={window.height + 40 * trackIndex}
+                                                        height={40}
+                                                        fill='transparent'
                                                         style={{ cursor: 'pointer' }}
                                                         genename={gene.name}
                                                         onMouseEnter={this.hoverGene}
                                                         onMouseLeave={this.unhoverGene}
                                                         onClick={this.filterGene}
                                                     />
-                                                    <text
-                                                        x={start + (window.xScale(gene.end) - start) / 2}
-                                                        y={window.height + 25 + 40 * trackIndex}
-                                                        style={{ textAnchor: 'middle', pointerEvents: 'none', fontWeight: ((gene.name === this.props.filterGene) ? 'bold' : 'normal') }}
-                                                        fill='white'
-                                                    >
-                                                        {gene.name}
-                                                    </text>
                                                 </g>
                                             )
                                         })}
@@ -287,7 +330,7 @@ class ScatterPlot extends Component {
 
                         </g>
                     </Svg>
-                    {/* Tooltip */}
+                    {/* Points Tooltip */}
                     {(this.state.toolTipData) ? (
                         <div style={{
                             backgroundColor: "white",
@@ -323,6 +366,8 @@ class ScatterPlot extends Component {
                             </LinkDiv>
                         </div>
                     ) : ""}
+                    {/* Gene Track Tooltip */}
+
                 </div>
             </div >
         )

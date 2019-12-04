@@ -191,18 +191,6 @@ class GenePage extends Component {
         }, cb)
     }
 
-    // filterData(gene) {
-    //     this.props.setLoadingFunc(true)
-
-    //     let filteredData = this.state.data.filter(d => d.gene === gene)
-    //     if (!gene) filteredData = this.state.data
-
-    //     this.setState({
-    //         filterValue: gene,
-    //         filteredData,
-    //     }, () => this.props.setLoadingFunc(false))
-    // }
-
     render() {
         if (!this.state.isDataLoaded) return (<Page />)
 
