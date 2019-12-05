@@ -11,7 +11,7 @@ import ScatterPlot from './ScatterPlot'
 // import TranscriptPlot from './TranscriptPlot'
 
 import { Page } from './UI/BasicElements'
-import { Datasets /*, tableCols */ } from './UI/Datasets'
+import { Datasets, tableCols } from './UI/Datasets'
 
 import { extent } from 'd3-array'
 import { scaleLinear } from 'd3-scale'
@@ -177,8 +177,8 @@ class GenePage extends Component {
         if (filterText) {
             filteredData = this.state.data.filter(dataPoint => {
 
-                return this.filterable_keys.some(key => {
-                    let val = dataPoint[key]
+                return tableCols.some(field => {
+                    let val = field.dbName(dataPoint)
                     return (val && val.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
                 })
 
