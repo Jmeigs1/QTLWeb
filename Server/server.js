@@ -10,6 +10,7 @@ const rfs = require('rotating-file-stream')
 const morgan = require('morgan')
 const uuid = require('node-uuid')
 const cookieSession = require('cookie-session')
+const helmet = require('helmet')
 
 const queries = require('./queries')
 
@@ -26,6 +27,8 @@ morgan.token('id', function getId (req) {
 })
 
 const app = express()
+
+app.use(helmet())
 
 app.use(cookieSession({
     name: 'session',
