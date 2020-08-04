@@ -64,7 +64,7 @@ const HomePage = (props) =>
                 <SearchBar 
                     dataset={props.dataset}
                     style={{ display: 'inline-block', width: '700px', padding: '20px 0', margin: "0 auto" }} />
-
+{/* 
                 <h3>
                     Datasets
                 </h3>
@@ -164,7 +164,7 @@ const HomePage = (props) =>
                             dataset='overlap'
                             geneData={overlap}/>
                     </div>
-                </InlineDiv>
+                </InlineDiv> */}
                 <Citations/>
             </HomePageDiv>
         )

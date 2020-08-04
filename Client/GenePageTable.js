@@ -21,61 +21,6 @@ import {
 from './UI/Table'
 import {tableCols} from './UI/Datasets'
 
-// class GenePageTable extends Component {
-
-//     shouldComponentUpdate(nextProps){
-//         //Hack for now.  Server side render later.
-//         return true
-//     }
-
-//     render() {
-//         let rows = this.props.filteredData
-
-//         return (
-//             <StyledTableRoot id="table-root" style={{height:"500px"}}>
-//                 <StyledTable>
-//                     <StyledTableHead>
-//                     <StyledTableRowHead>
-//                         <StyledTableCellHeader key={'_index'} >Genomic Coordinates</StyledTableCellHeader>
-//                     {tableCols.map((col, i) => (
-//                         <StyledTableCellHeader key={i} >{col.displayName}</StyledTableCellHeader>
-//                     ))}
-//                     </StyledTableRowHead>
-//                     </StyledTableHead>
-//                         <StyledTableBody>
-//                             {
-//                                 rows ?
-//                                 rows.map((row, i) => (
-//                                 <StyledTableRow
-//                                     id={`row_${row.index}`}
-//                                     key={row.index}>
-//                                     <StyledTableCell key={i + '_Link'}> 
-//                                             <Link to={
-//                                                 `/gene/${row.NonIndexedData.GeneSymbol}`+
-//                                                 `/site/${row.Site}`+
-//                                                 `/chr/${row.Chr}`+
-//                                                 `/dataset/${row.Dataset}`}>
-//                                                 {row.Coordinate}
-//                                             </Link>
-//                                     </StyledTableCell>
-//                                     {tableCols.map((col, j) =>
-//                                         (
-//                                             <StyledTableCell key={i + '_' + j}>
-//                                                 {col.dbName(row)}
-//                                             </StyledTableCell>
-//                                         )
-//                                     )}
-//                                     </StyledTableRow>
-//                                 )) :
-//                                 (<StyledTableRow/>)
-//                             }
-//                         </StyledTableBody>
-//                 </StyledTable>
-//             </StyledTableRoot>
-//         )
-//     }
-// }
-
 class GenePageTable extends Component {
 
     constructor(props, context) {
@@ -98,7 +43,7 @@ class GenePageTable extends Component {
         let classList = ""
 
         if(this.state.highlightIndex){
-            console.log(this.state)
+            // console.log(this.state)
             if(index == this.state.highlightIndex){
                 classList += "greenFade "
             }
@@ -132,7 +77,7 @@ class GenePageTable extends Component {
                         onScroll={
                             ({ clientHeight, scrollHeight, scrollTop }) => 
                                 {
-                                    console.log(clientHeight,scrollHeight,scrollTop)
+                                    // console.log(clientHeight,scrollHeight,scrollTop)
                                     this.setState({scrollTop})
                                 }
                             }
