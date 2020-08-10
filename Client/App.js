@@ -98,7 +98,7 @@ class App extends Component {
                                 }
                             }
                         />
-                        {/* <Route exact path="/datasets" 
+                        <Route exact path="/datasets" 
                             render={
                                 () => {
                                     return (
@@ -106,7 +106,7 @@ class App extends Component {
                                     )
                                 }
                             }
-                        /> */}
+                        />
                     </Switch>
                 </div>
                 <div className="loading style-2" style={this.state.loading ? {} : {display: "none"}}>
