@@ -1,7 +1,16 @@
 const axios = require('axios')
 const mysql = require('mysql')
 
-const esServerIP = 'http://localhost:9200'
+let esServerIP = 'http://localhost:9200'
+
+try {
+    esServerIP = require("./dev").esServer
+} catch (error) {
+    if (error.code !== 'MODULE_NOT_FOUND') {
+        throw error;
+    }
+}
+
 
 const esSanitize = (query) => {
     return query

@@ -29,7 +29,7 @@ const linkData = (label, url, isExternal) => {
 
 const links = [
     linkData('Dataset Descriptions', '/Datasets', 0),
-    linkData('Pre-Print', 'https://www.biorxiv.org/content/10.1101/816652v1', 1),
+    // linkData('Pre-Print', 'https://www.biorxiv.org/content/10.1101/816652v1', 1),
     linkData('WingoLab', 'http://wingolab.org', 1),
 ]
 

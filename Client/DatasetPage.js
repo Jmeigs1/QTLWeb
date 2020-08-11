@@ -29,52 +29,19 @@ class DatasetPage extends Component {
                 </p>
 
                 <h2>
-                    How were protein and RNA expression QTLs identified?
+                    How were protein QTLs identified?
                 </h2>
                 <p>
-                    We used protein and RNA expression data derived from dosolateral prefrontal
-                    cortex (Broadman area 46) from 144 research volunteers from the ROS/MAP studies
-                    (see Research Volunteers section below) who also underwent whole genome
-                    sequencing.
+                We used protein data derived from dosolateral prefrontal cortex from 338 research 
+                volunteers from the ROS/MAP studies (see Research Volunteers section below) who also 
+                underwent whole genome sequencing. For each of the 7,376 proteins measured in the 338 
+                individual brains, we tested all common (minor allele frequency {'>'} 0.05) single nucleotide 
+                variants (SNVs) in a 200 Kbp region around the protein-coding gene. In total, we tested 
+                501,414 SNVs and provided estimates of effect sizes and p-values for associations between 
+                those sites and the different proteins tested.
                 </p>
-                <div>
-                    We had two basic analyses:
-
-                    <ol>
-                        <li>
-                            Find all pQTLs in the ROS/MAP dataset
-                        </li>
-                        <li>
-                            Ask how do pQTLs compare with eQTLs in the ROS/MAP dataset
-                        </li>
-                    </ol>
-                </div>
-
-                <h3>
-                    pQTLs
-                </h3>
-                <p>
-                    For each of the 7,901 proteins measured in the 144 individual brains, we tested
-                    all single nucleotide variants (SNVs) in a 200 Kbp region around the gene. In
-                    total, we tested 2,599,383 SNVs and provided estimates for effect sizes and
-                    p-values for associations between those sites and the different proteins tested.
-                </p>
-
-                <h3>
-                    pQTL vs eQTL
-                </h3>
-                <p>
-                    To ask whether pQTLs tend to be eQTLs and vice versa, we selected individual
-                    brains with both proteomic and mRNA expression data from the ROS/MAP subjects.
-                    We then compared the location, strength, and direction of association between
-                    pQTL and eQTL within 200 Kbp of each gene and transcript in these individuals.
-                    In total, 2,082,000 SNVs were tested for association with  the abundance of
-                    protein and mRNA, respectively, from 5,739 genes.
-                </p>
-
 
                 <Divider />
-
 
                 <h2>
                     Resource descriptions
@@ -113,8 +80,7 @@ class DatasetPage extends Component {
                 <p>
                     Protein abundance of the brain was measured using liquid chromatography followed
                     by tandem mass spectrometry on proteins of the dorsolateral prefrontal cortex.
-                    For this study, we selected 144 ROS/MAP participants that died without evidence
-                    of impaired cognition. Protein abundance from cortical microdissections of the
+                    Protein abundance from cortical microdissections of the
                     dorsolateral prefrontal cortex (dPFC; Broadman area 9) of ROS/MAP subjects was
                     generated using tandem mass tag (TMT) isobaric labeling mass spectrometry
                     methods for protein identification and quantification. Samples were prepared and
@@ -154,8 +120,7 @@ class DatasetPage extends Component {
                 </h3>
                 <p>
                     Gene expression was measured from RNA extracted from of the dorsolateral
-                    prefrontal cortex. The data for the brain mRNA sequencing, which was used to
-                    estimate the amount of mRNA expression, is described
+                    prefrontal cortex. Further details of the sequencing are described
                     <ExternalLink href="https://www.ncbi.nlm.nih.gov/pubmed/30084846">
                         {' here '}
                     </ExternalLink>

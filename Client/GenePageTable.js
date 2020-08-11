@@ -21,6 +21,10 @@ import {
 from './UI/Table'
 import {tableCols} from './UI/Datasets'
 
+import {format} from 'd3-format'
+
+let d3format = format(".3e")
+
 class GenePageTable extends Component {
 
     constructor(props, context) {
@@ -95,14 +99,22 @@ class GenePageTable extends Component {
                                     ({rowData}) => {
                                         return (
                                             i > 0 ?
-                                            (
-                                                <Highlighter
-                                                    searchWords={[this.props.filterValue]}
-                                                    autoEscape={true}
-                                                    textToHighlight={col.dbName(rowData)}
-                                                />
-                                            ) :
-                                            (
+                                            col.numFormat == true ?
+                                                (
+                                                    <Highlighter
+                                                        searchWords={[this.props.filterValue]}
+                                                        autoEscape={true}
+                                                        textToHighlight={d3format(col.dbName(rowData))}
+                                                    />
+                                                )
+                                                :(
+                                                    <Highlighter
+                                                        searchWords={[this.props.filterValue]}
+                                                        autoEscape={true}
+                                                        textToHighlight={col.dbName(rowData)}
+                                                    />
+                                                )
+                                            :(
                                                 <Link to={
                                                     `/gene/${rowData.NonIndexedData.GeneSymbol}`+
                                                     `/site/${rowData.Site}`+
