@@ -98,7 +98,7 @@ class App extends Component {
                                 }
                             }
                         />
-                        <Route exact path="/datasets" 
+                        <Route exact path="/dataset" 
                             render={
                                 () => {
                                     return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import { Page, Link, ExternalLink } from './UI/BasicElements'
+import { Page, Link, ExternalLink, PopoutDiv } from './UI/BasicElements'
 import InlineDiv from './UI/InlineDiv'
 import Citations from './UI/Citations'
 import { pQTL, overlap } from './Data/NotableGenes'
@@ -42,25 +42,36 @@ const HomePage = (props) =>
         return (
             <HomePageDiv>
                 <HeadingContainer>
-                    <h3>
+                    <h2>
                         A resource for genetic investigations of the human brain
-                    </h3>
+                    </h2>
                 </HeadingContainer>
 
                 <GraphicDiv src="./assets/infographic.png"/>
 
                 <br />
 
-                <h3>
-                    Search - Visualization and Download
-                </h3>
-                <p>
-                    Search for genetic variants associated with quantitative molecular traits by gene name,
-                    UniProt protein ID, Ensembl gene ID, reference SNP ID, or SNP location
-                </p>
-                <p>
-                    Please note that the scope of the analysis and search does not include genes from mitochondrial or sex chromosomes
-                </p>
+                <PopoutDiv>
+                    <h3>
+                        Search - Visualization and Download
+                    </h3>
+                    <p>
+                        Search for genetic variants associated with quantitative molecular traits by gene name,
+                        UniProt protein ID, Ensembl gene ID, reference SNP ID, or SNP location
+                    </p>
+                    <p>
+                        Please note that the scope of the analysis and search does not include genes from mitochondrial or sex chromosomes
+                    </p>
+                    <p>
+                        <Link to="/dataset">
+                            Dataset Decription
+                        </Link>
+                    </p>
+                    <p>
+                        Full Dataset Download Coming soon
+                    </p>
+
+                </PopoutDiv>
                 <SearchBar 
                     dataset={props.dataset}
                     style={{ display: 'inline-block', width: '700px', padding: '20px 0', margin: "0 auto" }} />
@@ -165,7 +176,9 @@ const HomePage = (props) =>
                             geneData={overlap}/>
                     </div>
                 </InlineDiv> */}
-                <Citations/>
+                <PopoutDiv>
+                    <Citations/>
+                </PopoutDiv>
             </HomePageDiv>
         )
     }
