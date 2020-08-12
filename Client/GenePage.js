@@ -307,7 +307,9 @@ class GenePage extends Component {
                             filterResultsFunc={this.filterResultsFunc}
                             filteredData={this.state.filteredData.filter(
                                 (o) => (o.Dataset.toLowerCase() == dataset)
-                            )} />
+                            )}
+                            filterValue={this.state.filterValue}
+                            />
                         )
                     }
                 )}

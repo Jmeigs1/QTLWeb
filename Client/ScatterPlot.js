@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import animateScrollTo from 'animated-scroll-to';
 
@@ -20,21 +20,6 @@ class ScatterPlot extends Component{
         super(props)
     }
 
-    state = {
-    }
-
-    componentDidMount() {
-
-    }
-
-    componentDidUpdate() {
-
-    }
-
-    // shouldComponentUpdate(prevProps){
-    //     return(prevProps.filteredData != this.props.filteredData)
-    // }
-
     render() {
         return (
             <div style={{clear:"both"}}>
@@ -49,7 +34,9 @@ class ScatterPlot extends Component{
                     genePageTableRef={this.props.genePageTableRef}
                     setScroll={this.props.setScroll}
                     filterResultsFunc={this.props.filterResultsFunc}                    
-                    filteredData={this.props.filteredData} />
+                    filteredData={this.props.filteredData}
+                    filterValue={this.props.filterValue}
+                    />
             </div>
         )
     }
@@ -62,13 +49,21 @@ const Plot = (props) => {
         selected: null,
     })
 
+    useEffect(
+        () => {
+            return () => {
+                setState({
+                    toolTipData: null,
+                    selected: null,
+                });
+            };
+        },
+        [props.filterValue],
+    );
+
     const scrollToTable = (index) => {
 
-        window.test = props.genePageTableRef.current
-
         props.genePageTableRef.current.setState({"highlightIndex": index})
-
-        props.genePageTableRef.current._table.current.scrollToRow(index)
 
         const body = document.getElementById('table-root')
         
