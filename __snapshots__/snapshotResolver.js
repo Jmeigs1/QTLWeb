@@ -11,13 +11,11 @@ const r = {
     else dir = '__snapshots__/' + dir
 
     dir = dir.replace('.test.js', `.js${snapshotExtension}`)
-    // console.log(`resolveSnapshotPath: '${testPath}' => '${dir}'`)
     return dir
   },
 
   resolveTestPath: (snapshotFilePath, snapshotExtension) => {
     let dir = snapshotFilePath.replace('__snapshots__/', '').replace(`.js${snapshotExtension}`, '.test.js')
-    // console.log(`resolveTestPath: '${snapshotFilePath}' => '${dir}'`)
     return dir
   }
 }

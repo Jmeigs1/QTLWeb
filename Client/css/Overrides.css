@@ -66,12 +66,13 @@ list {
 }
 
 .greenFade {
-    animation: fade 1s linear 2
+    animation: fade 1s linear;
+    animation-fill-mode: forwards;
 }
 
 @keyframes fade {
-    0%,100% { background: white; }
-    33%,66% { background: lightgreen; }
+    50% { background: white; }
+    0%,100% { background: lightgreen; }
 }
 
 .white-shadowed{

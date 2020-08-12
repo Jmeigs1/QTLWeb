@@ -35,7 +35,6 @@ class GenePageTable extends Component {
         this._table = React.createRef();
 
         this.state = {
-            scrollTop:0,
             highlightIndex: -1,
         }
     }
@@ -43,11 +42,18 @@ class GenePageTable extends Component {
 
     }
 
+    componentDidUpdate(prevProps, prevState){
+        if(this.props.filterValue != prevProps.filterValue){
+            this.setState({
+                highlightIndex: -1,
+            })
+        }
+    }
+
     _rowClassName({index}) {
         let classList = ""
 
         if(this.state.highlightIndex){
-            // console.log(this.state)
             if(index == this.state.highlightIndex){
                 classList += "greenFade "
             }
@@ -78,14 +84,7 @@ class GenePageTable extends Component {
                         rowClassName={this._rowClassName}
                         rowCount={rows.length}
                         rowGetter={({ index }) => rows[index]}
-                        onScroll={
-                            ({ clientHeight, scrollHeight, scrollTop }) => 
-                                {
-                                    // console.log(clientHeight,scrollHeight,scrollTop)
-                                    this.setState({scrollTop})
-                                }
-                            }
-                        scrollTop={this.state.scrollTop}
+                        scrollToIndex={this.state.highlightIndex}
                         // rowRenderer={(props) => (<div id={`row_${props.rowData.filterdIndex}`}><DefaultTableRowRenderer {...props} /></div>)}
                     >
                     {tableCols.map(
