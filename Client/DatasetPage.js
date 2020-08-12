@@ -123,7 +123,7 @@ class DatasetPage extends Component {
                         We are grateful for the generosity of the research volunteers who gave their
                         time, and, ultimately, donated their brains to science. We thank our
                         collaborators at the
-                        <ExternalLink href="https://alzheimers.emory.edu">
+                        <ExternalLink href="http://alzheimers.emory.edu">
                             {' Emory Goizueta Alzheimer\'s Disease Research Center'}
                         </ExternalLink>
                         ,
