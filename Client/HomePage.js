@@ -63,8 +63,8 @@ const HomePage = (props) =>
                         Please note that the scope of the analysis and search does not include genes from mitochondrial or sex chromosomes
                     </p>
                     <p>
-                        <Link to="/dataset">
-                            Dataset Decription
+                        <Link to="">
+                            Study Description - Coming Soon
                         </Link>
                     </p>
                     <p>

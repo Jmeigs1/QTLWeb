@@ -6,14 +6,9 @@ export default (props) => (
             Citations
         </h3>
         <p>
-        Chloe Robins, Yue Liu, Wen Fan, Duc M. Duong, Jacob Meigs, Nadia Harerimana, Ekaterina S. Gerasimov, 
-        Eric B. Dammer, David J. Cutler, Thomas G. Beach, Eric M. Reiman, Philip L. De Jager, David A. Bennett, 
-        James J. Lah, Aliza P. Wingo, Allan I. Levey <sup>#</sup>, Nicholas T, Seyfried <sup>#</sup>, Thomas S. Wingo <sup>#</sup>.
-        <br/><i>Genetic control of the human brain proteome - in review.</i>
-
-        </p>
-        <p>
-            <sup>#</sup>Co-Senior Authors
+        Robins C, Liu Y, Fan W, Duong DM, Meigs J, Harerimana NV, Gerasimov ES, Dammer EB, Cutler DJ, Beach TG, 
+        Reiman EM, De Jager PL, <br/> Bennett DA, Lah JJ, Wingo AP, Levey AI, Seyfried NT, Wingo TS. 
+        <br/><i>Genetic Control Of The Human Brain Proteome. 2021. American Journal of Human Genetics.</i>
         </p>
     </div>
 )
