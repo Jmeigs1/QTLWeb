@@ -56,12 +56,17 @@ const esQuery = (searchTerm) => {
                             "should": [
                                 {
                                     "term": {
-                                        "Dataset": "pqtl"
+                                        "Dataset": "rosmap"
                                     }
                                 },
                                 {
                                     "term": {
-                                        "Dataset": "pqtloverlap"
+                                        "Dataset": "rosmap_control"
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "Dataset": "banner"
                                     }
                                 },
                                 {

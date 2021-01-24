@@ -292,8 +292,12 @@ class GenePage extends Component {
                 <CardBox>
                     <GeneCard
                         mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
+                    <DatasetFilter
+                        geneSymbol={this.props.geneSymbol}
+                        dataset={this.props.dataset}
+                        setDatasetFunc={this.props.setDatasetFunc}/>
+
                 </CardBox>
-                {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
                 {Datasets[this.props.dataset].datasets.map(
                     (dataset, i) => {
                         return (

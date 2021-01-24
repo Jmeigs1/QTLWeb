@@ -1,6 +1,24 @@
 export const Datasets = {
-    "pqtl":{
-        displayName: "pQTL",
+    "rosmap":{
+        displayName: "ROS/MAP",
+        datasets: [
+            "rosmap"
+        ],
+        datasetLabels:[
+            "ROS/MAP",
+        ]
+    },
+    "rosmap_control":{
+        displayName: "ROS/MAP Control",
+        datasets:[
+            "rosmap_control",
+        ],
+        datasetLabels:[
+            "Rosmap Control",
+        ]
+    },
+    "test":{
+        displayName: "Banner",
         datasets: [
             "pqtl"
         ],
@@ -8,34 +26,23 @@ export const Datasets = {
             "pQTL",
         ]
     },
-    "overlap":{
-        displayName: "pQTL vs eQTL",
-        datasets:[
-            "pqtloverlap",
-            "eqtloverlap",
-        ],
-        datasetLabels:[
-            "pQTL",
-            "eQTL",
-        ]
-    }
 }
 
 export const DatasetDisplayName = {
-    "pqtl":{
-        displayName: "pQTL",
-        value: 'pqtl',
-        downloadLabel: "pQTL",
+    "rosmap":{
+        displayName: "ROS/MAP",
+        value: 'rosmap',
+        downloadLabel: "ROS/MAP",
     },
-    "pqtlOverlap":{
-        displayName: "eQTL vs pQTL",
-        value: 'overlap',
-        downloadLabel: "pQTL",
+    "rosmap_control":{
+        displayName: "ROS/MAP Control",
+        value: 'rosmap_control',
+        downloadLabel: "ROS/MAP Control",
     },
-    "eqtlOverlap":{
-        displayName: "pQTL vs eQTL",
-        value: 'overlap',
-        downloadLabel: "eQTL",
+    "banner":{
+        displayName: "Banner",
+        value: 'banner',
+        downloadLabel: "Banner",
     },
 }
 
