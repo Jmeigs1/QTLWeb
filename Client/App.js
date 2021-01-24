@@ -15,7 +15,7 @@ class App extends Component {
         super(props)
 
         this.state = {
-            dataset: 'pqtl',
+            dataset: 'rosmap',
             loading: false,
         }
     }
