@@ -55,6 +55,6 @@ export const tableCols = [
     columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol, false),
     columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"], false),
     columnData('P-Value', (x) => x.NonIndexedData.pvalue, true),
-    columnData('T-Value', (x) => x.NonIndexedData.tvalue, true),
+    columnData('Beta', (x) => x.NonIndexedData.beta, true),
     columnData('FDR Adjusted P-Value', (x) => x.NonIndexedData.FDR,true),
 ]
