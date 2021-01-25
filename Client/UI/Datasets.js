@@ -17,13 +17,13 @@ export const Datasets = {
             "Rosmap Control",
         ]
     },
-    "test":{
+    "banner":{
         displayName: "Banner",
         datasets: [
-            "pqtl"
+            "banner"
         ],
         datasetLabels:[
-            "pQTL",
+            "Banner",
         ]
     },
 }
