@@ -75,26 +75,40 @@ const HomePage = (props) =>
                 <SearchBar 
                     dataset={props.dataset}
                     style={{ display: 'inline-block', width: '700px', padding: '20px 0', margin: "0 auto" }} />
-{/* 
-                <h3>
+
+                <h2>
                     Datasets
-                </h3>
+                </h2>
 
                 <InlineDiv>
-                    <div style={{
-                        boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
-                        0px 1px 1px 0px rgba(0,0,0,0.14), \
-                        0px 2px 1px -1px rgba(0,0,0,0.12)",
-                        background: "#FFF",
-                        padding:"10px",
-                    }}>
-                        <h3 style={{}}>
-                            pQTL
+                    <PopoutDiv>
+                        <h3>
+                            ROS/MAP Brain pQTL
                         </h3>
                         <p>
-                            View SNVs associated with protein abundance
+                            Brain pQTL results for up to 330 individuals in the 
+                            <ExternalLink 
+                                href="https://www.rushu.rush.edu/research/departmental-research/religious-orders-study"
+                                >
+                                {" ROS "}
+                            </ExternalLink> 
+                            and 
+                            <ExternalLink 
+                                href="https://www.rushu.rush.edu/research/departmental-research/memory-and-aging-project"
+                                >
+                                {" MAP "}
+                            </ExternalLink> 
+                            studies from 
+                            <ExternalLink 
+                                href="https://doi.org/10.1101/816652"
+                                >
+                                {" Robins et al., 2021 "}
+                            </ExternalLink>
+                            <br/>
+                            <br/>
+                            Results were adjusted for the last clinical cognitive diagnosis, first 10 genetic principal components, and 10 surrogate variables
                         </p>
-                        <br/>
+                        {/* <br/>
                         <p>
                             <Link to="/datasets">
                                 Detailed Dataset Decription
@@ -109,22 +123,36 @@ const HomePage = (props) =>
                                 >
                                 pQTL
                             </ExternalLink>
-                        </p>
-                    </div>
-                    <div style={{
-                        boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2), \
-                        0px 1px 1px 0px rgba(0,0,0,0.14), \
-                        0px 2px 1px -1px rgba(0,0,0,0.12)",
-                        background: "#FFF",
-                        padding:"10px",
-                    }}>
-                        <h3 style={{}}>
-                            pQTL vs eQTL
+                        </p> */}
+                    </PopoutDiv>
+                    <PopoutDiv>
+                        <h3>
+                            ROS/MAP Brain pQTL in controls only
                         </h3>
                         <p>
-                            Compare SNVs associated with both protein abundance and gene expression
+                            Brain pQTL results for 139 individuals in the
+                            <ExternalLink 
+                                href="https://www.rushu.rush.edu/research/departmental-research/religious-orders-study"
+                                >
+                                {" ROS "}
+                            </ExternalLink> 
+                            and 
+                            <ExternalLink 
+                                href="https://www.rushu.rush.edu/research/departmental-research/memory-and-aging-project"
+                                >
+                                {" MAP "}
+                            </ExternalLink> 
+                            with normal cognition at their last clinical assessment from 
+                            <ExternalLink 
+                                href="https://doi.org/10.1101/816652"
+                                >
+                                {" Robins et al., 2021 "}
+                            </ExternalLink>
+                            <br/>
+                            <br/>
+                            Results were adjusted for the last clinical cognitive diagnosis, first 10 genetic principal components, and 10 surrogate variables.
                         </p>
-                        <p>
+                        {/* <p>
                             <Link to="/datasets">
                                 Detailed Dataset Decription
                             </Link>
@@ -146,11 +174,56 @@ const HomePage = (props) =>
                                 >
                                 eQTL
                             </ExternalLink>
+                        </p> */}
+                    </PopoutDiv>
+                    <PopoutDiv>
+                        <h3>
+                            Banner Brain pQTL
+                        </h3>
+                        <p>
+                        Results of brain pQTLs for 149 individuals in the 
+                        <ExternalLink 
+                            href="https://www.bannerhealth.com/services/research/locations/sun-health-institute/programs/body-donation"
+                            >
+                            {" Sun Health Brain and Body Donation Program "}
+                        </ExternalLink> 
+                        from 
+                        <ExternalLink 
+                            href="https://doi.org/10.1101/816652"
+                            >
+                            {" Robins et al., 2021 "}
+                        </ExternalLink>
+                        <br/>
+                        <br/>
+                        Results were adjusted for the last clinical cognitive diagnosis, first 10 genetic principal components, and 10 surrogate variables
                         </p>
-                    </div>
+                        {/*<p>
+                            <Link to="/datasets">
+                                Detailed Dataset Decription
+                            </Link>
+                        </p>
+                        <p>
+                            {'Download Dataset: '}
+                            <ExternalLink 
+                                href="https://www.synapse.org/#!Synapse:syn21213391"
+                                download
+                                type="data:text/csv;charset=utf-8"
+                                >
+                                pQTL
+                            </ExternalLink>
+                            {' '}
+                            <ExternalLink 
+                                href="https://www.synapse.org/#!Synapse:syn21213297"
+                                download        
+                                type="data:text/csv;charset=utf-8"
+                                >
+                                eQTL
+                            </ExternalLink>
+                        </p> */}
+                    </PopoutDiv>
                 </InlineDiv>
 
-                <h3>
+                {/* <h3>
                     Notable Genes
                 </h3>
 
@@ -164,7 +237,7 @@ const HomePage = (props) =>
                             pQTL
                         </h4>
                         <NotableGenesTable
-                            dataset='pqtl'
+                            dataset='rosmap'
                             geneData={pQTL}/>
                     </div>
                     <div>
@@ -172,7 +245,7 @@ const HomePage = (props) =>
                             pQTL vs eQTL
                         </h4>
                         <NotableGenesTable
-                            dataset='overlap'
+                            dataset='banner'
                             geneData={overlap}/>
                     </div>
                 </InlineDiv> */}
