@@ -63,12 +63,9 @@ const HomePage = (props) =>
                         Please note that the scope of the analysis and search does not include genes from mitochondrial or sex chromosomes
                     </p>
                     <p>
-                        <Link to="">
-                            Study Description - Coming Soon
-                        </Link>
-                    </p>
-                    <p>
-                        Full Dataset Download Coming soon
+                        <ExternalLink href="https://www.synapse.org/#!Synapse:syn24172458">
+                            Study Description and Dataset Download
+                        </ExternalLink>
                     </p>
 
                 </PopoutDiv>

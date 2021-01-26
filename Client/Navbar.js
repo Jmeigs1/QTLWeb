@@ -28,7 +28,7 @@ const linkData = (label, url, isExternal) => {
 }
 
 const links = [
-    linkData('Study Description', '', 0),
+    linkData('Study Description', 'https://www.synapse.org/#!Synapse:syn24172458', 1),
     // linkData('Pre-Print', 'https://www.biorxiv.org/content/10.1101/816652v1', 1),
     linkData('WingoLab', 'https://wingolab.org', 1),
 ]
