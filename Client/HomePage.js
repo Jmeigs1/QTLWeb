@@ -101,9 +101,6 @@ const HomePage = (props) =>
                                 >
                                 {" Robins et al., 2021 "}
                             </ExternalLink>
-                            <br/>
-                            <br/>
-                            Results were adjusted for the last clinical cognitive diagnosis, first 10 genetic principal components, and 10 surrogate variables
                         </p>
                         {/* <br/>
                         <p>
@@ -145,9 +142,6 @@ const HomePage = (props) =>
                                 >
                                 {" Robins et al., 2021 "}
                             </ExternalLink>
-                            <br/>
-                            <br/>
-                            Results were adjusted for the last clinical cognitive diagnosis, first 10 genetic principal components, and 10 surrogate variables.
                         </p>
                         {/* <p>
                             <Link to="/datasets">
@@ -190,9 +184,6 @@ const HomePage = (props) =>
                             >
                             {" Robins et al., 2021 "}
                         </ExternalLink>
-                        <br/>
-                        <br/>
-                        Results were adjusted for the last clinical cognitive diagnosis, first 10 genetic principal components, and 10 surrogate variables
                         </p>
                         {/*<p>
                             <Link to="/datasets">
