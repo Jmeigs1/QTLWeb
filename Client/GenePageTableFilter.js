@@ -63,9 +63,6 @@ class GenePageTableDownloadButton extends Component {
 
     downloadHander(props) {
 
-        //Temp disable this feature
-        return
-
         if(props.filteredData.length == 0){
             return
         }
@@ -143,7 +140,7 @@ class GenePageTableDownloadButton extends Component {
                 onClick={() => this.downloadHander(this.props)}
                 style = {{float:'right'}}
             > 
-                Download (Coming Soon)
+                Download as CSV
             </button>
         )
     }
