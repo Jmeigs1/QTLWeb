@@ -8,13 +8,13 @@ import GenePageTable from './GenePageTable'
 import GenePageTableFilter from './GenePageTableFilter'
 import Legend from './Legend'
 import ScatterPlot from './ScatterPlot'
-import TranscriptPlot from './TranscriptPlot'
+// import TranscriptPlot from './TranscriptPlot'
 
-import {Page} from './UI/BasicElements'
-import {Datasets, tableCols} from './UI/Datasets'
+import { Page } from './UI/BasicElements'
+import { Datasets, tableCols } from './UI/Datasets'
 
-import {min,max} from 'd3-array'
-import {scaleLinear} from 'd3-scale'
+import { extent } from 'd3-array'
+import { scaleLinear } from 'd3-scale'
 
 const CardBox = styled.div`
     margin: 10px;
@@ -24,28 +24,30 @@ const CardBox = styled.div`
 
 class GenePage extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props)
 
         this.state = {
-            geneData: [],
-            resultsData: {},
-            filteredData: {},
-            filterValue: "",
-          }
-
-        this.filterResultsFuncDB = debounce(
-            250,
-            this.filterResultsFunc
-        )
+            genes: [],
+            data: [],
+            d3WindowData: {},
+            mainGeneTranscripts: [],
+            filterValue: '',
+            filteredData: [],
+            isDataLoaded: false,
+        }
 
         this._genePageTable = React.createRef()
+        this.filterable_keys = ['bystroId', 'chromosome', 'dataset', 'gene']
+
+        this.filterData = this.filterData.bind(this)
+        this.filterDataDB = debounce(
+            250,
+            this.filterData
+        )
+
     }
 
-    shouldComponentUpdate(prevProps){
-        //this change will always happen by itself
-        return prevProps.loading == this.props.loading 
-    }
 
     componentDidMount() {
         document.title = "QTL's - " + this.props.geneSymbol
@@ -53,291 +55,181 @@ class GenePage extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(this.props.geneSymbol != prevProps.geneSymbol || prevProps.dataset != this.props.dataset){
-            document.title = "QTL's - " + this.props.geneSymbol
-            this.loadAllData()
+        if (this.props.geneSymbol != prevProps.geneSymbol || prevProps.dataset != this.props.dataset) {
+            this.componentDidMount()
         }
     }
 
-    loadAllData(){
-        if(!this.props.loading){
-            this.props.setLoadingFunc(true, 
-                () => {
-                    this.props.setDatasetFunc(this.props.dataset)
-                }    
-            )
-        }
-
-        this.getSiteRange()
-        .then( 
-            (rangeQueryData) => this.loadDataResults(this.props.geneSymbol,rangeQueryData)
-            .then(
-                (resultsQueryResults) => {
-                    this.loadDataGene(resultsQueryResults.genes)
-                    .then(
-                        (stateDI) => {this.loadD3Data(resultsQueryResults,stateDI)}
-                    )
-                    
-                }
-            )
-        )
+    shouldComponentUpdate(prevProps) {
+        //this change will always happen by itself
+        return prevProps.loading == this.props.loading
     }
 
-    getSiteRange(){
-        return fetch(
-            window.location.origin + '/api/gene/' + this.props.geneSymbol
-        ).then(response => response.json())
-    }
 
-    loadDataResults(geneSymbol,rangeQueryData) {
-
-        const txStart = Math.min(...rangeQueryData.genes.map(o => parseInt(o["knownGene.txStart"])))
-        const txEnd   = Math.max(...rangeQueryData.genes.map(o => parseInt(o["knownGene.txEnd"])))
-
-        return fetch(
-            window.location.origin + '/api/es/range',
-            { 
-                method: "POST",
-                body: JSON.stringify({
-                    rangeData:{
-                        chr: rangeQueryData.genes[0]["knownGene.chrom"],
-                        start: txStart - 100000,
-                        end: txEnd + 100000,
-                        dataset: Datasets[this.props.dataset].datasets,
-                    },
-                }),
-                headers:{
-                    'Content-Type': 'application/json',
-                },
-            }
-        )
-        .then(response => response.json())
-        .then(data => {
-
-            var lines = data
-
-            var fullData = lines.map((x,i) => {
-                let ret = x._source
-                ret.index = i
-                ret.filterdIndex = i
-                return ret
+    async loadAllData() {
+        if (!this.props.loading)
+            this.props.setLoadingFunc(true, () => {
+                this.props.setDatasetFunc(this.props.dataset)
             })
-            var pvals = lines.map(x => parseFloat(x._source.NonIndexedData.log10pvalue))
-            var genes = lines.map(x => x._source.NonIndexedData.GeneSymbol)
 
-            genes.push(geneSymbol)
+        const resultsQueryData = await this.getSiteRange(this.props.geneSymbol)
+            .then(res => this.loadDataResults(this.props.geneSymbol, res))
+        const genes = await this.loadGeneData(resultsQueryData.genes)
 
-            return {
-                geneName: geneSymbol,
-                fullData: fullData,
-                pvals: pvals,
-                mainGeneTranscripts: rangeQueryData.genes,
-                genes: genes.filter( (value, index, self) => (self.indexOf(value) === index)),
-                range: {
-                    'start':    txStart,
-                    'end':      txEnd,
-                    'padding':  100000,
-                },
-            }
+        const points = resultsQueryData.fullData.map((p, i) => ({
+            position: +p.NonIndexedData.SNPGenomicPosition,
+            pvalue: +p.NonIndexedData.pvalue,
+            log10pvalue: +p.NonIndexedData.log10pvalue,
+            bonfpvalue: +p.NonIndexedData.Bonferronipvalue,
+            gene: p.NonIndexedData.GeneSymbol,
+            chromosome: p.NonIndexedData.Chromosome,
+            bystroId: p.BystroData['gnomad.genomes.id'],
+            dataset: p.Dataset,
+            fdr: +p.NonIndexedData.FDR,
+            index: i,
+        }))
+        const d3WindowData = await this.loadD3Data(this.props.geneSymbol, points)
 
+        this.setState({
+            mainGeneTranscripts: resultsQueryData.mainGeneTranscripts,
+            genes,
+            data: points,
+            filteredData: points,
+            d3WindowData,
+            isDataLoaded: true,
         })
+        this.props.setLoadingFunc(false)
+
+    }
+    getSiteRange(symbol) {
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/${symbol}`)
+            .then(res => res.json())
+    }
+    loadDataResults(geneName, rangeQueryData) {
+        const start = Math.min(...rangeQueryData.genes.map(o => +o["knownGene.txStart"]))
+        const end = Math.max(...rangeQueryData.genes.map(o => +o["knownGene.txEnd"]))
+
+        return fetch(`${'http://brainqtl.org:8080'}/api/es/range`, {
+            method: 'POST',
+            body: JSON.stringify({
+                rangeData: {
+                    chr: rangeQueryData.genes[0]['knownGene.chrom'],
+                    start: start - 100000,
+                    end: end + 100000,
+                    dataset: Datasets[this.props.dataset].datasets,
+                },
+            }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then(res => res.json())
+            .then(lines => {
+                let fullData = lines.map((x, index) => ({ ...x._source, index }))
+
+                let genes = fullData.map(x => x.NonIndexedData.GeneSymbol)
+                genes.push(geneName)
+
+                return {
+                    fullData,
+                    geneName,
+                    genes: [...new Set(genes)],
+                    mainGeneTranscripts: rangeQueryData.genes, // intial gene information
+                }
+            })
+    }
+    loadGeneData(genes) {
+        return fetch(`${'http://brainqtl.org:8080'}/api/gene/search`, {
+            method: 'POST',
+            body: JSON.stringify({ knownGenes: genes }),
+            headers: { 'Content-Type': 'application/json' },
+        })
+            .then(res => res.json())
+            .then(data => data.genes)
+    }
+    loadD3Data(gene, points) {
+
+        let axisPadding = { left: 45, top: 40 } // give space for axis numbers/labels
+        let padding = { left: 20, top: 20, right: 20, bottom: 20 } // make data stay away from axes
+        let width = 1100
+        let height = 600
+
+        return {
+            axisPadding,
+            padding,
+            width,
+            height,
+            gene,
+            xScale: scaleLinear()
+                .domain(extent(points, d => d.position))
+                .range([padding.left + axisPadding.left, width - padding.right]),
+            yScale: scaleLinear()
+                .domain(extent(points, d => d.log10pvalue))
+                .range([height - padding.bottom, padding.top + axisPadding.top]),
+            // header: `QTL's - ${this.props.geneSymbol}`,
+        }
     }
 
-    loadDataGene(genes) {
 
-        return fetch(
-            window.location.origin + '/api/gene/search',
-            { 
-                method: "POST",
-                body: JSON.stringify({
-                    knownGenes: genes,
-                }),
-                headers:{
-                    'Content-Type': 'application/json',
-                },
-            }
-        )
-            .then(response => response.json())
-            .then( data => {
+    filterData(filterText, cb) {
 
-                return ({
-                    geneData: data.genes,
-                    geneDataLoaded: true,
+        this._genePageTable.current.setState({ "highlightIndex": -1 })
+
+        let filteredData = this.state.data
+        if (filterText) {
+            filteredData = this.state.data.filter(dataPoint => {
+
+                return tableCols.some(field => {
+                    let val = field.dbName(dataPoint)
+                    return (val && val.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
                 })
 
             })
-    }
-
-    loadD3Data(resultsQueryResults,stateDI){
-        if(!resultsQueryResults)
-            return
-
-        const size = [1000,400]
-
-        const d3Margin = {top: 10, right: 50, bottom: 40, left: 50},
-        d3Width = size[0] - d3Margin.left - d3Margin.right,
-        d3Height = size[1] - d3Margin.top - d3Margin.bottom
-
-        let pvals = resultsQueryResults.pvals
-
-        //Calculate here because we need the scale across components
-        const d3Min = pvals ? min(pvals) : 0,
-        d3Max = pvals ? max(pvals) : 10,
-        dataMinSite = Math.max(resultsQueryResults.range.start - resultsQueryResults.range.padding,0),
-        dataMaxSite = resultsQueryResults.range.end + resultsQueryResults.range.padding
-
-        var d3ScaleX = scaleLinear()
-            .domain([dataMinSite, dataMaxSite])
-            .range([0, d3Width])
-            .nice()
-
-        var d3ScaleY = scaleLinear()
-            .domain([d3Min, d3Max])
-            .range([d3Height, 0])     
-            .nice()
-
-        var d3Data ={
-            min:    d3Min,
-            max:    d3Max,
-            dataMinSite: dataMinSite,
-            dataMaxSite: dataMaxSite,
-            scaleX: d3ScaleX,
-            scaleY: d3ScaleY,
-            height: d3Height,
-            width:  d3Width,
-            margin: d3Margin,
-            size: size,
         }
-
-        this.setState(
-            {
-                ...stateDI,
-                resultsData:{
-                    ...resultsQueryResults,
-                    dataLoaded: true,
-                    d3Data: d3Data,
-                },
-                filteredData: resultsQueryResults.fullData,
-                geneSymbol: this.props.geneSymbol,
-                filterValue: "",
-            },
-            () => {this.props.setLoadingFunc(false)}
-        )
-    }
-
-    filterDataFields =  [
-        {
-            fieldName: "GeneSymbol",
-            getData: (d) => d.NonIndexedData.GeneSymbol,
-        },
-        {
-            fieldName: "EnsID",
-            getData: (d) => d.NonIndexedData.EnsemblGeneID,
-        },
-    ]
-
-    filterResultsFunc = (filterText,cb) => {
 
         this.setState({
             filterValue: filterText,
-        })
-
-        this._genePageTable.current.setState({"highlightIndex": -1})
-
-        let filteredData = this.state.resultsData.fullData
-
-        if(filterText){
-            filteredData = this.state.resultsData.fullData.filter(
-                (dataPoint) => 
-                {
-                    if(!filterText){
-                        return true
-                    }
-
-                    let filterbool = false
-                    for(let dataField of tableCols){
-
-                        let value = dataField.dbName(dataPoint)
-                        if(value && value.toLowerCase().indexOf(filterText.toLowerCase()) > -1){
-                            filterbool = true
-                            break
-                        }
-    
-                    }
-                    return filterbool
-                }
-            )
-
-            for(let i = 0; i < filteredData.length; i++){
-                filteredData[i].filterdIndex = i
-            }
-        }
-
-        this.setState({
-            filteredData: filteredData,
-        },cb)
+            filteredData,
+        }, cb)
     }
 
     render() {
-
-        if (!this.state.geneDataLoaded){
-            return (
-                <Page>
-                </Page>
-            )
-        }
+        if (!this.state.isDataLoaded) return (<Page />)
 
         return (
             <Page>
                 <CardBox>
                     <GeneCard
-                        mainGeneTranscripts={this.state.resultsData.mainGeneTranscripts}/>
+                        mainGeneTranscripts={this.state.mainGeneTranscripts} />
                     <DatasetFilter
                         geneSymbol={this.props.geneSymbol}
                         dataset={this.props.dataset}
-                        setDatasetFunc={this.props.setDatasetFunc}/>
+                        setDatasetFunc={this.props.setDatasetFunc} />
                 </CardBox>
-                {/* <ScatterPlot geneData={this.state.geneData} scaleData={} size={[1000,500]}/> */}
-                {Datasets[this.props.dataset].datasets.map(
-                    (dataset, i) => {
-                        return (
-                            <ScatterPlot size={[1000,400]} 
-                            key={i}
-                            header={Datasets[this.props.dataset].datasetLabels[i]}
-                            d3Data={this.state.resultsData.d3Data}
-                            range={this.state.resultsData.range}
-                            geneSymbol={this.props.geneSymbol}
-                            genePageTableRef={this._genePageTable}
-                            filterResultsFunc={this.filterResultsFunc}
-                            filteredData={this.state.filteredData.filter(
-                                (o) => (o.Dataset.toLowerCase() == dataset)
-                            )} />
-                        )
-                    }
-                )}
-                <Legend/>
+                <ScatterPlot
+                    header={Datasets[this.props.dataset].displayName}
+                    window={this.state.d3WindowData}
+                    points={this.state.filteredData}
+                    genes={this.state.genes}
+                    filterGene={this.state.filterValue}
+                    filterResults={this.filterDataDB}
+                    genePageTableRef={this._genePageTable}
+                />
+                <Legend />
                 <h3>
                     Filters
                 </h3>
-                <TranscriptPlot size={[1000,10]} 
-                    header="UCSC KnownGene Track"
-                    d3Data={this.state.resultsData.d3Data}
-                    geneSymbol={this.props.geneSymbol}
-                    filterResultsFunc={this.filterResultsFunc}
-                    geneData={this.state.geneData}
-                    filterValue={this.state.filterValue}/>
                 <GenePageTableFilter
                     geneSymbol={this.props.geneSymbol}
-                    filterResultsFunc={this.filterResultsFuncDB}
+                    filterResultsFunc={this.filterDataDB}
                     filteredData={this.state.filteredData}
                     filterValue={this.state.filterValue}
-                    />
-                <GenePageTable size={[1000,500]} 
+                />
+                <GenePageTable
+                    // size={[1100, 500]}
                     ref={this._genePageTable}
                     filterValue={this.state.filterValue}
-                    filteredData={this.state.filteredData}
-                    dataset={this.props.dataset}
-                    />
+                    data={this.state.filteredData}
+                // dataset={this.props.dataset}
+                />
             </Page>
         )
     }

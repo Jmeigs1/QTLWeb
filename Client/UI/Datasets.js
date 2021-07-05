@@ -1,38 +1,38 @@
 export const Datasets = {
-    "pqtl":{
+    "pqtl": {
         displayName: "pQTL",
         datasets: [
-            "pqtl"
+            "pqtl",
         ],
-        datasetLabels:[
+        datasetLabels: [
             "pQTL",
-        ]
+        ],
     },
-    "overlap":{
+    "overlap": {
         displayName: "pQTL vs eQTL",
-        datasets:[
+        datasets: [
             "pqtloverlap",
             "eqtloverlap",
         ],
-        datasetLabels:[
+        datasetLabels: [
             "pQTL",
             "eQTL",
-        ]
-    }
+        ],
+    },
 }
 
 export const DatasetDisplayName = {
-    "pqtl":{
+    "pqtl": {
         displayName: "pQTL",
         value: 'pqtl',
         downloadLabel: "pQTL",
     },
-    "pqtlOverlap":{
+    "pqtlOverlap": {
         displayName: "eQTL vs pQTL",
         value: 'overlap',
         downloadLabel: "pQTL",
     },
-    "eqtlOverlap":{
+    "eqtlOverlap": {
         displayName: "pQTL vs eQTL",
         value: 'overlap',
         downloadLabel: "eQTL",
@@ -40,15 +40,15 @@ export const DatasetDisplayName = {
 }
 
 const columnData = (displayName, dbName) => {
-    return {displayName, dbName}
+    return { displayName, dbName }
 }
 
 export const tableCols = [
-    columnData('Genomic Coordinates', (x) => x.Coordinate),
-    columnData('Dataset', (x) => DatasetDisplayName[x.Dataset].downloadLabel),
-    columnData('Associated Gene', (x) => x.NonIndexedData.GeneSymbol),
-    columnData('RefSNP Number', (x) => x.BystroData["gnomad.genomes.id"]),
-    columnData('P-Value', (x) => x.NonIndexedData.pvalue),
-    columnData('Bonf Corrected P-Value', (x) => x.NonIndexedData.Bonferronipvalue),
-    columnData('FDR', (x) => x.NonIndexedData.FDR),
+    columnData('Genomic Coordinates', (x) => `${x.chromosome}:${x.position}`),
+    columnData('Dataset', (x) => DatasetDisplayName[x.dataset].downloadLabel),
+    columnData('Associated Gene', (x) => x.gene),
+    columnData('RefSNP Number', (x) => x.bystroId),
+    columnData('P-Value', (x) => `${x.pvalue}`),
+    columnData('Bonf Corrected P-Value', (x) => `${x.bonfpvalue}`),
+    columnData('FDR', (x) => `${x.fdr}`),
 ]

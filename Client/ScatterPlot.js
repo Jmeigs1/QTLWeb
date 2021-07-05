@@ -1,307 +1,378 @@
-import React, { Component, useState } from 'react'
+import React, { Component } from 'react'
 import styled from 'styled-components'
-import animateScrollTo from 'animated-scroll-to';
+import animateScrollTo from 'animated-scroll-to'
 
-import {Axis,axisPropsFromTickScale, LEFT, BOTTOM} from 'react-d3-axis'
+import { Axis, axisPropsFromTickScale, LEFT, TOP } from 'react-d3-axis'
 
-import Colors from './UI/Colors'
-import {LinkDiv} from './UI/BasicElements'
+// import Colors from './UI/Colors'
+import { LinkDiv } from './UI/BasicElements'
+import TranscriptPlot from './TranscriptPlot'
 
 import './UI/closeButton.css'
+// import { fontWeight } from '@material-ui/system'
 
 const Svg = styled.svg`
     margin: 10px auto;
     display: block;
 `
+const ArrowBox = styled.div`
+    background-color: #4C688B;
+    border-radius: 3px;
+    color: white;
+    display: inline-block;
+    position: relative;
+    text-align: center;
+    padding: 4px 0;
+    min-width: 100px;
+    border: 2px solid #000;
+    box-sizing: padding-box;
+    padding: 0px 5px;
 
-class ScatterPlot extends Component{
+    &::after, &::before {
+        top: 100%;
+        left: 50%;
+        border: solid;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
 
-    constructor(props){
+    &::after {
+        border-color: rgba(136, 183, 213, 0);
+        border-top-color: #4C688B;
+        border-width: 10px;
+        margin-left: -10px;
+    }
+
+    &::before {
+        border-color: rgba(136, 183, 213, 0);
+        border-top-color: #000;
+        border-width: 13px;
+        margin-left: -13px;
+    }`
+/*
+    TODO:
+    make text on geneTrack readable when small
+*/
+
+class ScatterPlot extends Component {
+
+    constructor(props) {
         super(props)
+        this.state = {
+            hoveredGene: null, // covers other
+            hoveredGeneTrackOffset: [0, 0],
+            toolTipData: null,
+            selected: -1,
+        }
+        this.sortedPoints = [] // not in state, don't update when changed!
+
+        this.filterGene = this.filterGene.bind(this)
+        this.hoverGene = this.hoverGene.bind(this)
+        this.unhoverGene = this.unhoverGene.bind(this)
+        this.comparePoints = this.comparePoints.bind(this)
+        this.showToolTip = this.showToolTip.bind(this)
+        this.scrollTable = this.scrollTable.bind(this)
     }
 
-    state = {
+    formGeneTracks(genes) {
+        let distributed = [[]]
+        genes.map((gene, index) => {
+            gene.index = index
+            // if we can place it in existing genes... gene
+            if (distributed.some(geneTrack => {
+                // if none are overlapping
+                if (geneTrack.some(this.areRegionsOverlapping.bind(this, gene)))
+                    return false
+                geneTrack.push(gene)
+                return true
+            })) return true
+            // if we can't place it...
+            distributed.push([gene])
+            return false
+        })
+        return distributed
     }
 
-    componentDidMount() {
-
+    areRegionsOverlapping(a, b) {
+        let actualDif = Math.max(a.end, b.end) - Math.min(a.start, b.start)
+        let minDif = (a.end - a.start) + (b.end - b.start)
+        return (actualDif < minDif)
     }
 
-    componentDidUpdate() {
+    comparePoints(a, b) {
+        // full sort evaluates at ~6ms
+        const currentGene = this.props.window.gene
 
+        if (currentGene === a.gene) {
+            if (currentGene !== b.gene) return 1
+        }
+        else if (currentGene === b.gene) return -1
+
+        if (a.dataset === 'pqtlOverlap') {
+            if (b.dataset !== 'pqtlOverlap') return 1
+        }
+        else if (b.dataset !== 'pqtlOverlap') return -1
+
+        return 0
     }
 
-    // shouldComponentUpdate(prevProps){
-    //     return(prevProps.filteredData != this.props.filteredData)
-    // }
+    filterGene(e) { // call with event or gene
+        let gene = e
+        if (e.target)
+            gene = e.target.getAttribute('genename')
+        if (this.props.filterGene === gene) gene = ''
 
-    render() {
-        return (
-            <div style={{clear:"both"}}>
-                <h2>
-                    {this.props.header}
-                </h2>
-                <Plot 
-                    size={this.props.size}
-                    d3Data={this.props.d3Data}
-                    range={this.props.range}
-                    geneSymbol={this.props.geneSymbol}
-                    genePageTableRef={this.props.genePageTableRef}
-                    setScroll={this.props.setScroll}
-                    filterResultsFunc={this.props.filterResultsFunc}                    
-                    filteredData={this.props.filteredData} />
-            </div>
-        )
+        // this.setState({ filteredGene: gene })
+        this.props.filterResults(gene)
     }
-}
 
-const Plot = (props) => {
+    getPointFill(d) {
+        let isDominantDataset = (d.dataset === 'pqtlOverlap' || d.dataset === 'pqtl')
+        if (this.props.window.gene === d.gene) {
+            if (isDominantDataset) return '#5e94eb'
+            return '#1c4587'
+        }
+        if (isDominantDataset) return '#d52e2e'
+        return '#780000'
+    }
 
-    const [state, setState] = useState({
-        toolTipData: null,
-        selected: null,
-    })
+    getToolTipDirection(coorY, boxHeight) {
+        if (coorY < this.props.window.height / 2)
+            return coorY + 20
+        return coorY - boxHeight - 20
+    }
 
-    const scrollToTable = (index) => {
+    hoverGene(e) {
+        // if (this.props.filterGene) return
+        this.setState({
+            hoveredGene: e.target.getAttribute('genename') || e,
+        })
+    }
+    unhoverGene() {
+        this.setState({
+            hoveredGene: null,
+        })
+    }
 
-        window.test = props.genePageTableRef.current
+    showToolTip(e) {
+        let circle = e.target
+        let circleIndex = circle.getAttribute('index')
 
-        props.genePageTableRef.current.setState({"highlightIndex": index})
+        if (this.state.selected == circleIndex)
+            return this.setState({
+                toolTipData: null,
+                selected: -1,
+            })
 
-        props.genePageTableRef.current._table.current.scrollToRow(index)
+        let toolTipData = {
+            ...this.sortedPoints[circleIndex],
+            coordX: circle.getAttribute('cx'),
+            coordY: circle.getAttribute('cy'),
+        }
+        this.setState({
+            toolTipData,
+            selected: circleIndex,
+        })
+    }
+
+    scrollTable(e) {
+        let point = this.sortedPoints[this.state.selected]
+
+        let index = point.index // index in unsorted list
+
+        this.props.genePageTableRef.current.setState({ "highlightIndex": index })
+        this.props.genePageTableRef.current._table.current.scrollToRow(index)
 
         const body = document.getElementById('table-root')
-        
-        animateScrollTo(body.offsetTop,{
+
+        animateScrollTo(body.offsetTop, {
             minDuration: 1000,
         })
     }
 
-    const handleMouseClick = (event, itemData, coordX, coordY) => {
+    render() {
+        const { header, window, points, genes } = this.props
 
-        let circle = event.target
+        const geneTracks = this.formGeneTracks(genes) // TODO: don't do on every update
 
-        if(circle == state.selected){
-            setState({
-                toolTipData: null,
-                selected: null,
-            })
-            return
-        }
+        if (this.sortedPoints.length !== points.length) // only re-sort when actual points change
+            this.sortedPoints = points.sort(this.comparePoints)
 
-        let circleData = itemData
-        circleData.coordX = coordX
-        circleData.coordY = coordY
+        return (
+            <div style={{ clear: "both" }}>
+                <h2>
+                    {header}
+                </h2>
+                <div style={{ background: 'translucent', position: "relative", width: `${window.width}px`, margin: "30px auto" }}>
+                    <Svg
+                        id="MainGraphArea"
+                        width={window.width}
+                        height={window.height + 40 * geneTracks.length}>
+                        <g>
 
-        setState({
-            toolTipData: circleData,
-            selected: circle,
-        })
-        
-        //Brings svg element to front
-        circle.parentNode.append(circle)
-    }
+                            {/* Labels */}
+                            <g className="ScatterPlot__labels">
+                                <text
+                                    transform={`translate(${window.width / 2}, 12)`}
+                                    style={{ textAnchor: "middle" }}
+                                >
+                                    Genomic Position
+                                </text>
+                                <text
+                                    transform="rotate(-90)"
+                                    style={{ textAnchor: "middle" }}
+                                    dy="1em"
+                                    x={0 - (window.height / 2)}
+                                >
+                                    Log 10 P-Value
+                                </text>
+                            </g>
 
-    const margin = props.d3Data.margin,
-    width = props.d3Data.width,
-    height = props.d3Data.height
+                            {/* Shaded Regions */}
+                            <g className="ScatterPlot__tracks">
+                                <rect
+                                    x={window.axisPadding.left}
+                                    width={window.width - window.axisPadding.left}
+                                    y={window.height}
+                                    height={6}
+                                    fill='#333'
+                                />
+                                {geneTracks.map((track, trackIndex) => (
+                                    <g
+                                        key={trackIndex}
+                                        className="ScatterPlot__tracks__track"
+                                    >
+                                        {track.map((gene, index) => {
+                                            let start = Math.max(window.xScale(gene.start), window.axisPadding.left) // cut off overflow
+                                            return (
+                                                <g key={index} className={`Scatter__region__${gene.name}`}>
+                                                    <rect
+                                                        x={start}
+                                                        width={window.xScale(gene.end) - start}
+                                                        y={window.axisPadding.top}
+                                                        height={window.height - window.axisPadding.top} // ded9d0
+                                                        fill={window.gene === gene.name ? '#d4e4ff' : '#f0f0f0'}
+                                                    />
+                                                    <rect
+                                                        x={start}
+                                                        width={window.xScale(gene.end) - start}
+                                                        y={window.height + 40 * trackIndex}
+                                                        height={12}
+                                                        fill={'#333'}
+                                                    />
+                                                    <text
+                                                        x={start + (window.xScale(gene.end) - start) / 2}
+                                                        y={window.height + 30 + 40 * trackIndex}
+                                                        style={{ textAnchor: 'middle', pointerEvents: 'none', fontSize: '13px', fontWeight: ((gene.name === this.props.filterGene) ? 'bold' : 'normal') }}
+                                                    // fill='white'
+                                                    >{gene.name}</text>
+                                                    {/* HoverArea */}
+                                                    <rect
+                                                        x={start}
+                                                        width={window.xScale(gene.end) - start}
+                                                        y={window.height + 40 * trackIndex}
+                                                        height={40}
+                                                        fill='transparent'
+                                                        style={{ cursor: 'pointer' }}
+                                                        genename={gene.name}
+                                                        onMouseEnter={this.hoverGene}
+                                                        onMouseLeave={this.unhoverGene}
+                                                        onClick={this.filterGene}
+                                                    />
+                                                </g>
+                                            )
+                                        })}
+                                    </g>
+                                ))}
+                            </g>
 
-    const x = props.d3Data.scaleX
-    const y = props.d3Data.scaleY
+                            {/* Points */}
+                            <g className="ScatterPlot__points">
+                                {this.sortedPoints.map((item, index) => (
+                                    <circle
+                                        key={index}
+                                        index={index}
+                                        className={`ScatterPlot__points__${item.gene} ScatterPlot__points__${item.dataset}`}
+                                        cx={window.xScale(item.position)}
+                                        cy={window.yScale(item.log10pvalue)}
+                                        r={(!this.state.hoveredGene || this.state.hoveredGene === item.gene) ? 5 : 3}
+                                        fill={this.getPointFill(item)}
+                                        style={{ cursor: "pointer", opacity: (!this.state.hoveredGene || this.state.hoveredGene === item.gene ? 1 : .15) }}
 
-    let mainGene = [],
-    otherGene = []
+                                        genename={item.gene}
+                                        onMouseEnter={this.hoverGene}
+                                        onMouseLeave={this.unhoverGene}
+                                        onClick={this.showToolTip}
+                                    />
+                                ))}
+                            </g>
 
-    const getToolTipDirection = (coorY,boxHeight) => {
-        
-        if(coorY < height/2){
-            return coorY + 20
-        }
-        else{
-            return coorY - boxHeight - 20
-        }
+                            {/* Axis */}
+                            <g className="ScatterPlot__axis">
+                                <g transform={`translate(0, ${window.axisPadding.top})`} >
+                                    <Axis {...axisPropsFromTickScale(window.xScale)}
+                                        style={{
+                                            orient: TOP,
+                                        }}
+                                    />
+                                </g>
+                                <g transform={`translate(${window.axisPadding.left}, 0)`}>
+                                    <Axis {...axisPropsFromTickScale(window.yScale)}
+                                        style={{
+                                            orient: LEFT,
+                                        }}
+                                    />
+                                </g>
+                            </g>
 
-    }
-
-    for( let item of props.filteredData ){
-        if(item.NonIndexedData.GeneSymbol == props.geneSymbol){
-            mainGene.push(item)
-        } else {
-            otherGene.push(item)
-        }
-    }
-
-    return (
-        <div style={{position:"relative",width:`${width + margin.left + margin.right}px`,margin:"10px auto"}}>
-            <Svg 
-                id="MainGraphArea"
-                width = {width + margin.left + margin.right}
-                height = {height + margin.top + margin.bottom}>
-                <g transform = {"translate(" + margin.left + "," + margin.top + ")"}>
-                    {/*Axis*/}
-                    <g transform= {"translate(0," + height + ")"}>
-                        <Axis {...axisPropsFromTickScale(props.d3Data.scaleX)} 
-                            style={{
-                                orient: BOTTOM,
-                            }}
-                        />
-                    </g>
-                    <g>
-                        <Axis {...axisPropsFromTickScale(props.d3Data.scaleY)} 
-                            style={{
-                                orient: LEFT,
-                            }}
-                        />
-                    </g>
-                    {/*Label*/}
-                    <text
-                        transform = {"translate(" + (width/2) + " ," + (height + margin.top + 30) + ")"}
-                        style = {{textAnchor:"middle"}}
-                        >
-                            Genomic Position
-                    </text>
-                    <text
-                        transform = "rotate(-90)"
-                        style = {{textAnchor:"middle"}}
-                        dy = "1em"
-                        y = {0 - margin.left}
-                        x = {0 - (height / 2)}
-                        >
-                            -Log 10 P-Value
-                    </text>
-                    {/*Shaded Regions*/}        
-                    <rect
-                        width = {x(props.range.end)-x(props.range.start)}
-                        height = {height}
-                        fill = {Colors[1][0]}
-                        fillOpacity = {0.6}
-                        transform = {'translate(' + x(props.range.start) +',0)'}
-                        />
-                    <rect
-                        width = {x(props.range.start) - x(Math.max(props.range.start - props.range.padding,0))}
-                        height = {height}
-                        fill = {"#AA9239"}
-                        fillOpacity = {0.1}
-                        transform = {'translate(' + x(Math.max(props.range.start - props.range.padding,0)) + ',0)'}/>    
-                    <rect
-                        width = {x(props.range.start) - x(props.range.start - props.range.padding)}
-                        height = {height}
-                        fill = {"#AA9239"}
-                        fillOpacity = {0.1}
-                        transform = {'translate(' + x(props.range.end) + ',0)'}/>
-
-                    <g>
-                    {
-                        otherGene.map(
-                            (item, index) => (
-                                <Circle 
-                                    cx = {x(item.Site)}
-                                    cy = {y(item.NonIndexedData.log10pvalue)}
-                                    r = "5"
-                                    fill = {Colors[0][0]}
-                                    style = {{cursor:"pointer"}}
-                                    onClick = {handleMouseClick}
-                                    data={item}
-                                    key = {item.index}/>
-                            )
-                        )
-                    }
-                    {
-                        mainGene.map(
-                            (item) => (
-                                <Circle 
-                                    cx = {x(item.Site)}
-                                    cy = {y(item.NonIndexedData.log10pvalue)}
-                                    r = "5"
-                                    fill = "brown"
-                                    style = {{cursor:"pointer"}}
-                                    onClick = {handleMouseClick}
-                                    data={item}
-                                    key = {item.index}/> 
-                            )
-                        )
-                    }
-                    </g>
-                </g>
-            </Svg>
-                {
-                    state.toolTipData ? (
+                        </g>
+                    </Svg>
+                    {/* Points Tooltip */}
+                    {(this.state.toolTipData) ? (
                         <div style={{
-                            backgroundColor:"white",
-                            boxShadow:"0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12)",
-                            display:"inline-block",
-                            width:"250px",
-                            padding:"6px 10px",
-                            position:"absolute",
-                            left:`${state.toolTipData.coordX + margin.left}px`,
-                            top:`${getToolTipDirection(state.toolTipData.coordY,144) + margin.top}px`
+                            backgroundColor: "white",
+                            boxShadow: "0px 1px 3px 0px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 2px 1px -1px rgba(0,0,0,0.12)",
+                            display: "inline-block",
+                            width: "250px",
+                            padding: "6px 10px",
+                            position: "absolute",
+                            left: `${this.state.toolTipData.coordX + window.padding.left}px`,
+                            // top: `${this.state.toolTipData.coordY + window.padding.top - 134}px`,
+                            top: `${this.getToolTipDirection(this.state.toolTipData.coordY, 134) + window.padding.top}px`,
                         }}>
-                            <div href="#" onClick={() => {setState({toolTipData: null,selected: null})}} className="boxclose">x</div>
+                            <div href="#" onClick={() => { this.setState({ toolTipData: null, selected: null }) }} className="boxclose">x</div>
                             <div>
-                                {state.toolTipData.NonIndexedData.GeneSymbol} -
-                                <LinkDiv onClick={() => {props.filterResultsFunc(state.toolTipData.NonIndexedData.GeneSymbol)}} style={{display:"inline"}}>
-                                    {' Filter'}
-                                </LinkDiv>
+                                {this.state.toolTipData.gene} -
+                                <LinkDiv
+                                    onClick={e => this.filterGene(this.state.toolTipData.gene)}
+                                    style={{ display: "inline" }}
+                                >Toggle Filter</LinkDiv>
                             </div>
                             <div>
-                                {state.toolTipData.Coordinate}
+                                {`${this.state.toolTipData.chromosome}:${this.state.toolTipData.position}`}
                             </div>
                             <div>
-                                {state.toolTipData.BystroData["gnomad.genomes.id"]}
+                                {this.state.toolTipData.bystroId}
                             </div>
-                            <hr style={{marginTop:"3px",marginBottom:"3px",borderTopColor:"#4C688B"}}/>
+                            <hr style={{ marginTop: "3px", marginBottom: "3px", borderTopColor: "#4C688B" }} />
                             <div>
-                                {`Value: ${state.toolTipData.NonIndexedData.log10pvalue}`}
+                                {`Value: ${this.state.toolTipData.log10pvalue}`}
                             </div>
-                            <LinkDiv onClick={() => {scrollToTable(state.toolTipData.filterdIndex)}}>
+                            <LinkDiv onClick={this.scrollTable}>
                                 Show in table
                             </LinkDiv>
                         </div>
-                    ) :
-                    ""
-                }
-        </div>
-    )
+                    ) : ""}
+                    {/* Gene Track Tooltip */}
+
+                </div>
+            </div >
+        )
+    }
 }
 
-const Circle = (props) => {
-
-    const {data,r,onClick,...otherProps} = props
-    const [state, setState] = React.useState({
-        radius: props.r,
-    })
-
-    const handleMouseClick = (event) => {
-        props.onClick(event,props.data,props.cx,props.cy)
-    }
-
-    const handleMouseOver = (event) => {
-        setState((prevState) => {
-            return {
-                ...prevState,
-                radius: 10,
-            }
-        })
-    }
-
-    const handleMouseOut = (event) => {
-        setState((prevState) => {
-            return {
-                ...prevState,
-                radius: 5,
-            }
-        })
-    }
-
-    return (
-        <circle 
-            {...otherProps}
-            onClick={handleMouseClick}
-            onMouseOver={handleMouseOver}
-            onMouseOut={handleMouseOut}
-            r={state.radius}
-            /> 
-    )
-}
 
 export default ScatterPlot

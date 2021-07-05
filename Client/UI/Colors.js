@@ -24,7 +24,7 @@ export const colors =
             "#FFEDAA",
             "#D4BE6A",
             "#806915",
-            "#554300",            
+            "#554300",
         ],
         //Orange
         [
@@ -33,7 +33,7 @@ export const colors =
             "#D4AC6A",
             "#805715",
             "#553500",
-        ]
+        ],
 
     ]
 
